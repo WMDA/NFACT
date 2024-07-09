@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev_dependencies = [ruff]
+development = ['ruff']
 
 requires-python = ">=3.8"
 
