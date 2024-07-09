@@ -25,11 +25,11 @@ dependencies = [
     'fslpy',
     'tqdm'
 ]
-
+requires-python = ">=3.8"
 [project.optional-dependencies]
 development = ['ruff']
 
-requires-python = ">=3.8"
+
 
 [project.scripts]
 entry_point = "NFACT:main"
