@@ -17,7 +17,7 @@ def main():
 
     # Import after parsing argument to speed up printing help message
 
-    out_folder = args.outdir
+    out_folder = args["outdir"]
     # Create out_folder if it does not exist already
     if not os.path.isdir(out_folder):
         os.makedirs(out_folder, exist_ok=True)
@@ -25,13 +25,7 @@ def main():
     if not os.access(out_folder, os.W_OK):
         raise (Exception(f"Cannot write into {out_folder}. Check permissions..."))
 
-    # Save command line options
-    # with open(os.path.join(out_folder, "options.txt"), "w") as f:
-    #    f.write(parser.format_values())
-
-    # begin
-    print("---- PTX Matrix2 Decomposition ----")
-    ptx_folder = args.ptxdir
+    ptx_folder = args["ptxdir"]
 
     group_mode = False
     # if len = 1 --> could be text file or single folder
@@ -47,7 +41,7 @@ def main():
     print(ptx_folder)
 
     # check that I can find the seed files
-    seeds = args.ptx_seeds
+    seeds = args["seeds"]
     if seeds is None:
         if group_mode:
             raise (Exception("Must provide seeds if running in group mode."))
@@ -74,14 +68,14 @@ def main():
     print(f"...loaded matricies in {t.toc()} secs.")
 
     # Run the decomposition
-    n_comps = args.dim
+    n_comps = args["dim"]
     kwargs = {
-        "do_migp": args.migp > 0,
-        "d_pca": args.migp,
-        "n_dim": args.migp,
-        "algo": args.algo,
-        "normalise": args.normalise,
-        "sign_flip": args.sign_flip,
+        "do_migp": args["migp"] > 0,
+        "d_pca": args["migp"],
+        "n_dim": args["migp"],
+        "algo": args["algo"],
+        "normalise": args["normalise"],
+        "sign_flip": args["sign_flip"],
     }
 
     # Run the decomposition
@@ -96,11 +90,11 @@ def main():
     save_W(W, ptx_folder[0], os.path.join(out_folder, f"W_dim{n_comps}"))
     save_G(G, ptx_folder[0], os.path.join(out_folder, f"G_dim{n_comps}"), seeds=seeds)
 
-    if args.wta:
+    if args["wta"]:
         # Save winner-takes-all maps
         print("...Saving winner-take-all maps")
-        W_wta = winner_takes_all(W, axis=0, z_thr=args.wta_zthr)
-        G_wta = winner_takes_all(G, axis=1, z_thr=args.wta_zthr)
+        W_wta = winner_takes_all(W, axis=0, z_thr=args["wta_zthr"])
+        G_wta = winner_takes_all(G, axis=1, z_thr=args["wta_zthr"])
         save_W(W_wta, ptx_folder[0], os.path.join(out_folder, f"W_dim{n_comps}_wta"))
         save_G(
             G_wta,
@@ -115,7 +109,7 @@ def main():
     }  # stores data for glm if user wants to run that
     if group_mode:
         # Only run the dual regression if the user asked for it
-        if args.mode == "dualreg":
+        if not args["skip_dual_reg"]:
             print("...Doing dual regression")
             os.makedirs(os.path.join(out_folder, "dualreg_on_G"), exist_ok=True)
             os.makedirs(os.path.join(out_folder, "dualreg_on_W"), exist_ok=True)
@@ -139,7 +133,7 @@ def main():
                     seeds=seeds,
                 )
                 # keep data for GLM?
-                if args.glm_mat:
+                if args["glm_mat"]:
                     glm_data["dualreg_on_G"].append([Gs, Ws])
 
                 # dual reg on W
@@ -156,14 +150,14 @@ def main():
                     os.path.join(out_dualreg, f"Gs_{idx3}_dim{n_comps}"),
                     seeds=seeds,
                 )
-                if args.glm_mat:
+                if args["glm_mat"]:
                     glm_data["dualreg_on_W"].append([Gs, Ws])
 
                 # memory management
                 del Cs
 
     # GLM?
-    if args.glm_mat:
+    if args["glm_mat"]:
         print("...Running GLMs")
         if not group_mode:
             raise (Exception("Must provide multiple subjects data to run a GLM"))
@@ -171,8 +165,8 @@ def main():
             raise (Exception("Must be in dualreg mode to run a GLM"))
         # Load design files
 
-        desmat = loadVestFile(args.glm_mat)
-        conmat = loadVestFile(args.glm_con)
+        desmat = loadVestFile(args["glm_mat"])
+        conmat = loadVestFile(args["glm_con"])
         glm = GLM()
         # Loop through dualreg targets
         for dr_target in ["G", "W"]:

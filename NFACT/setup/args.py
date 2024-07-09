@@ -2,100 +2,126 @@ import argparse
 from NFACT.utils.utils import colours
 
 
-def cmd_args():
-    p = argparse.ArgumentParser(
+def cmd_args() -> dict:
+    """
+    Function to define cmd arguments
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    dict: dictionary
+        dictionary of cmd arguments
+    """
+    args = argparse.ArgumentParser(
         prog="NFACT",
         description=print(splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    p.add_argument(
+    args.add_argument(
+        "-p",
         "--ptxdir",
-        required=True,
         nargs="+",
-        metavar="<STR>",
+        dest="ptxdir",
         type=str,
-        help="ProbTrackx Folder(s), or ascii list of folders",
+        help="List of file paths to probtrackx directories. If not provided will then --list_ofsubjects must be provided",
     )
-    p.add_argument(
-        "--outdir", required=True, metavar="<STR>", type=str, help="Output Folder"
+    args.add_argument(
+        "-l",
+        "--list_of_subjects",
+        dest="list_of_subjects",
+        type=str,
+        help="Filepath to a list of subjects. If not given then --ptxdir must be",
     )
-    p.add_argument(
-        "--dim", required=True, metavar="<INT>", type=int, help="Number of dimensions"
+    args.add_argument(
+        "-o", "--outdir", dest="outdir", type=str, help="Path to output folder"
+    )
+    args.add_argument(
+        "-d", "--dim", dest="dim", type=int, help="Number of dimensions/components"
     )
 
-    # Some optional arguments to be added here
-    p.add_argument(
-        "--ptx_seeds",
-        required=False,
+    args.add_argument(
+        "--seeds",
+        "-s",
+        dest="seeds",
         nargs="+",
-        metavar="<NIFTI or GIFTI>",
         type=str,
-        help="Seeds used in PTX (if not provided, these will be taken from the log file)",
+        help="Seeds used in NFACT_PP/probtrackx",
     )
-    p.add_argument(
+    args.add_argument(
+        "-M",
         "--migp",
-        required=False,
+        dest="migp",
         default=1000,
-        metavar="<INT>",
         type=int,
-        help="MIGP dimensionality (default is 1000. set to negative to skip MIGP)",
+        help="MELODIC's Incremental Group-PCA dimensionality (default is 1000)",
     )
-    p.add_argument(
-        "--mode",
-        required=False,
-        default="dualreg",
-        type=str,
-        help="What to do when provided with a list of ptx_folders. Options are 'dualreg' (default - runs decomp on average and produces single subject decomp using dual regression) or 'average' (only produces decomp of the average)",
+    args.add_argument(
+        "-S" "--skip_dual_reg",
+        dest="skip_dual_reg",
+        action="store_true",
+        default=False,
+        help="Options to skip dual regression",
     )
-    p.add_argument(
+    args.add_argument(
+        "-a",
         "--algo",
         required=False,
         default="ICA",
         type=str,
         help="What algorithm to run. Options are: ICA (default), or NMF.",
     )
-    p.add_argument("--wta", action="store_true", help="Save winner-takes-all maps")
-    p.add_argument(
+    args.add_argument(
+        "-W",
+        "--wta",
+        dest="wta",
+        action="store_true",
+        default=False,
+        help="Save winner-takes-all maps",
+    )
+
+    args.add_argument(
+        "-Z",
         "--wta_zthr",
-        required=False,
+        dest="wta_zthr",
         default=0.0,
         type=float,
         help="Winner-takes-all threshold (default=0.)",
     )
-    p.add_argument(
+    args.add_argument(
         "-N",
         "--normalise",
         dest="normalise",
         action="store_true",
-        required=False,
         default=False,
         help="normalise components by scaling",
     )
-    p.add_argument(
+    args.add_argument(
         "-S",
         "--sign_flip",
         dest="sign_flip",
         action="store_true",
-        required=False,
         default=False,
         help="sign flip components",
     )
 
     # If a design is provided, run the stats
-    p.add_argument(
+    args.add_argument(
+        "-G",
         "--glm_mat",
-        required=False,
-        metavar="<design.mat>",
+        dest="glm_mat",
         help="Run a GLM using design and contrast matrices provided (only in dualreg mode)",
     )
-    p.add_argument(
+    args.add_argument(
+        "-C",
         "--glm_con",
-        required=False,
-        metavar="<design.con>",
+        dest="glm_con",
         help="Run a GLM using design and contrast matrices provided (only in dualreg mode)",
     )
 
-    return p.parse_args()
+    return vars(args.parse_args())
 
 
 def splash() -> str:
