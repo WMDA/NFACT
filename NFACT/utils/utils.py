@@ -48,3 +48,17 @@ def colours():
         "purple": "\033[38;5;93m",
         "darker_pink": "\033[38;5;129m",
     }
+
+
+def error_and_exit(bool_statement: bool, error_message=None):
+    """
+    Function to exit out of script
+    with error message if bool statement
+    is false
+    """
+    if not bool_statement:
+        if error_message:
+            col = colours()
+            print(col["red"] + error_message + col["reset"])
+        print("Exiting...\n")
+        exit(1)
