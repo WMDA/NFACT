@@ -1,0 +1,35 @@
+# pyproject.toml
+
+[build-system]
+requires      = ["setuptools>=44.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "NFACT"
+version = "1.0.0"
+description = "NFACT"
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["NFACT"]
+
+dependencies = [
+    'scipy',
+    'numpy',
+    'nibabel',
+    'scikit-learn',
+    'fslpy',
+    'tqdm'
+]
+
+[project.optional-dependencies]
+dev_dependencies = [ruff]
+
+requires-python = ">=3.8"
+
+[project.scripts]
+entry_point = "NFACT:main"
