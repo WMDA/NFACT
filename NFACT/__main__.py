@@ -15,17 +15,14 @@ from NFACT.pipes.data_pipes import winner_takes_all, get_seed
 def main():
     args = cmd_args()
 
-    # Import after parsing argument to speed up printing help message
+    # Do argument checking
 
-    out_folder = args["outdir"]
-    # Create out_folder if it does not exist already
-    if not os.path.isdir(out_folder):
-        os.makedirs(out_folder, exist_ok=True)
-    # check that I'll be able to save results
-    if not os.access(out_folder, os.W_OK):
-        raise (Exception(f"Cannot write into {out_folder}. Check permissions..."))
-
+    # put here if ptx_folder or list of subjects
     ptx_folder = args["ptxdir"]
+    # error check that participants exist
+    out_folder = args["outdir"]
+
+    # set up output dir here
 
     group_mode = False
     # if len = 1 --> could be text file or single folder
