@@ -2,23 +2,22 @@ import os
 import re
 
 # NFACT functions
-import NFACT.NFACT_PP.nfactpp_check_functions as nff
-from NFACT.NFACT_PP.nfactpp_utils_functions import (
+import NFACT.NFACT_PP.nfactpp_setup as nff
+from NFACT.NFACT_PP.nfactpp_utils import (
     make_directory,
-    error_and_exit,
     hcp_get_seeds,
     hcp_get_rois,
     hcp_reorder_seeds_rois,
-    colours,
     update_seeds_file,
 )
-from NFACT.NFACT_PP.nfactpp_probtrackx_functions import (
+from NFACT.NFACT_PP.probtrackx_functions import (
     build_probtrackx2_arguments,
     write_options_to_file,
     Probtrackx,
     get_target2,
     seeds_to_ascii,
 )
+from NFACT.utils.utils import colours, error_and_exit
 
 
 def surf_volume_main(arg: dict, handler) -> None:

@@ -1,9 +1,7 @@
 from NFACT.NFACT_PP.nfactpp import surf_volume_main, hcp_stream_main
 from NFACT.NFACT_PP.nfactpp_args import nfact_pp_args
-from NFACT.NFACT_PP.nfactpp_utils_functions import (
-    read_file_to_list,
-)
-from NFACT.NFACT_PP.nfactpp_check_functions import (
+from NFACT.NFACT_PP.nfactpp_utils import read_file_to_list
+from NFACT.NFACT_PP.nfactpp_setup import (
     check_fsl_is_installed,
     check_study_folder,
     does_list_of_subjects_exist,
@@ -17,6 +15,17 @@ from NFACT.utils.utils import error_and_exit, Signit_handler
 
 
 def nfact_pp_main():
+    """
+    Main nfact_pp function.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
     arg = nfact_pp_args()
     handler = Signit_handler()
 

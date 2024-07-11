@@ -2,8 +2,8 @@ import os
 import glob
 import pathlib
 import re
-from NFACT.NFACT_PP.nfactpp_utils_functions import read_file_to_list
-from NFACT.NFACT_PP.nfactpp_probtrackx_functions import get_probtrack2_arguments
+from NFACT.NFACT_PP.nfactpp_utils import read_file_to_list
+from NFACT.NFACT_PP.probtrackx_functions import get_probtrack2_arguments
 from NFACT.utils.utils import colours, error_and_exit
 
 
