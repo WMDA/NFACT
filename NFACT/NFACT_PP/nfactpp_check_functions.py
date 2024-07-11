@@ -2,8 +2,9 @@ import os
 import glob
 import pathlib
 import re
-from NFACT.NFACT_PP.nfactpp_utils_functions import colours, read_file_to_list, error_and_exit
+from NFACT.NFACT_PP.nfactpp_utils_functions import read_file_to_list
 from NFACT.NFACT_PP.nfactpp_probtrackx_functions import get_probtrack2_arguments
+from NFACT.utils.utils import colours, error_and_exit
 
 
 def directory_contains_subjects(study_folder_path: str) -> bool:

@@ -1,6 +1,7 @@
 import argparse
 from NFACT.utils.utils import colours
 
+
 def nfact_pp_args() -> dict:
     """
     Function to get arguements
@@ -19,7 +20,7 @@ def nfact_pp_args() -> dict:
         prog="nfact_pp",
         description=print(nfact_pp_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=example_usage(),
+        epilog=nfact_pp_example_usage(),
     )
     col = colours()
     option.add_argument(
@@ -169,7 +170,7 @@ def nfact_pp_splash() -> str:
 """
 
 
-def example_usage() -> str:
+def nfact_pp_example_usage() -> str:
     """
     Function to return example usage
 

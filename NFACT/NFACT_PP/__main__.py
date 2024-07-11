@@ -1,8 +1,6 @@
 from NFACT.NFACT_PP.nfactpp import surf_volume_main, hcp_stream_main
 from NFACT.NFACT_PP.nfactpp_args import nfact_pp_args
 from NFACT.NFACT_PP.nfactpp_utils_functions import (
-    error_and_exit,
-    Signit_handler,
     read_file_to_list,
 )
 from NFACT.NFACT_PP.nfactpp_check_functions import (
@@ -14,6 +12,9 @@ from NFACT.NFACT_PP.nfactpp_check_functions import (
     check_arguments,
     check_ptx_options_are_valid,
 )
+
+from NFACT.utils.utils import error_and_exit, Signit_handler
+
 
 def nfact_pp_main():
     arg = nfact_pp_args()
@@ -69,6 +70,6 @@ def nfact_pp_main():
 
     surf_volume_main(arg, handler)
 
+
 if __name__ == "__main__":
     nfact_pp_main()
-    
