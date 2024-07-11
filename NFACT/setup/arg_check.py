@@ -69,8 +69,10 @@ def process_command_args(args: dict) -> dict:
     -------
     args: dict
     """
-    try:
+    if ".0" in args["dim"]:
         args["dim"] = float(args["dim"])
+    try:
+        args["dim"] = int(args["dim"])
     except Exception:
         error_and_exit(
             False,
@@ -84,6 +86,9 @@ def process_command_args(args: dict) -> dict:
                 False,
                 f"wta_thr must be a float value. {args['wta_zthr']} is not a float",
             )
+
+    if ".0" in args["migp"]:
+        args["migp"] = float(args["migp"])
     if args["algo"] != "nfm":
         if args["migp"]:
             try:
