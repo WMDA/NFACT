@@ -5,6 +5,7 @@ import os
 from NFACT.pipes.data_pipes import mat2vol, get_seed
 
 
+# TODO: fade these functions out in favour of checking file extensions as faster
 def is_gifti(filename):
     try:
         x = nib.load(filename)

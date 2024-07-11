@@ -217,4 +217,4 @@ def nfact_main():
 
 
 if __name__ == "__main__":
-    main()
+    nfact_main()
