@@ -5,15 +5,15 @@ from fsl.data.vest import loadVestFile
 from NFACT.utils.utils import Timer
 from NFACT.regression.glm import GLM
 from NFACT.regression.dual_regression import dualreg
-from NFACT.setup.args import cmd_args
+from NFACT.setup.args import nfact_args
 from NFACT.decomposition.decomp import matrix_decomposition
 from NFACT.decomposition.matrix_handling import load_mat2, avg_matrix2
 from NFACT.pipes.image_handling import save_W, save_G, is_gifti, is_nifti
 from NFACT.pipes.data_pipes import winner_takes_all, get_seed
 
 
-def main():
-    args = cmd_args()
+def nfact_main():
+    args = nfact_args()
 
     # Do argument checking
 
