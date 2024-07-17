@@ -56,7 +56,7 @@ def nfact_main() -> None:
     # remove for checking extensions
 
     # Build out folder structure
-    # Load the matrix and save. TODO: make nfact for previous matrix
+    # Load the matrix and save. TODO: make nfact look for previous matrix
     if group_mode:
         # Calculate the group average matrix
         list_of_matrices = [os.path.join(f, "fdt_matrix2.dot") for f in ptx_folder]
