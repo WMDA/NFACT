@@ -49,27 +49,6 @@ def make_directory(path: str) -> None:
     return True
 
 
-def read_file_to_list(filename: str) -> list:
-    """
-    Function to dump output of file to
-    list format.
-
-    Parameters
-    ----------
-    filename: str
-        path to file
-
-    Returns
-    -------
-    list: list of subjects
-        list of path to subjects directories
-    """
-
-    with open(filename, "r") as file:
-        lines = file.readlines()
-    return [sub.rstrip() for sub in lines]
-
-
 def date_for_filename() -> str:
     """
     Function to get the

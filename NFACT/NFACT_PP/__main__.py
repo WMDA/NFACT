@@ -1,17 +1,20 @@
 from NFACT.NFACT_PP.nfactpp import surf_volume_main, hcp_stream_main
 from NFACT.NFACT_PP.nfactpp_args import nfact_pp_args
-from NFACT.NFACT_PP.nfactpp_utils import read_file_to_list
+
 from NFACT.NFACT_PP.nfactpp_setup import (
     check_fsl_is_installed,
     check_study_folder,
-    does_list_of_subjects_exist,
-    return_list_of_subjects_from_file,
     list_of_subjects_from_directory,
     check_arguments,
     check_ptx_options_are_valid,
 )
 
-from NFACT.utils.utils import error_and_exit, Signit_handler
+from NFACT.utils.utils import error_and_exit, Signit_handler, read_file_to_list
+from NFACT.setup.setup import (
+    return_list_of_subjects_from_file,
+    does_list_of_subjects_exist,
+    check_subject_exist,
+)
 
 
 def nfact_pp_main():
@@ -55,7 +58,7 @@ def nfact_pp_main():
         # Error handles if not subjects can be found.
         error_and_exit(
             arg["list_of_subjects"],
-            "Unable to locate subject. Please check data structure",
+            "Unable to locate subjects. Please check data structure",
         )
 
     if not arg["list_of_subjects"]:
@@ -64,7 +67,7 @@ def nfact_pp_main():
         error_and_exit(
             arg["list_of_subjects"], "Unable to find list of subjects from directory"
         )
-
+    check_subject_exist(arg["list_of_subjects"])
     if arg["ptx_options"]:
         try:
             arg["ptx_options"] = read_file_to_list(arg["ptx_options"])

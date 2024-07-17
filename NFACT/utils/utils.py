@@ -101,11 +101,19 @@ def colours():
     }
 
 
-def error_and_exit(bool_statement: bool, error_message=None):
+def error_and_exit(bool_statement: bool, error_message: str = None) -> None:
     """
     Function to exit out of script
     with error message if bool statement
-    is false
+    is false.
+
+    Parameters
+    ----------
+    bool_statement: bool
+       statement to evaluate
+    error_message: str
+        error message to print
+        out. Default is None
     """
     if not bool_statement:
         if error_message:
@@ -113,3 +121,24 @@ def error_and_exit(bool_statement: bool, error_message=None):
             print(col["red"] + error_message + col["reset"])
         print("Exiting...\n")
         exit(1)
+
+
+def read_file_to_list(filename: str) -> list:
+    """
+    Function to dump output of file to
+    list format.
+
+    Parameters
+    ----------
+    filename: str
+        path to file
+
+    Returns
+    -------
+    list: list of subjects
+        list of path to subjects directories
+    """
+
+    with open(filename, "r") as file:
+        lines = file.readlines()
+    return [sub.rstrip() for sub in lines]

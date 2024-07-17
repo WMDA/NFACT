@@ -2,7 +2,6 @@ import os
 import glob
 import pathlib
 import re
-from NFACT.NFACT_PP.nfactpp_utils import read_file_to_list
 from NFACT.NFACT_PP.probtrackx_functions import get_probtrack2_arguments
 from NFACT.utils.utils import colours, error_and_exit
 
@@ -108,64 +107,6 @@ def check_study_folder(study_folder_path: str) -> bool:
     if not directory_contains_subjects(study_folder_path):
         return False
     return True
-
-
-def does_list_of_subjects_exist(path_to_list: str) -> bool:
-    """
-    Function to check if list of subjects
-    exists and isn't a directory.
-
-    Parameters
-    ----------
-    path_to_list: str
-        file path to list of subjects
-
-    Returns
-    -------
-    bool: boolean
-       True if list of subjects exists
-       else prints error message and
-       returns false
-    """
-
-    if (not os.path.exists(path_to_list)) or (os.path.isdir(path_to_list)):
-        return False
-    return True
-
-
-def return_list_of_subjects_from_file(path_to_list: str) -> list:
-    """
-    Function to return list of subjects from a file
-
-    Parameters
-    ----------
-    path_to_list: str
-        path to subject directory
-
-    Returns
-    -------
-    list_of_subjects: list
-        list of subjects
-    """
-    # First check that list of subjects is a txt file.
-    try:
-        if path_to_list.split(".")[1] != "txt":
-            col = colours()
-            print(f"""{col['red']}List of subjects is not ascii file. 
-                  Please specify a list of subject or remove flag.{col['reset']}""")
-
-            return None
-    # Hacky way to allow sub list not to have an extension
-    except IndexError:
-        pass
-
-    try:
-        list_of_subjects = read_file_to_list(path_to_list)
-    except Exception as e:
-        col = colours()
-        print(f"{col['red']}Unable to open subject list due to: {e}{col['reset']}")
-
-    return list_of_subjects
 
 
 def list_of_subjects_from_directory(study_folder: str) -> list:
