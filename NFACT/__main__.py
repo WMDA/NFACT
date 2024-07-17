@@ -6,6 +6,7 @@ from NFACT.utils.utils import Timer
 from NFACT.regression.glm import GLM
 from NFACT.regression.dual_regression import dualreg
 from NFACT.setup.args import nfact_args
+from NFACT.setup.setup import get_subjects, check_subject_exist
 from NFACT.decomposition.decomp import matrix_decomposition
 from NFACT.decomposition.matrix_handling import load_mat2, avg_matrix2
 from NFACT.pipes.image_handling import save_W, save_G, is_gifti, is_nifti
@@ -26,6 +27,10 @@ def nfact_main():
     args = process_command_args(args)
 
     # put here if ptx_folder or list of subjects
+    args = get_subjects(args)
+    check_subject_exist(args["ptxdir"])
+    print(args)
+    exit(0)
     ptx_folder = args["ptxdir"]
     # error check that participants exist
     out_folder = args["outdir"]
