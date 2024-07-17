@@ -25,29 +25,22 @@ def nfact_args() -> dict:
         "--ptxdir",
         nargs="+",
         dest="ptxdir",
-        type=str,
         help="List of file paths to probtrackx directories. If not provided will then --list_ofsubjects must be provided",
     )
     args.add_argument(
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
-        type=str,
         help="Filepath to a list of subjects. If not given then --ptxdir must be",
     )
-    args.add_argument(
-        "-o", "--outdir", dest="outdir", type=str, help="Path to output folder"
-    )
-    args.add_argument(
-        "-d", "--dim", dest="dim", type=int, help="Number of dimensions/components"
-    )
+    args.add_argument("-o", "--outdir", dest="outdir", help="Path to output folder")
+    args.add_argument("-d", "--dim", dest="dim", help="Number of dimensions/components")
 
     args.add_argument(
         "--seeds",
         "-s",
         dest="seeds",
         nargs="+",
-        type=str,
         help="Seeds used in NFACT_PP/probtrackx",
     )
     args.add_argument(
@@ -55,7 +48,6 @@ def nfact_args() -> dict:
         "--migp",
         dest="migp",
         default=1000,
-        type=int,
         help="MELODIC's Incremental Group-PCA dimensionality (default is 1000)",
     )
     args.add_argument(
@@ -70,7 +62,6 @@ def nfact_args() -> dict:
         "--algo",
         required=False,
         default="ICA",
-        type=str,
         help="What algorithm to run. Options are: ICA (default), or NMF.",
     )
     args.add_argument(
@@ -87,7 +78,6 @@ def nfact_args() -> dict:
         "--wta_zthr",
         dest="wta_zthr",
         default=0.0,
-        type=float,
         help="Winner-takes-all threshold (default=0.)",
     )
     args.add_argument(
@@ -122,7 +112,6 @@ def nfact_args() -> dict:
     )
 
     return vars(args.parse_args())
-
 
 
 def nfact_splash() -> str:

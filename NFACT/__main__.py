@@ -10,12 +10,20 @@ from NFACT.decomposition.decomp import matrix_decomposition
 from NFACT.decomposition.matrix_handling import load_mat2, avg_matrix2
 from NFACT.pipes.image_handling import save_W, save_G, is_gifti, is_nifti
 from NFACT.pipes.data_pipes import winner_takes_all, get_seed
+from NFACT.setup.arg_check import (
+    check_complusory_arguments,
+    check_algo,
+    process_command_args,
+)
 
 
 def nfact_main():
     args = nfact_args()
 
     # Do argument checking
+    check_complusory_arguments(args)
+    args["algo"] = check_algo(args["algo"])
+    args = process_command_args(args)
 
     # put here if ptx_folder or list of subjects
     ptx_folder = args["ptxdir"]
