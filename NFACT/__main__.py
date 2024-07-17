@@ -52,8 +52,9 @@ def nfact_main() -> None:
     print("Number of Subjects:", len(ptx_folder))
     # find seeds
     # check that I can find the seed files
-    seeds = args["seeds"]
-    if seeds is None:
+
+    if args["seeds"] is None:
+        error_and_exit(False, "No Seeds provided. Please specify with --seeds")
         if group_mode:
             raise (Exception("Must provide seeds if running in group mode."))
         seeds = get_seed(ptx_folder[0])

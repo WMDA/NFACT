@@ -40,8 +40,7 @@ def nfact_args() -> dict:
         "--seeds",
         "-s",
         dest="seeds",
-        nargs="+",
-        help="Seeds used in NFACT_PP/probtrackx",
+        help="File of seeds used in NFACT_PP/probtrackx",
     )
     args.add_argument(
         "-M",

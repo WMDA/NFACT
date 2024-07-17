@@ -3,6 +3,60 @@ import nibabel as nib
 import numpy as np
 import os
 from NFACT.pipes.data_pipes import mat2vol, get_seed
+from NFACT.utils.utils import error_and_exit
+import pathlib
+
+
+def get_file(img_file: list, sub: str) -> list:
+    """
+    Function to get an imaging file
+    type and returns it. Checks that file
+    is correct file type and exists.
+
+    Parameters
+    ----------
+    img_file: list
+        a list of imaging files
+    sub: str
+       path to subjects directory.
+
+    Returns
+    -------
+    img_files: list
+        list of imging files
+
+    """
+    img_files = [os.path.join(sub, file) for file in img_file]
+    [
+        error_and_exit(
+            os.path.exists(path), f"Unable to find {path}. Please check it exists"
+        )
+        for path in img_files
+    ]
+    [check_files_are_imaging_files(path) for path in img_files]
+    return img_files
+
+
+def check_files_are_imaging_files(path: str) -> bool:
+    """
+    Function to check that imaging files
+    are actually imaging files.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    None
+    """
+    accepted_extenions = [".gii", ".nii"]
+    file_extensions = pathlib.Path(path).suffixes
+    file = os.path.basename(path)
+    sub = os.path.basename(os.path.dirname(path))
+    error_and_exit(
+        [file for file in file_extensions if file in accepted_extenions],
+        f"{file} for {sub} is an incorrect file type (not gii or nii)",
+    )
 
 
 # TODO: fade these functions out in favour of checking file extensions as faster

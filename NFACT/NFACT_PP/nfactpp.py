@@ -3,6 +3,7 @@ import re
 
 # NFACT functions
 import NFACT.NFACT_PP.nfactpp_setup as nff
+from NFACT.pipes.image_handling import get_file
 from NFACT.NFACT_PP.nfactpp_utils import (
     make_directory,
     hcp_get_seeds,
@@ -49,9 +50,9 @@ def surf_volume_main(arg: dict, handler) -> None:
     for sub in arg["list_of_subjects"]:
         # looping over subjects and building out directories
         print(f"\n{col['pink']}Setting up:{col['reset']} {os.path.basename(sub)}")
-        seed = nff.get_file(arg["seed"], sub)
+        seed = get_file(arg["seed"], sub)
         seed_text = "\n".join(seed)
-        nff.get_file(arg["warps"], sub)
+        get_file(arg["warps"], sub)
 
         nfactpp_diretory = os.path.join(sub, arg["out"])
 
@@ -64,7 +65,7 @@ def surf_volume_main(arg: dict, handler) -> None:
         error_and_exit(directory_created)
 
         if surface_processing:
-            roi = nff.get_file(arg["rois"], sub)
+            roi = get_file(arg["rois"], sub)
             seed_names = [
                 re.sub(r"..ii", "", os.path.basename(seeds)) for seeds in seed
             ]
