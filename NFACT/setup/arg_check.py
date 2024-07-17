@@ -1,4 +1,4 @@
-from NFACT.utils.utils import error_and_exit
+from NFACT.utils.utils import error_and_exit, read_file_to_list
 
 
 def check_complusory_arguments(args: dict) -> None:
