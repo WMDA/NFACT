@@ -24,8 +24,6 @@ def nfact_main():
     check_complusory_arguments(args)
     args["algo"] = check_algo(args["algo"])
     args = process_command_args(args)
-    print(args)
-    exit(0)
 
     # put here if ptx_folder or list of subjects
     ptx_folder = args["ptxdir"]
