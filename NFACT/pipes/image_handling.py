@@ -1,8 +1,9 @@
 from fsl.data.image import Image
 import nibabel as nib
 import numpy as np
+from sklearn.preprocessing import StandardScaler
+import numpy as np
 import os
-from NFACT.pipes.data_pipes import mat2vol, get_seed
 from NFACT.utils.utils import error_and_exit
 import pathlib
 
@@ -94,14 +95,12 @@ def save_W(W, ptx_folder, out_file):
     tmp.save(out_file)
 
 
-def save_G(G, ptx_folder, out_file, seeds=None):
+def save_G(G, ptx_folder, out_file, seeds):
     # get seed files and work out if they are surfaces of volumes
     coord_mat2 = np.loadtxt(
         os.path.join(ptx_folder, "coords_for_fdt_matrix2"), dtype=int
     )
     seeds_id = coord_mat2[:, -2]
-    if seeds is None:
-        seeds = get_seed(ptx_folder)
     for idx, seed in enumerate(seeds):
         G_seed = G[seeds_id == idx, :]
         if is_gifti(seed):
@@ -131,3 +130,23 @@ def save_G(G, ptx_folder, out_file, seeds=None):
                 out[xyz_idx, i] = g
             img = Image(out.reshape(vol.shape + (ncols,)), header=vol.header)
             img.save(out_file + f"_{idx}")
+
+
+def winner_takes_all(X, axis=1, z_thr=0.0):
+    # must apply scaling for z_thr to make sense
+    Xs = StandardScaler().fit_transform(X)
+    Xs_max = np.max(Xs, axis=axis, keepdims=True)
+    Xs_wta = np.argmax(Xs, axis=axis, keepdims=True) + 1
+    Xs_wta[Xs_max < z_thr] = 0.0
+    return np.array(Xs_wta, dtype=int)
+
+
+# Helper functions to save the results
+def mat2vol(mat, lut_vol):
+    mask = lut_vol.data > 0
+    matvol = np.zeros(lut_vol.shape + (len(mat),))
+
+    for i in range(len(mat)):
+        matvol.reshape(-1, len(mat))[mask.flatten(), i] = mat[i, lut_vol.data[mask] - 1]
+
+    return matvol

@@ -2,15 +2,15 @@ import os
 import numpy as np
 from fsl.data.vest import loadVestFile
 
-from NFACT.utils.utils import Timer
+from NFACT.utils.utils import Timer, Signit_handler
 from NFACT.regression.glm import GLM
 from NFACT.regression.dual_regression import dualreg
 from NFACT.setup.args import nfact_args
-from NFACT.setup.setup import get_subjects, check_subject_exist
+from NFACT.setup.setup import get_subjects, check_subject_exist, process_seeds
 from NFACT.decomposition.decomp import matrix_decomposition
 from NFACT.decomposition.matrix_handling import load_mat2, avg_matrix2
-from NFACT.pipes.image_handling import save_W, save_G, is_gifti, is_nifti
-from NFACT.pipes.data_pipes import winner_takes_all, get_seed
+from NFACT.pipes.image_handling import save_W, save_G
+from NFACT.pipes.image_handling import winner_takes_all
 from NFACT.setup.arg_check import (
     check_complusory_arguments,
     check_algo,
@@ -30,6 +30,7 @@ def nfact_main() -> None:
     -------
     None
     """
+    handler = Signit_handler()
     args = nfact_args()
 
     # Do argument checking
@@ -51,20 +52,9 @@ def nfact_main() -> None:
 
     print("Number of Subjects:", len(ptx_folder))
     # find seeds
-    # check that I can find the seed files
-
-    if args["seeds"] is None:
-        error_and_exit(False, "No Seeds provided. Please specify with --seeds")
-        if group_mode:
-            raise (Exception("Must provide seeds if running in group mode."))
-        seeds = get_seed(ptx_folder[0])
-    print(f"...Seed files are: {seeds}")
+    seeds = process_seeds(args["seeds"])
     # remove for checking extensions
-    for s in seeds:
-        if not is_nifti(s) and not is_gifti(s):
-            raise (
-                Exception(f"Seed file {s} does not appear to be a valid GIFTI or NIFTI")
-            )
+
     # Build out folder structure
     # Load the matrix and save. TODO: make nfact for previous matrix
     if group_mode:

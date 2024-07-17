@@ -1,5 +1,6 @@
 import os
 from NFACT.utils.utils import error_and_exit, read_file_to_list, colours
+from NFACT.pipes.image_handling import check_files_are_imaging_files
 
 
 def get_subjects(args: dict) -> dict:
@@ -133,8 +134,25 @@ def return_list_of_subjects_from_file(path_to_list: str) -> list:
     return list_of_subjects
 
 
-def process_seeds(seeds):
+def process_seeds(seeds: str) -> list:
+    """
+    Function to read in seed file
+
+    Parameters
+    ----------
+    seeds: str
+        str to file with
+        seeds in them.
+
+    Returns
+    -------
+    list_of_seeds: list
+        list of seed files
+    """
     try:
-        seeds = read_file_to_list(seeds)
+        list_of_seeds = read_file_to_list(seeds)
     except Exception as e:
         error_and_exit(False, f"Unable to read seeds text file due to {e}")
+
+    [check_files_are_imaging_files(seed) for seed in list_of_seeds]
+    return list_of_seeds
