@@ -18,7 +18,18 @@ from NFACT.setup.arg_check import (
 )
 
 
-def nfact_main():
+def nfact_main() -> None:
+    """
+    Main nfact function
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
     args = nfact_args()
 
     # Do argument checking
@@ -29,27 +40,17 @@ def nfact_main():
     # put here if ptx_folder or list of subjects
     args = get_subjects(args)
     check_subject_exist(args["ptxdir"])
-    print(args)
-    exit(0)
+
     ptx_folder = args["ptxdir"]
     # error check that participants exist
     out_folder = args["outdir"]
 
     # set up output dir here
 
-    group_mode = False
-    # if len = 1 --> could be text file or single folder
-    if len(ptx_folder) == 1:
-        if not os.path.isdir(ptx_folder[0]):
-            with open(ptx_folder[0], "r") as f:
-                ptx_folder = [x.strip() for x in f.read().split(" ")]
-    if len(ptx_folder) == 1:
-        print("...Single ptx_folder provided")
-    else:
-        group_mode = True
-        print("...List of ptx_folders provided")
-    print(ptx_folder)
+    group_mode = True if len(ptx_folder) > 0 else False
 
+    print("Number of Subjects:", len(ptx_folder))
+    # find seeds
     # check that I can find the seed files
     seeds = args["seeds"]
     if seeds is None:
@@ -57,13 +58,14 @@ def nfact_main():
             raise (Exception("Must provide seeds if running in group mode."))
         seeds = get_seed(ptx_folder[0])
     print(f"...Seed files are: {seeds}")
+    # remove for checking extensions
     for s in seeds:
         if not is_nifti(s) and not is_gifti(s):
             raise (
                 Exception(f"Seed file {s} does not appear to be a valid GIFTI or NIFTI")
             )
-
-    # Load the matrix
+    # Build out folder structure
+    # Load the matrix and save. TODO: make nfact for previous matrix
     if group_mode:
         # Calculate the group average matrix
         list_of_matrices = [os.path.join(f, "fdt_matrix2.dot") for f in ptx_folder]
