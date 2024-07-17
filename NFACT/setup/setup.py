@@ -1,5 +1,5 @@
 import os
-from NFACT.utils.utils import error_and_exit, read_file_to_list, colours
+from NFACT.utils.utils import error_and_exit, read_file_to_list, colours, make_directory
 from NFACT.pipes.image_handling import check_files_are_imaging_files
 
 
@@ -57,27 +57,6 @@ def check_subject_exist(list_of_subjects: str) -> None:
         )
         for path in list_of_subjects
     ]
-
-
-def create_output_folder(out_folder: str) -> None:
-    """
-    Function to create output folder.
-    If can't it errors out.
-
-    Parameters
-    ----------
-    out_folder: str
-        string of path to output folder
-
-    Returns
-    -------
-    None
-    """
-
-    try:
-        os.mkdir(out_folder)
-    except Exception as e:
-        error_and_exit(False, f"Unable to create output folder due {e}")
 
 
 def does_list_of_subjects_exist(path_to_list: str) -> bool:
@@ -156,3 +135,36 @@ def process_seeds(seeds: str) -> list:
 
     [check_files_are_imaging_files(seed) for seed in list_of_seeds]
     return list_of_seeds
+
+
+def create_folder_set_up(directory: str) -> None:
+    """
+    Function to create NFACT directory set up
+
+    Parameters
+    ----------
+    directory: str
+        path to directory to save output
+        in.
+
+
+    Returns
+    -------
+    None
+    """
+    col = colours()
+    nfact_directory = os.path.join(directory, "nfact")
+    print(f"{col['']}Creating nfact folder in {directory}")
+    make_directory(nfact_directory)
+    make_directory(os.path.join(nfact_directory, "group_averages"))
+    make_directory(os.path.join(nfact_directory, "ICA"))
+    make_directory(os.path.join(nfact_directory, "NFM"))
+    make_directory(os.path.join(nfact_directory, "GLM"))
+    make_directory(os.path.join(nfact_directory, "ICA", "dual_reg"))
+    make_directory(os.path.join(nfact_directory, "NFM", "dual_reg"))
+    make_directory(os.path.join(nfact_directory, "ICA", "dual_reg", "G"))
+    make_directory(os.path.join(nfact_directory, "ICA", "dual_reg", "W"))
+    make_directory(os.path.join(nfact_directory, "NFM", "dual_reg", "G"))
+    make_directory(os.path.join(nfact_directory, "NFM", "dual_reg", "W"))
+    make_directory(os.path.join(nfact_directory, "ICA", "normalised"))
+    make_directory(os.path.join(nfact_directory, "NFM", "normalised"))

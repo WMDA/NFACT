@@ -5,7 +5,6 @@ import re
 import NFACT.NFACT_PP.nfactpp_setup as nff
 from NFACT.pipes.image_handling import get_file
 from NFACT.NFACT_PP.nfactpp_utils import (
-    make_directory,
     hcp_get_seeds,
     hcp_get_rois,
     hcp_reorder_seeds_rois,
@@ -18,7 +17,7 @@ from NFACT.NFACT_PP.probtrackx_functions import (
     get_target2,
     seeds_to_ascii,
 )
-from NFACT.utils.utils import colours, error_and_exit
+from NFACT.utils.utils import colours, error_and_exit, make_directory
 
 
 def surf_volume_main(arg: dict, handler) -> None:
@@ -61,8 +60,7 @@ def surf_volume_main(arg: dict, handler) -> None:
                 f'{col["red"]}{arg["out"]} directory already exists. Overwriting{col["reset"]}'
             )
 
-        directory_created = make_directory(nfactpp_diretory)
-        error_and_exit(directory_created)
+        make_directory(nfactpp_diretory)
 
         if surface_processing:
             roi = get_file(arg["rois"], sub)
@@ -143,8 +141,7 @@ def hcp_stream_main(arg: dict, handler: object) -> None:
         seeds = hcp_get_seeds(sub)
         arg["rois"] = hcp_get_rois(sub)
         nfactpp_diretory = os.path.join(sub, arg["out"])
-        directory_created = make_directory(nfactpp_diretory)
-        error_and_exit(directory_created)
+        make_directory(nfactpp_diretory)
 
         ordered_by_hemisphere = hcp_reorder_seeds_rois(seeds, arg["rois"])
         for hemishphere, img in ordered_by_hemisphere.items():

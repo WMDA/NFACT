@@ -27,28 +27,6 @@ def write_to_file(file_path: str, name: str, text: str) -> bool:
     return True
 
 
-def make_directory(path: str) -> None:
-    """
-    Function to make a directory
-
-    Parameters
-    ----------
-    path: str
-        string to directory path
-
-    Returns
-    -------
-    None
-    """
-    if not os.path.isdir(path):
-        try:
-            os.mkdir(path)
-        except Exception as e:
-            print(e)
-            return False
-    return True
-
-
 def date_for_filename() -> str:
     """
     Function to get the

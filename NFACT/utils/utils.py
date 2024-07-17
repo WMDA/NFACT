@@ -1,5 +1,6 @@
 import time
 import signal
+import os
 
 
 class dotdict(dict):
@@ -142,3 +143,24 @@ def read_file_to_list(filename: str) -> list:
     with open(filename, "r") as file:
         lines = file.readlines()
     return [sub.rstrip() for sub in lines]
+
+
+def make_directory(path: str) -> None:
+    """
+    Function to make a directory.
+    If error it will exit
+
+    Parameters
+    ----------
+    path: str
+        string to directory path
+
+    Returns
+    -------
+    None
+    """
+
+    try:
+        os.mkdir(path)
+    except Exception as e:
+        error_and_exit(False, f"Unable to create directory due to {e}")

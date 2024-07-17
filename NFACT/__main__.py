@@ -2,11 +2,16 @@ import os
 import numpy as np
 from fsl.data.vest import loadVestFile
 
-from NFACT.utils.utils import Timer, Signit_handler
+from NFACT.utils.utils import Timer, Signit_handler, colours
 from NFACT.regression.glm import GLM
 from NFACT.regression.dual_regression import dualreg
 from NFACT.setup.args import nfact_args
-from NFACT.setup.setup import get_subjects, check_subject_exist, process_seeds
+from NFACT.setup.setup import (
+    get_subjects,
+    check_subject_exist,
+    process_seeds,
+    create_folder_set_up,
+)
 from NFACT.decomposition.decomp import matrix_decomposition
 from NFACT.decomposition.matrix_handling import load_mat2, avg_matrix2
 from NFACT.pipes.image_handling import save_W, save_G
@@ -56,6 +61,14 @@ def nfact_main() -> None:
     # remove for checking extensions
 
     # Build out folder structure
+    if not args["dont_overwrite"]:
+        if os.path.exists(os.path.join(args["outdir"], "nfact")):
+            col = colours()
+            print(
+                f'{col["pink"]}{args["colours"]} directory already contains nfact directory. Overwriting{col["reset"]}'
+            )
+
+        create_folder_set_up(args["outdir"])
     # Load the matrix and save. TODO: make nfact look for previous matrix
     if group_mode:
         # Calculate the group average matrix
@@ -114,8 +127,7 @@ def nfact_main() -> None:
         # Only run the dual regression if the user asked for it
         if not args["skip_dual_reg"]:
             print("...Doing dual regression")
-            os.makedirs(os.path.join(out_folder, "dualreg_on_G"), exist_ok=True)
-            os.makedirs(os.path.join(out_folder, "dualreg_on_W"), exist_ok=True)
+
             for idx, matfile in enumerate(list_of_matrices):
                 print(f"... subj-{idx} - mat: {matfile}")
                 idx3 = str(idx).zfill(3)  # zero-pad index
@@ -123,7 +135,9 @@ def nfact_main() -> None:
 
                 # dual reg on G
                 Gs, Ws = dualreg(Cs, G)
-                out_dualreg = os.path.join(out_folder, "dualreg_on_G")
+                out_dualreg = os.path.join(
+                    out_folder, args["algo"].upper(), "dual_reg", "G"
+                )
                 save_W(
                     Ws,
                     ptx_folder[idx],
@@ -141,7 +155,9 @@ def nfact_main() -> None:
 
                 # dual reg on W
                 Gs, Ws = dualreg(Cs, W)
-                out_dualreg = os.path.join(out_folder, "dualreg_on_W")
+                out_dualreg = os.path.join(
+                    out_folder, args["algo"].upper(), "dual_reg", "W"
+                )
                 save_W(
                     Ws,
                     ptx_folder[idx],
@@ -174,8 +190,10 @@ def nfact_main() -> None:
         # Loop through dualreg targets
         for dr_target in ["G", "W"]:
             # Loop through dimensions and run GLMs
-            out_glm = os.path.join(out_folder, f"glm_on_{dr_target}")
-            os.makedirs(out_glm, exist_ok=True)
+            print("Warning. NFACT will overwrite previous analysis at the moments")
+            out_glm = os.path.join(out_folder, "GLM")
+            os.mkdir(os.path.join(out_glm, "G"))
+            os.mkdir(os.path.join(out_glm, "W"))
             all_stats = {"G": [], "W": []}
             for comp in range(n_comps):
                 # assemble data matrix subject-by-gm or subject-by-wm
