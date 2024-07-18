@@ -101,7 +101,7 @@ def build_probtrackx2_arguments(
     target_mask = (
         os.path.join(sub, arg["target2"])
         if arg["target2"]
-        else os.path.join(sub, arg["out"], "target2.nii.gz")
+        else os.path.join(sub, arg["out"], 'files', "target2.nii.gz")
     )
     bpx = os.path.join(command_arguments["bpx_path"], "merged")
     output_dir = os.path.join(sub, arg["out"], "omatrix2")
@@ -333,7 +333,7 @@ class Probtrackx:
         try:
             if not self.dont_log:
                 log_name = "PP_log_" + date_for_filename()
-                with open(os.path.join(nfactpp_diretory, log_name), "w") as log_file:
+                with open(os.path.join(nfactpp_diretory, 'logs' ,log_name), "w") as log_file:
                     run = subprocess.run(
                         command,
                         stdout=log_file,

@@ -76,7 +76,7 @@ def nfact_pp_main():
         except Exception as e:
             error_and_exit(False, f"Unable to read ptx_options text file due to {e}")
         check_ptx_options_are_valid(arg["ptx_options"])
-
+    
     if arg["hcp_stream"]:
         hcp_stream_main(arg, handler)
 
