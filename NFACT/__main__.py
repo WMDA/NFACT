@@ -14,7 +14,7 @@ from NFACT.setup.setup import (
     create_folder_set_up,
 )
 from NFACT.decomposition.decomp import matrix_decomposition
-from NFACT.decomposition.matrix_handling import load_mat2, avg_matrix2
+from NFACT.decomposition.matrix_handling import load_fdt_matrix2
 from NFACT.pipes.image_handling import save_W, save_G
 from NFACT.pipes.image_handling import winner_takes_all
 from NFACT.setup.arg_check import (
@@ -38,7 +38,7 @@ def nfact_main() -> None:
     """
     handler = Signit_handler()
     args = nfact_args()
-
+    col = colours()
     # Do argument checking
     check_complusory_arguments(args)
     args["algo"] = check_algo(args["algo"])
@@ -47,7 +47,7 @@ def nfact_main() -> None:
     # put here if ptx_folder or list of subjects
     args = get_subjects(args)
     check_subject_exist(args["ptxdir"])
-
+    print("Number of Subjects:", len(args["ptxdir"]))
     ptx_folder = args["ptxdir"]
     # error check that participants exist
     out_folder = args["outdir"]
@@ -63,28 +63,25 @@ def nfact_main() -> None:
     # Build out folder structure
     if args["overwrite"]:
         if os.path.exists(os.path.join(args["outdir"], "nfact")):
-            col = colours()
             print(
                 f'{col["red"]}Overwrite flag given. {args["outdir"]} directory being overwritten{col["reset"]}'
             )
             shutil.rmtree(os.path.join(args["outdir"], "nfact"), ignore_errors=True)
 
     create_folder_set_up(args["outdir"])
-    print("Number of Subjects:", len(ptx_folder))
 
+    print("Loading matrices")
+    matrix_time = Timer()
+    matrix_time.tic()
+    fdt_2_conn = load_fdt_matrix2(
+        ptx_folder, os.path.join(args["outdir"], "nfact"), group_mode
+    )
+    print(
+        f"{col['darker_pink']}loaded matricies in {matrix_time.toc()} secs.{col['reset']}"
+    )
+
+    exit(0)
     # Load the matrix and save. TODO: make nfact look for previous matrix
-    if group_mode:
-        # Calculate the group average matrix
-        list_of_matrices = [os.path.join(f, "fdt_matrix2.dot") for f in ptx_folder]
-        print("... Averaging subject matrices")
-        t = Timer()
-        t.tic()
-        C = avg_matrix2(list_of_matrices)
-    else:
-        # Load a single matrix
-        C = load_mat2(os.path.join(ptx_folder[0], "fdt_matrix2.dot"))
-
-    print(f"...loaded matricies in {t.toc()} secs.")
 
     # Run the decomposition
     n_comps = args["dim"]

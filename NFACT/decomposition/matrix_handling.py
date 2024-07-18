@@ -2,41 +2,136 @@ import scipy.sparse as sps
 import numpy as np
 from tqdm import tqdm
 from scipy.sparse.linalg import eigsh
-from NFACT.utils.utils import Timer
+import os
+from NFACT.utils.utils import Timer, error_and_exit, colours
 
 
-# This function loads a omatrix2 matrix
-def load_mat2(matfile):
-    """Loads ptx sparse matrix format"""
+def load_fdt_matrix2(ptx_folder: list, directory: str, group_mode: bool) -> np.array:
+    """
+    Function to get group average matrix
+
+    Parameters
+    ----------
+    ptx_folder: list
+        list of ptx folders
+
+    Returns
+    -------
+    matrcies: np.array
+       np.array of fdt2 matrix either averaged
+       across subjects or single subjects
+    """
+    fdt_matrix2 = load_previous_matrix(
+        os.path.join(directory, "group_averages", "average_matrix2.npy")
+    )
+    if fdt_matrix2:
+        return fdt_matrix2
+
+    list_of_matrices = [
+        os.path.join(sub_folder, "fdt_matrix2.dot") for sub_folder in ptx_folder
+    ]
+
+    if group_mode:
+        try:
+            fdt_matrix2 = avg_fdt(list_of_matrices)
+        except Exception as e:
+            error_and_exit(False, f"Unable to load fdt_matrix2 due to {e}")
+    if not group_mode:
+        try:
+            fdt_matrix2 = load_fdt_matrix(list_of_matrices[0])
+        except Exception as e:
+            error_and_exit(False, f"Unable to load fdt_matrix2 due to {e}")
+    save_avg_matrix(fdt_matrix2, directory)
+    return fdt_matrix2
+
+
+def load_previous_matrix(path: str) -> np.array:
+    if os.path.exists(path):
+        print("Loading previously saved matrix")
+        return np.load(os.path.join(path))
+    return None
+
+
+def save_avg_matrix(matrix: np.array, directory: str) -> None:
+    """
+    Function to save average matrix as npz file
+
+    Parameters
+    ----------
+    matrix: np.array
+        fdt2 matrix
+    directory: str
+        path to group_average folder in the nfact
+        folder
+
+    Returns
+    -------
+    None
+    """
+    try:
+        print(f'Saving matrix to {os.path.join(directory, 'group_averages')}')
+        np.save(os.path.join(directory, "group_averages", "average_matrix2"), matrix)
+    except Exception as e:
+        error_and_exit(False, f"Unable to save matrix due to {e}")
+
+
+def load_fdt_matrix(matfile: str) -> np.array:
+    """
+    Function to load a single fdt matrix
+    as a ptx sparse matrix format.
+
+    Parameters
+    ----------
+    matfile: str
+       path to file
+
+    Returns
+    -------
+    sparse_matrix: np.array
+       sparse matrix in numpy array
+       form.
+    """
     mat = np.loadtxt(matfile)
-    # Reading these with pandas is MUCH faster than numpy. Nope not true
-    # mat = pd.read_csv(matfile, header=None, dtype={0:np.int32, 1:np.int32, 2:np.float32}, delim_whitespace=True).to_numpy()
     data = mat[:-1, -1]
     rows = np.array(mat[:-1, 0] - 1, dtype=int)
     cols = np.array(mat[:-1, 1] - 1, dtype=int)
     nrows, ncols = int(mat[-1, 0]), int(mat[-1, 1])
-    M = sps.csc_matrix((data, (rows, cols)), shape=(nrows, ncols)).toarray()
-    return M
+    sparse_matrix = sps.csc_matrix((data, (rows, cols)), shape=(nrows, ncols)).toarray()
+    return sparse_matrix
 
 
-# Average matrices across subjects
-def avg_matrix2(list_of_matfiles):
-    M = 0.0
-    for mat in tqdm(list_of_matfiles):
-        M += load_mat2(mat)
+def avg_fdt(list_of_matfiles: list) -> np.array:
+    """
+    Function to create and create
+    an average group matrix.
 
-    M /= len(list_of_matfiles)
-    return M
+    Parameters
+    ----------
+    list_of_matfiles: list
+        list of matricies
+        for the group.
+
+    Returns
+    -------
+    sparse_matrix: np.array
+        np.array of sparse matrix.
+    """
+    sparse_matrix = 0.0
+
+    for matrix in tqdm(list_of_matfiles, colour="magenta"):
+        sparse_matrix += load_fdt_matrix(matrix)
+
+    sparse_matrix /= len(list_of_matfiles)
+    return sparse_matrix
 
 
-# demean a matrix
 def demean(X, axis=0):
     return X - np.mean(X, axis=axis, keepdims=True)
 
 
-# Implementation of incremental PCA for matrix2
 def matrix_MIGP(C, n_dim=1000, d_pca=1000, keep_mean=False):
-    """Apply incremental PCA to C
+    """
+    Apply incremental PCA to C
     Inputs:
     C (2D array) : should be wide i.e. nxN where N bigger than n
     We pretend that the matrix C is made of column blocks, each block is
