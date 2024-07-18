@@ -1,5 +1,5 @@
 import os
-from NFACT.utils.utils import error_and_exit, read_file_to_list, colours
+from NFACT.utils.utils import error_and_exit, read_file_to_list, colours, make_directory
 from NFACT.pipes.image_handling import check_files_are_imaging_files
 
 
@@ -57,27 +57,6 @@ def check_subject_exist(list_of_subjects: str) -> None:
         )
         for path in list_of_subjects
     ]
-
-
-def create_output_folder(out_folder: str) -> None:
-    """
-    Function to create output folder.
-    If can't it errors out.
-
-    Parameters
-    ----------
-    out_folder: str
-        string of path to output folder
-
-    Returns
-    -------
-    None
-    """
-
-    try:
-        os.mkdir(out_folder)
-    except Exception as e:
-        error_and_exit(False, f"Unable to create output folder due {e}")
 
 
 def does_list_of_subjects_exist(path_to_list: str) -> bool:
@@ -156,3 +135,81 @@ def process_seeds(seeds: str) -> list:
 
     [check_files_are_imaging_files(seed) for seed in list_of_seeds]
     return list_of_seeds
+
+
+def create_folder_set_up(directory: str) -> None:
+    """
+    Function to create NFACT directory set up
+
+    Parameters
+    ----------
+    directory: str
+        path to directory to save output
+        in.
+
+    Returns
+    -------
+    None
+    """
+    error_and_exit(
+        os.path.exists(directory),
+        "Output directory does not exist. Please provide actual directory",
+    )
+    col = colours()
+    print(f"{col['pink']}nfact folder is in {directory}{col['reset']}")
+    nfact_directory = os.path.join(directory, "nfact")
+
+    sub_folders = [
+        "group_averages",
+        "ICA",
+        "NFM",
+        "GLM",
+        "ICA/dual_reg",
+        "NFM/dual_reg",
+        "ICA/normalised",
+        "NFM/normalised",
+        "ICA/dual_reg/G",
+        "ICA/dual_reg/W",
+        "NFM/dual_reg/G",
+        "NFM/dual_reg/W",
+    ]
+
+    does_exist = os.path.exists(nfact_directory)
+
+    if does_exist:
+        sub_folders = which_nfact_folders_exist(nfact_directory, sub_folders)
+
+        if len(sub_folders) == 0:
+            return None
+
+    if not does_exist:
+        make_directory(nfact_directory)
+
+    [make_directory(os.path.join(nfact_directory, sub)) for sub in sub_folders]
+
+
+def which_nfact_folders_exist(nfact_directory: str, sub_folders: list) -> list:
+    """
+    Function to check which nfact sub folders
+    don't exist
+
+    Parameters
+    ----------
+    nfact_directory: str
+        path to nfact directory
+    sub_folders: list
+        list of sub folders
+
+    Returns
+    -------
+    sub_folders_that_dont_exist: list
+        list of sub folders that don't exist
+    """
+
+    sub_folders_that_dont_exist = []
+    [
+        sub_folders_that_dont_exist.append(sub)
+        for sub in sub_folders
+        if not os.path.exists(os.path.join(nfact_directory, sub))
+    ]
+    return sub_folders_that_dont_exist
