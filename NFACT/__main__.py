@@ -1,4 +1,5 @@
 import os
+import shutil
 import numpy as np
 from fsl.data.vest import loadVestFile
 
@@ -55,20 +56,23 @@ def nfact_main() -> None:
 
     group_mode = True if len(ptx_folder) > 0 else False
 
-    print("Number of Subjects:", len(ptx_folder))
     # find seeds
     seeds = process_seeds(args["seeds"])
     # remove for checking extensions
 
     # Build out folder structure
-    if not args["dont_overwrite"]:
+    if args["overwrite"]:
+        breakpoint()
         if os.path.exists(os.path.join(args["outdir"], "nfact")):
             col = colours()
             print(
-                f'{col["pink"]}{args["colours"]} directory already contains nfact directory. Overwriting{col["reset"]}'
+                f'{col["red"]}Overwrite flag given. {args["outdir"]} directory being overwritten{col["reset"]}'
             )
+            shutil.rmtree(os.path.join(args["outdir"], "nfact"), ignore_errors=True)
 
-        create_folder_set_up(args["outdir"])
+    create_folder_set_up(args["outdir"])
+    print("Number of Subjects:", len(ptx_folder))
+
     # Load the matrix and save. TODO: make nfact look for previous matrix
     if group_mode:
         # Calculate the group average matrix

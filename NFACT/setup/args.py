@@ -110,12 +110,12 @@ def nfact_args() -> dict:
         help="Run a GLM using design and contrast matrices provided (only in dualreg mode)",
     )
     args.add_argument(
-        "-D",
-        "--dont_overwrite",
-        dest="dont_overwrite",
+        "-O",
+        "--overwrite",
+        dest="overwrite",
         action="store_true",
         default=False,
-        help="Dont overwrite previous file structure. Useful if wanting to perform multiple GLMs or ICA and NFM",
+        help="Overwrite previous file structure. Useful if wanting to perform multiple GLMs or ICA and NFM",
     )
 
     return vars(args.parse_args())
