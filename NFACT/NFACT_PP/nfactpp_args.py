@@ -142,6 +142,14 @@ def nfact_pp_args() -> dict:
         default=False,
         help="Run on cluster",
     )
+    option.add_argument(
+        "-O",
+        "--overwrite",
+        dest="overwrite",
+        action="store_true",
+        default=False,
+        help="Overwrite previous file structure",
+    )
     return vars(option.parse_args())
 
 
