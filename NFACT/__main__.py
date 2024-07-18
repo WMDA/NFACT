@@ -62,7 +62,6 @@ def nfact_main() -> None:
 
     # Build out folder structure
     if args["overwrite"]:
-        breakpoint()
         if os.path.exists(os.path.join(args["outdir"], "nfact")):
             col = colours()
             print(
