@@ -70,17 +70,29 @@ def matrix_decomposition(
     sign_flip: bool,
     pca_dim: int,
 ) -> dict:
-    """Decompose matrix2 as C = G*W
+    """
+    Wrapper function to decompose a matrix2 into
+    grey * white matter components.
 
-    Starts with MIGP then ICA t get G then Regression to get W
+    Performs either ICA or NFM depending on input.
+    Will normalise components however with NFM it does
+    not demean components to keep values positive.
+
+    Parameters
+    ----------
+    fdt_matrix: np.array,
+    n_components: int,
+    algo: str,
+    normalise: bool,
+    sign_flip: bool,
+    pca_dim: int,
+
 
     """
-    decomposition_timer = Timer()
-    decomposition_timer.tic()
 
-    print(f"Decomposing fdt matrix using {algo}")
     if algo == "ica":
-        pca_matrix = matrix_MIGP(fdt_matrix, pca_dim)
+        # TODO: either change function to accept single argument or offer differnt inputs
+        pca_matrix = matrix_MIGP(fdt_matrix, pca_dim, pca_dim)
         components = ICA_decomp(n_components, pca_matrix)
 
         if sign_flip:
@@ -90,8 +102,6 @@ def matrix_decomposition(
 
     if algo == "nfm":
         components = NFM_decomp(n_components, fdt_matrix)
-
-    print(f"Decomposition done in {decomposition_timer.toc()} secs.")
 
     demean = True if algo == "ica" else False
 
