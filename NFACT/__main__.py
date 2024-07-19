@@ -12,9 +12,15 @@ from NFACT.setup.setup import (
     check_subject_exist,
     process_seeds,
     create_folder_set_up,
+    list_of_fdt_mat,
 )
 from NFACT.decomposition.decomp import matrix_decomposition
-from NFACT.decomposition.matrix_handling import load_fdt_matrix2
+from NFACT.decomposition.matrix_handling import (
+    process_fdt_matrix2,
+    load_previous_matrix,
+    save_avg_matrix,
+    load_fdt_matrix,
+)
 from NFACT.pipes.image_handling import save_W, save_G
 from NFACT.pipes.image_handling import winner_takes_all
 from NFACT.setup.arg_check import (
@@ -36,29 +42,25 @@ def nfact_main() -> None:
     -------
     None
     """
+    # Setting up nfact
     handler = Signit_handler()
     args = nfact_args()
     col = colours()
+
     # Do argument checking
     check_complusory_arguments(args)
     args["algo"] = check_algo(args["algo"])
     args = process_command_args(args)
 
-    # put here if ptx_folder or list of subjects
+    # check subjects exist
     args = get_subjects(args)
     check_subject_exist(args["ptxdir"])
-    print("Number of Subjects:", len(args["ptxdir"]))
-    ptx_folder = args["ptxdir"]
-    # error check that participants exist
-    out_folder = args["outdir"]
+    print("Number of Subjects:", len(args["ptxdir"]), "\n")
 
-    # set up output dir here
+    group_mode = True if len(args["ptxdir"]) > 0 else False
 
-    group_mode = True if len(ptx_folder) > 0 else False
-
-    # find seeds
+    # process seeds
     seeds = process_seeds(args["seeds"])
-    # remove for checking extensions
 
     # Build out folder structure
     if args["overwrite"]:
@@ -69,18 +71,26 @@ def nfact_main() -> None:
             shutil.rmtree(os.path.join(args["outdir"], "nfact"), ignore_errors=True)
 
     create_folder_set_up(args["outdir"])
+    args["ptx_fdt"] = list_of_fdt_mat(args["ptxdir"])
 
-    print("Loading matrices")
+    # load matrix
+    print(f"{col['darker_pink']}\nLoading matrix{col['reset']}")
     matrix_time = Timer()
     matrix_time.tic()
-    fdt_2_conn = load_fdt_matrix2(
-        ptx_folder, os.path.join(args["outdir"], "nfact"), group_mode
-    )
-    print(
-        f"{col['darker_pink']}loaded matricies in {matrix_time.toc()} secs.{col['reset']}"
+
+    fdt_2_conn = load_previous_matrix(
+        os.path.join(args["outdir"], "nfact", "group_averages", "average_matrix2.npy")
     )
 
-    exit(0)
+    if fdt_2_conn is None:
+        fdt_2_conn = process_fdt_matrix2(
+            args["ptx_fdt"], os.path.join(args["outdir"], "nfact"), group_mode
+        )
+        save_avg_matrix(fdt_2_conn, os.path.join(args["outdir"], "nfact"))
+    print(
+        f"{col['darker_pink']}loaded matrix in {matrix_time.toc()} secs.{col['reset']}"
+    )
+
     # Load the matrix and save. TODO: make nfact look for previous matrix
 
     # Run the decomposition
@@ -103,19 +113,28 @@ def nfact_main() -> None:
         print("...Saving group average results")
     else:
         print("...Saving group decomposition results")
-    save_W(W, ptx_folder[0], os.path.join(out_folder, f"W_dim{n_comps}"))
-    save_G(G, ptx_folder[0], os.path.join(out_folder, f"G_dim{n_comps}"), seeds=seeds)
+    save_W(W, args["ptxdir"][0], os.path.join(args["outdir"], f"W_dim{n_comps}"))
+    save_G(
+        G,
+        args["ptxdir"][0],
+        os.path.join(args["outdir"], f"G_dim{n_comps}"),
+        seeds=seeds,
+    )
 
     if args["wta"]:
         # Save winner-takes-all maps
         print("...Saving winner-take-all maps")
         W_wta = winner_takes_all(W, axis=0, z_thr=args["wta_zthr"])
         G_wta = winner_takes_all(G, axis=1, z_thr=args["wta_zthr"])
-        save_W(W_wta, ptx_folder[0], os.path.join(out_folder, f"W_dim{n_comps}_wta"))
+        save_W(
+            W_wta,
+            args["ptxdir"][0],
+            os.path.join(args["outdir"], f"W_dim{n_comps}_wta"),
+        )
         save_G(
             G_wta,
-            ptx_folder[0],
-            os.path.join(out_folder, f"G_dim{n_comps}_wta"),
+            args["ptxdir"][0],
+            os.path.join(args["outdir"], f"G_dim{n_comps}_wta"),
             seeds=seeds,
         )
 
@@ -128,24 +147,24 @@ def nfact_main() -> None:
         if not args["skip_dual_reg"]:
             print("...Doing dual regression")
 
-            for idx, matfile in enumerate(list_of_matrices):
+            for idx, matfile in enumerate(args["ptx_fdt"]):
                 print(f"... subj-{idx} - mat: {matfile}")
                 idx3 = str(idx).zfill(3)  # zero-pad index
-                Cs = load_mat2(os.path.join(matfile))
+                Cs = load_fdt_matrix(os.path.join(matfile))
 
                 # dual reg on G
                 Gs, Ws = dualreg(Cs, G)
                 out_dualreg = os.path.join(
-                    out_folder, args["algo"].upper(), "dual_reg", "G"
+                    args["outdir"], args["algo"].upper(), "dual_reg", "G"
                 )
                 save_W(
                     Ws,
-                    ptx_folder[idx],
+                    args["ptxdir"][idx],
                     os.path.join(out_dualreg, f"Ws_{idx3}_dim{n_comps}"),
                 )
                 save_G(
                     Gs,
-                    ptx_folder[idx],
+                    args["ptxdir"][idx],
                     os.path.join(out_dualreg, f"Gs_{idx3}_dim{n_comps}"),
                     seeds=seeds,
                 )
@@ -156,16 +175,16 @@ def nfact_main() -> None:
                 # dual reg on W
                 Gs, Ws = dualreg(Cs, W)
                 out_dualreg = os.path.join(
-                    out_folder, args["algo"].upper(), "dual_reg", "W"
+                    args["outdir"], args["algo"].upper(), "dual_reg", "W"
                 )
                 save_W(
                     Ws,
-                    ptx_folder[idx],
+                    args["ptxdir"][idx],
                     os.path.join(out_dualreg, f"Ws_{idx3}_dim{n_comps}"),
                 )
                 save_G(
                     Gs,
-                    ptx_folder[idx],
+                    args["ptxdir"][idx],
                     os.path.join(out_dualreg, f"Gs_{idx3}_dim{n_comps}"),
                     seeds=seeds,
                 )
@@ -191,7 +210,7 @@ def nfact_main() -> None:
         for dr_target in ["G", "W"]:
             # Loop through dimensions and run GLMs
             print("Warning. NFACT will overwrite previous analysis at the moments")
-            out_glm = os.path.join(out_folder, "GLM")
+            out_glm = os.path.join(args["outdir"], "GLM")
             os.mkdir(os.path.join(out_glm, "G"))
             os.mkdir(os.path.join(out_glm, "W"))
             all_stats = {"G": [], "W": []}
@@ -201,13 +220,13 @@ def nfact_main() -> None:
                     "G": np.array(
                         [
                             glm_data[f"dualreg_on_{dr_target}"][i][0][:, comp]
-                            for i in range(len(list_of_matrices))
+                            for i in range(len(args["ptx_fdt"]))
                         ]
                     ),
                     "W": np.array(
                         [
                             glm_data[f"dualreg_on_{dr_target}"][i][1][comp, :]
-                            for i in range(len(list_of_matrices))
+                            for i in range(len(args["ptx_fdt"]))
                         ]
                     ),
                 }
@@ -227,14 +246,14 @@ def nfact_main() -> None:
                         if y == "G":
                             save_G(
                                 X[con],
-                                ptx_folder[0],
+                                args["ptxdir"][0],
                                 os.path.join(out_glm, f"{y}_{stat}{con+1}"),
                                 seeds=seeds,
                             )
                         elif y == "W":
                             save_W(
                                 X[con].T,
-                                ptx_folder[0],
+                                args["ptxdir"][0],
                                 os.path.join(out_glm, f"{y}_{stat}{con+1}"),
                             )
     print("---- Done ----")

@@ -6,14 +6,16 @@ import os
 from NFACT.utils.utils import Timer, error_and_exit, colours
 
 
-def load_fdt_matrix2(ptx_folder: list, directory: str, group_mode: bool) -> np.array:
+def process_fdt_matrix2(
+    list_of_fdt: list, directory: str, group_mode: bool
+) -> np.array:
     """
     Function to get group average matrix
 
     Parameters
     ----------
-    ptx_folder: list
-        list of ptx folders
+    list_of_fdt: list
+        list of fdt2 dot files
 
     Returns
     -------
@@ -21,24 +23,15 @@ def load_fdt_matrix2(ptx_folder: list, directory: str, group_mode: bool) -> np.a
        np.array of fdt2 matrix either averaged
        across subjects or single subjects
     """
-    fdt_matrix2 = load_previous_matrix(
-        os.path.join(directory, "group_averages", "average_matrix2.npy")
-    )
-    if fdt_matrix2:
-        return fdt_matrix2
-
-    list_of_matrices = [
-        os.path.join(sub_folder, "fdt_matrix2.dot") for sub_folder in ptx_folder
-    ]
 
     if group_mode:
         try:
-            fdt_matrix2 = avg_fdt(list_of_matrices)
+            fdt_matrix2 = avg_fdt(list_of_fdt)
         except Exception as e:
             error_and_exit(False, f"Unable to load fdt_matrix2 due to {e}")
     if not group_mode:
         try:
-            fdt_matrix2 = load_fdt_matrix(list_of_matrices[0])
+            fdt_matrix2 = load_fdt_matrix(list_of_fdt[0])
         except Exception as e:
             error_and_exit(False, f"Unable to load fdt_matrix2 due to {e}")
     save_avg_matrix(fdt_matrix2, directory)
@@ -46,6 +39,19 @@ def load_fdt_matrix2(ptx_folder: list, directory: str, group_mode: bool) -> np.a
 
 
 def load_previous_matrix(path: str) -> np.array:
+    """
+    Function to load previous matrix.
+
+    Parameters
+    ----------
+    path: str
+       path to matrix
+
+    Returns
+    -------
+    array: np.array
+        fdt2 matrix.
+    """
     if os.path.exists(path):
         print("Loading previously saved matrix")
         return np.load(os.path.join(path))
@@ -69,7 +75,7 @@ def save_avg_matrix(matrix: np.array, directory: str) -> None:
     None
     """
     try:
-        print(f'Saving matrix to {os.path.join(directory, 'group_averages')}')
+        print(f'Saving matrix to {os.path.join(directory, "group_averages")}')
         np.save(os.path.join(directory, "group_averages", "average_matrix2"), matrix)
     except Exception as e:
         error_and_exit(False, f"Unable to save matrix due to {e}")
