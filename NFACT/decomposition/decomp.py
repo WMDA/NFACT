@@ -63,7 +63,13 @@ def NFM_decomp(n_components: int, fdt_matrix: np.array) -> dict:
 
 
 def matrix_decomposition(
-    C, n_components, normalise=True, sign_flip=True, do_migp=True, algo="ICA", **kwargs
+    fdt_matrix,
+    n_components,
+    normalise=True,
+    sign_flip=True,
+    do_migp=True,
+    algo="ICA",
+    **kwargs,
 ):
     """Decompose matrix2 as C = G*W
 
@@ -71,8 +77,8 @@ def matrix_decomposition(
 
     """
 
-    if do_migp:
-        C_small = matrix_MIGP(C, **kwargs)
+    if algo == "ica":
+        pca_matrix = matrix_MIGP(fdt_matrix, **kwargs)
     else:
         C_small = C
 
@@ -112,25 +118,42 @@ def normalise_components(G, W, demean: bool = True) -> dict:
     }
 
 
-def SignFlip(X, thr=0):
-    """Sign flip the rows of X such that the heavy tail is >0"""
-    Y = []
-    for row in X:
+def SignFlip(decomp_matrix: np.array, thr: int = 0) -> np.array:
+    """
+    Function to sign flip the rows of
+    the decomp matrix so that the heavy tail
+    is > 0.
+
+    Parameters
+    ----------
+    decomp_matrix: np.array
+        decomposition matrix
+
+    thr: int=0
+        threshold value
+
+    Returns
+    -------
+    signflip_decomp_matrix: np.array
+        array of signfliped matrix
+    """
+
+    signflip_decomp_matrix = np.empty_like(decomp_matrix)
+    for index in range(decomp_matrix.shape[0]):
+        row = decomp_matrix[index]
         rowthr = row[np.abs(row) > thr]
-        # nothing above thresh
-        if np.min(np.abs(rowthr)) == 0:
-            Y.append(row)
-        # all > 0:
-        elif all(rowthr > 0):
-            Y.append(row)
-        elif all(rowthr < 0):
-            Y.append(-row)
-        else:
-            right = np.mean(row[rowthr > 0])
-            left = -np.mean(row[rowthr < 0])
-            skew = np.sign(right - left)
-            if skew == 0:
-                Y.append(row)
-            else:
-                Y.append(row * skew)
-    return np.asarray(Y)
+
+        if rowthr.size == 0 or np.min(np.abs(rowthr)) == 0:
+            signflip_decomp_matrix[index] = row
+            continue
+
+        positive_elements = row[row > thr]
+        negative_elements = row[row < -thr]
+
+        positive_mean = np.mean(positive_elements) if positive_elements.size > 0 else 0
+        negative_mean = -np.mean(negative_elements) if negative_elements.size > 0 else 0
+
+        skew = np.sign(positive_mean - negative_mean)
+        signflip_decomp_matrix[index] = row if skew == 0 else row * skew
+
+    return signflip_decomp_matrix

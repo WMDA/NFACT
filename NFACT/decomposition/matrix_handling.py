@@ -131,8 +131,19 @@ def avg_fdt(list_of_matfiles: list) -> np.array:
     return sparse_matrix
 
 
-def demean(X, axis=0):
-    return X - np.mean(X, axis=axis, keepdims=True)
+def demean(matrix: np.array, axis: int = 0):
+    """
+    Function to demean a matrix
+
+    Parameters
+    ----------
+    matrix: np.array
+        matrix
+    axis: int
+        which axis to calculate
+        the mean from
+    """
+    return matrix - np.mean(matrix, axis=axis, keepdims=True)
 
 
 def matrix_MIGP(C, n_dim=1000, d_pca=1000, keep_mean=False):
