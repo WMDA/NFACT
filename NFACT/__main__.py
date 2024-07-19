@@ -103,7 +103,7 @@ def nfact_main() -> None:
     }
 
     # Run the decomposition
-    G, W = matrix_decomposition(fdt_2_conn, n_components=n_comps, **kwargs)
+    components = matrix_decomposition(fdt_2_conn, n_components=n_comps, **kwargs)
 
     # Save the results
     # If group mode, save average then run dualreg to save the individual stuff (if user requested)

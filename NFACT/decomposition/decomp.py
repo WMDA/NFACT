@@ -63,58 +63,78 @@ def NFM_decomp(n_components: int, fdt_matrix: np.array) -> dict:
 
 
 def matrix_decomposition(
-    fdt_matrix,
-    n_components,
-    normalise=True,
-    sign_flip=True,
-    do_migp=True,
-    algo="ICA",
-    **kwargs,
-):
+    fdt_matrix: np.array,
+    n_components: int,
+    algo: str,
+    normalise: bool,
+    sign_flip: bool,
+    pca_dim: int,
+) -> dict:
     """Decompose matrix2 as C = G*W
 
     Starts with MIGP then ICA t get G then Regression to get W
 
     """
+    decomposition_timer = Timer()
+    decomposition_timer.tic()
 
+    print(f"Decomposing fdt matrix using {algo}")
     if algo == "ica":
-        pca_matrix = matrix_MIGP(fdt_matrix, **kwargs)
-    else:
-        C_small = C
+        pca_matrix = matrix_MIGP(fdt_matrix, pca_dim)
+        components = ICA_decomp(n_components, pca_matrix)
 
-    print("...Decomposition")
-    t = Timer()
-    t.tic()
+        if sign_flip:
+            print("Sign-flipping components")
+            components["grey_components"] = SignFlip(components["grey_components"].T).T
+            components["white_components"] = SignFlip(components["white_components"])
 
-    print(f"...Decomposition done in {t.toc()} secs.")
+    if algo == "nfm":
+        components = NFM_decomp(n_components, fdt_matrix)
 
-    if sign_flip:
-        print("...Sign-flip components")
-        G = SignFlip(G.T).T
-        W = SignFlip(W)
+    print(f"Decomposition done in {decomposition_timer.toc()} secs.")
 
-    return G, W
+    demean = True if algo == "ica" else False
+
+    if normalise:
+        components["normalised_grey"] = normalise_components(
+            components["grey_components"], demean
+        )
+        components["normalised_white"] = normalise_components(
+            components["white_components"], demean
+        )
+
+    return components
 
 
-def normalise_components(G, W, demean: bool = True) -> dict:
+def normalise_components(
+    grey_matter: np.array, white_matter: np.array, demean: bool = True
+) -> dict:
     """
     Normalise components.
     Useful for visulaization
 
     Parameters
     ----------
+    grey_matter: np.array
+        grey matter component
+    white_matter: np.array
+        white matter component
+    demean: bool
+        Demean matrix. default is True
 
 
     Returns
     -------
     dict: dictionary.
-
+        dictionary of normalised components
     """
     print("Normalising components")
 
     return {
-        "G": StandardScaler(with_mean=demean).fit_transform(G),
-        "W": StandardScaler(with_mean=demean).fit_transform(W.T).T,
+        "grey_matter": StandardScaler(with_mean=demean).fit_transform(grey_matter),
+        "white_matter": StandardScaler(with_mean=demean)
+        .fit_transform(white_matter.T)
+        .T,
     }
 
 
