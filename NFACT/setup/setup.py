@@ -156,7 +156,7 @@ def create_folder_set_up(directory: str) -> None:
         "Output directory does not exist. Please provide actual directory",
     )
     col = colours()
-    print(f"{col['pink']}nfact folder is in {directory}{col['reset']}")
+    print(f"{col['purple']}nfact folder is in {directory}{col['reset']}")
     nfact_directory = os.path.join(directory, "nfact")
 
     sub_folders = [
@@ -213,3 +213,23 @@ def which_nfact_folders_exist(nfact_directory: str, sub_folders: list) -> list:
         if not os.path.exists(os.path.join(nfact_directory, sub))
     ]
     return sub_folders_that_dont_exist
+
+
+def list_of_fdt_mat(list_ptx_folder: list) -> list:
+    """
+    Function to get list of matricies
+
+    Parameters
+    ----------
+    list_ptx_folder: list
+        list of ptx folders
+
+    Returns
+    -------
+    list: list object
+       list of subjects fdt_matrix2.dot
+       paths
+    """
+    return [
+        os.path.join(sub_folder, "fdt_matrix2.dot") for sub_folder in list_ptx_folder
+    ]
