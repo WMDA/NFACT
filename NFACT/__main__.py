@@ -91,8 +91,6 @@ def nfact_main() -> None:
         f"{col['darker_pink']}loaded matrix in {matrix_time.toc()} secs.{col['reset']}"
     )
 
-    # Load the matrix and save. TODO: make nfact look for previous matrix
-
     # Run the decomposition
     n_comps = args["dim"]
     kwargs = {
@@ -105,7 +103,7 @@ def nfact_main() -> None:
     }
 
     # Run the decomposition
-    G, W = matrix_decomposition(C, n_components=n_comps, **kwargs)
+    G, W = matrix_decomposition(fdt_2_conn, n_components=n_comps, **kwargs)
 
     # Save the results
     # If group mode, save average then run dualreg to save the individual stuff (if user requested)
