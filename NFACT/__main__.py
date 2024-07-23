@@ -94,7 +94,7 @@ def nfact_main() -> None:
     # Run the decomposition
     decomposition_timer = Timer()
     decomposition_timer.tic()
-    print(f"\nDecomposing fdt matrix using {args['algo']}")
+    print(f"\nDecomposing fdt matrix using {args['algo'].upper()}")
     components = matrix_decomposition(
         fdt_2_conn,
         n_components=args["dim"],
@@ -103,7 +103,7 @@ def nfact_main() -> None:
         sign_flip=args["sign_flip"],
         pca_dim=args["migp"],
     )
-
+    exit(0)
     # Save the results
     # If group mode, save average then run dualreg to save the individual stuff (if user requested)
     if group_mode:

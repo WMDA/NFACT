@@ -3,8 +3,12 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
+import warnings
 
-from NFACT.decomposition.matrix_handling import matrix_MIGP
+warnings.filterwarnings("ignore")
+
+from NFACT.decomposition.matrix_handling import melodic_incremental_group_pca
+from NFACT.utils.utils import error_and_exit
 
 
 @ignore_warnings(category=ConvergenceWarning)
@@ -27,9 +31,16 @@ def ICA_decomp(n_components: int, fdt_matrix: np.array) -> dict:
         components
     """
     decomp = FastICA(n_components=n_components)
-    grey_matter = decomp.fit_transform(fdt_matrix)
-    white_matter = np.linalg.pinv(grey_matter) @ fdt_matrix
-    return {"grey_components": grey_matter, "white_components": white_matter}
+
+    try:
+        grey_matter = decomp.fit_transform(fdt_matrix)
+    except Exception as e:
+        error_and_exit(False, f"Unable to perform ICA due to {e}")
+
+    return {
+        "grey_components": grey_matter,
+        "white_components": np.linalg.pinv(grey_matter) @ fdt_matrix,
+    }
 
 
 @ignore_warnings(category=ConvergenceWarning)
@@ -58,9 +69,11 @@ def NFM_decomp(n_components: int, fdt_matrix: np.array) -> dict:
         init="nndsvd",
         random_state=1,
     )
-    grey_matter = decomp.fit_transform(fdt_matrix)
-    white_matter = decomp.components_
-    return {"grey_components": grey_matter, "white_components": white_matter}
+    try:
+        grey_matter = decomp.fit_transform(fdt_matrix)
+    except Exception as e:
+        error_and_exit(False, f"Unable to perform NFM due to {e}")
+    return {"grey_components": grey_matter, "white_components": decomp.components_}
 
 
 def matrix_decomposition(
@@ -102,7 +115,7 @@ def matrix_decomposition(
 
     if algo == "ica":
         # TODO: either change function to accept single argument or offer differnt inputs
-        pca_matrix = matrix_MIGP(fdt_matrix, pca_dim, pca_dim)
+        pca_matrix = melodic_incremental_group_pca(fdt_matrix, pca_dim, pca_dim)
         components = ICA_decomp(n_components, pca_matrix)
 
         if sign_flip:
