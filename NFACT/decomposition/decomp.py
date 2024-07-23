@@ -1,13 +1,13 @@
 from sklearn.decomposition import FastICA, NMF
 from sklearn.preprocessing import StandardScaler
 import numpy as np
+from sklearn.utils._testing import ignore_warnings
+from sklearn.exceptions import ConvergenceWarning
 
 from NFACT.decomposition.matrix_handling import matrix_MIGP
-from NFACT.utils.utils import Timer
-
-# TODO: rename variables as better names
 
 
+@ignore_warnings(category=ConvergenceWarning)
 def ICA_decomp(n_components: int, fdt_matrix: np.array) -> dict:
     """
     Function to perform ica decomposition
@@ -32,6 +32,7 @@ def ICA_decomp(n_components: int, fdt_matrix: np.array) -> dict:
     return {"grey_components": grey_matter, "white_components": white_matter}
 
 
+@ignore_warnings(category=ConvergenceWarning)
 def NFM_decomp(n_components: int, fdt_matrix: np.array) -> dict:
     """
     Function to perform NFM.
@@ -93,7 +94,10 @@ def matrix_decomposition(
     pca_dim: int
         number of pca dimensions for ICA
 
-
+    Returns
+    -------
+    dict: dictionary
+        dict of components
     """
 
     if algo == "ica":

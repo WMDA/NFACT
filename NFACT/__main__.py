@@ -92,26 +92,17 @@ def nfact_main() -> None:
     )
 
     # Run the decomposition
-    n_comps = args["dim"]
-    kwargs = {
-        "do_migp": args["migp"] > 0,
-        "d_pca": args["migp"],
-        "n_dim": args["migp"],
-        "algo": args["algo"],
-        "normalise": args["normalise"],
-        "sign_flip": args["sign_flip"],
-    }
-
-    # Run the decomposition
     decomposition_timer = Timer()
     decomposition_timer.tic()
-    print(f"Decomposing fdt matrix using {args['algo']}")
+    print(f"\nDecomposing fdt matrix using {args['algo']}")
     components = matrix_decomposition(
         fdt_2_conn,
-        n_components=n_comps,
+        n_components=args["dim"],
         algo=args["algo"],
+        normalise=args["normalise"],
+        sign_flip=args["sign_flip"],
+        pca_dim=args["migp"],
     )
-    print(f"Decomposition done in {decomposition_timer.toc()} secs.")
 
     # Save the results
     # If group mode, save average then run dualreg to save the individual stuff (if user requested)
@@ -119,28 +110,36 @@ def nfact_main() -> None:
         print("...Saving group average results")
     else:
         print("...Saving group decomposition results")
-    save_W(W, args["ptxdir"][0], os.path.join(args["outdir"], f"W_dim{n_comps}"))
-    save_G(
-        G,
+    save_W(
+        components["white_components"],
         args["ptxdir"][0],
-        os.path.join(args["outdir"], f"G_dim{n_comps}"),
+        os.path.join(args["outdir"], f"W_dim{args['dim']}"),
+    )
+    save_G(
+        components["grey_components"],
+        args["ptxdir"][0],
+        os.path.join(args["outdir"], f"G_dim{args['dim']}"),
         seeds=seeds,
     )
 
     if args["wta"]:
         # Save winner-takes-all maps
         print("...Saving winner-take-all maps")
-        W_wta = winner_takes_all(W, axis=0, z_thr=args["wta_zthr"])
-        G_wta = winner_takes_all(G, axis=1, z_thr=args["wta_zthr"])
+        W_wta = winner_takes_all(
+            components["white_components"], axis=0, z_thr=args["wta_zthr"]
+        )
+        G_wta = winner_takes_all(
+            components["grey_components"], axis=1, z_thr=args["wta_zthr"]
+        )
         save_W(
             W_wta,
             args["ptxdir"][0],
-            os.path.join(args["outdir"], f"W_dim{n_comps}_wta"),
+            os.path.join(args["outdir"], f"W_dim{args['dim']}_wta"),
         )
         save_G(
             G_wta,
             args["ptxdir"][0],
-            os.path.join(args["outdir"], f"G_dim{n_comps}_wta"),
+            os.path.join(args["outdir"], f"G_dim{args['dim']}_wta"),
             seeds=seeds,
         )
 
@@ -159,19 +158,19 @@ def nfact_main() -> None:
                 Cs = load_fdt_matrix(os.path.join(matfile))
 
                 # dual reg on G
-                Gs, Ws = dualreg(Cs, G)
+                Gs, Ws = dualreg(Cs, components["grey_components"])
                 out_dualreg = os.path.join(
                     args["outdir"], args["algo"].upper(), "dual_reg", "G"
                 )
                 save_W(
                     Ws,
                     args["ptxdir"][idx],
-                    os.path.join(out_dualreg, f"Ws_{idx3}_dim{n_comps}"),
+                    os.path.join(out_dualreg, f"Ws_{idx3}_dim{args['dim']}"),
                 )
                 save_G(
                     Gs,
                     args["ptxdir"][idx],
-                    os.path.join(out_dualreg, f"Gs_{idx3}_dim{n_comps}"),
+                    os.path.join(out_dualreg, f"Gs_{idx3}_dim{args['dim']}"),
                     seeds=seeds,
                 )
                 # keep data for GLM?
@@ -179,19 +178,19 @@ def nfact_main() -> None:
                     glm_data["dualreg_on_G"].append([Gs, Ws])
 
                 # dual reg on W
-                Gs, Ws = dualreg(Cs, W)
+                Gs, Ws = dualreg(Cs, components["white_components"])
                 out_dualreg = os.path.join(
                     args["outdir"], args["algo"].upper(), "dual_reg", "W"
                 )
                 save_W(
                     Ws,
                     args["ptxdir"][idx],
-                    os.path.join(out_dualreg, f"Ws_{idx3}_dim{n_comps}"),
+                    os.path.join(out_dualreg, f"Ws_{idx3}_dim{args['dim']}"),
                 )
                 save_G(
                     Gs,
                     args["ptxdir"][idx],
-                    os.path.join(out_dualreg, f"Gs_{idx3}_dim{n_comps}"),
+                    os.path.join(out_dualreg, f"Gs_{idx3}_dim{args['dim']}"),
                     seeds=seeds,
                 )
                 if args["glm_mat"]:
@@ -220,7 +219,7 @@ def nfact_main() -> None:
             os.mkdir(os.path.join(out_glm, "G"))
             os.mkdir(os.path.join(out_glm, "W"))
             all_stats = {"G": [], "W": []}
-            for comp in range(n_comps):
+            for comp in range(args["dim"]):
                 # assemble data matrix subject-by-gm or subject-by-wm
                 data = {
                     "G": np.array(
