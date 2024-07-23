@@ -80,12 +80,18 @@ def matrix_decomposition(
 
     Parameters
     ----------
-    fdt_matrix: np.array,
-    n_components: int,
-    algo: str,
-    normalise: bool,
-    sign_flip: bool,
-    pca_dim: int,
+    fdt_matrix: np.array
+        matrix to decompose
+    n_components: int
+        number of components
+    algo: str
+        which algo
+    normalise: bool
+        to z score normalise components
+    sign_flip: bool
+        to sign flip ICA components so heavy tail is > 0
+    pca_dim: int
+        number of pca dimensions for ICA
 
 
     """

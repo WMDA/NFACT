@@ -107,8 +107,7 @@ An example set up
 \_| \_/\_|    \_| |_/ \____/  \_/      \_|    \_|
 
 
-usage: NFACT_PP [-h] -f STUDY_FOLDER -i REF [-l LIST_OF_SUBJECTS] [-b BPX_PATH] [-t TARGET2] [-s SEED [SEED ...]] [-r ROIS [ROIS ...]] [-m MASK] [-w WARPS [WARPS ...]] [-o OUT] [-H] [-g] [-N NSAMPLES] [-R RES]
-                [-P PTX_OPTIONS] [-n N_CORES] [-C]
+usage: nfact_pp [-h] -f STUDY_FOLDER -i REF [-l LIST_OF_SUBJECTS] [-b BPX_PATH] [-t TARGET2] [-s SEED [SEED ...]] [-r ROIS [ROIS ...]] [-w WARPS [WARPS ...]] [-o OUT] [-H] [-g] [-N NSAMPLES] [-R RES] [-P PTX_OPTIONS] [-n N_CORES] [-C] [-D] [-O]
 
 options:
   -h, --help            show this help message and exit
@@ -121,14 +120,14 @@ options:
   -b BPX_PATH, --bpx BPX_PATH
                         Name of Diffusion.bedpostX directory
   -t TARGET2, --target TARGET2
-                        Path to target image. If not given will create a whole mask
+                        Path to target image. If not given will create a whole mask from reference image
   -s SEED [SEED ...], --seed SEED [SEED ...]
                         The suffixes of the paths leading to the left and right hemisphere cortical seeds (white-grey boundary GIFTI)
   -r ROIS [ROIS ...], --rois ROIS [ROIS ...]
                         The suffixes of the paths leading to the left and right hemisphere medial wall masks (GIFTI)
   -w WARPS [WARPS ...], --warps WARPS [WARPS ...]
                         The suffix of the path leading to the transforms between standard space and diffusion space
-  -o OUT, --out OUT     Path to output folder
+  -o OUT, --out OUT     Name of folder to save results into. Default is nfact_pp
   -H, --hcp_stream      HCP stream option. Will search through HCP folder structure for L/R white.32k_fs_LR.surf.gii and ROIs. Then performs suface seed stream
   -g, --gpu             Use GPU version
   -N NSAMPLES, --nsamples NSAMPLES
@@ -139,10 +138,12 @@ options:
   -n N_CORES, --n_cores N_CORES
                         If should parallel process and with how many cores
   -C, --cluster         Run on cluster
+  -D, --dont_log        Run on cluster
+  -O, --overwrite       Overwrite previous file structure
 
 Example Usage:
     Seed surface mode:
-           python3 -m NFACT_PP --study_folder /home/mr_robot/subjects
+           nfact_pp --study_folder /home/mr_robot/subjects
                --list /home/mr_robot/sub_list
                --bpx_path Diffusion.bedpostX
                --seeds L.white.32k_fs_LR.surf.gii R.white.32k_fs_LR.surf.gii
@@ -153,7 +154,7 @@ Example Usage:
 
 
     Volume surface mode:
-            python3 -m NFACT_PP --study_folder /home/mr_robot/subjects
+            nfact_pp --study_folder /home/mr_robot/subjects
                 --list /home/mr_robot/sub_list
                 --bpx_path Diffusion.bedpostX
                 --seeds L.white.nii.gz R.white.nii.gz
@@ -164,10 +165,9 @@ Example Usage:
 
 
     HCP mode:
-        python3 -m NFACT_PP --hcp_stream
+        nfact_pp --hcp_stream
             --study_folder /home/mr_robot/subjects
-            --list /home/mr_robot/sub_list
+            --list /home/mr_robot/for_axon/nfact_dev/sub_list
             --image_standard_space $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz
             --gpu --n_cores 3
-
 ```
