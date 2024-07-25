@@ -116,6 +116,13 @@ def nfact_args() -> dict:
         default=False,
         help="Overwrite previous file structure. Useful if wanting to perform multiple GLMs or ICA and NFM",
     )
+    args.add_argument(
+        "-c",
+        "--config",
+        dest="config",
+        default=False,
+        help="Provide config file to change hyperparameters for ICA and NFM. Please see sckit learn documentation for NFM and FASTICA for further details",
+    )
 
     return vars(args.parse_args())
 

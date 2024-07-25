@@ -13,6 +13,7 @@ from NFACT.setup.setup import (
     process_seeds,
     create_folder_set_up,
     list_of_fdt_mat,
+    check_config_file,
 )
 from NFACT.decomposition.decomp import matrix_decomposition
 from NFACT.decomposition.matrix_handling import (
@@ -61,6 +62,9 @@ def nfact_main() -> None:
 
     # process seeds
     seeds = process_seeds(args["seeds"])
+
+    if args["config"]:
+        check_config_file(args["config"])
 
     # Build out folder structure
     if args["overwrite"]:

@@ -233,3 +233,7 @@ def list_of_fdt_mat(list_ptx_folder: list) -> list:
     return [
         os.path.join(sub_folder, "fdt_matrix2.dot") for sub_folder in list_ptx_folder
     ]
+
+
+def check_config_file(config_file: dict) -> None:
+    return None

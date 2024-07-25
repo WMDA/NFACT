@@ -1,14 +1,7 @@
 import time
 import signal
 import os
-
-
-class dotdict(dict):
-    """dot.notation access to dictionary attributes"""
-
-    __getattr__ = dict.get
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
+import json
 
 
 # Helper class for timing
@@ -164,3 +157,24 @@ def make_directory(path: str) -> None:
         os.mkdir(path)
     except Exception as e:
         error_and_exit(False, f"Unable to create directory due to {e}")
+
+
+def load_json(path: str) -> dict:
+    """
+    Function to load json
+
+    Parameters
+    ----------
+    path: str
+       path to json file
+
+    Returns
+    -------
+    dict: dictionary file
+        json file
+    """
+    try:
+        with open(path) as config:
+            return json.load(config)
+    except Exception as e:
+        error_and_exit(False, f"Unable to load json due to {e}")
