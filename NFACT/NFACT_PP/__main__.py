@@ -10,7 +10,7 @@ from NFACT.NFACT_PP.nfactpp_setup import (
 )
 
 from NFACT.utils.utils import error_and_exit, Signit_handler, read_file_to_list
-from NFACT.setup.setup import (
+from NFACT.setup.configure_setup import (
     return_list_of_subjects_from_file,
     does_list_of_subjects_exist,
     check_subject_exist,
@@ -76,7 +76,7 @@ def nfact_pp_main():
         except Exception as e:
             error_and_exit(False, f"Unable to read ptx_options text file due to {e}")
         check_ptx_options_are_valid(arg["ptx_options"])
-    
+
     if arg["hcp_stream"]:
         hcp_stream_main(arg, handler)
 
