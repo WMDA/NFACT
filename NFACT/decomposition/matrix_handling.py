@@ -101,9 +101,9 @@ def load_fdt_matrix(matfile: str) -> np.array:
     data = mat[:-1, -1]
     rows = np.array(mat[:-1, 0] - 1, dtype=int)
     cols = np.array(mat[:-1, 1] - 1, dtype=int)
-    nrows, ncols = int(mat[-1, 0]), int(mat[-1, 1])
-    sparse_matrix = sps.csc_matrix((data, (rows, cols)), shape=(nrows, ncols)).toarray()
-    return sparse_matrix
+    nrows = int(mat[-1, 0])
+    ncols = int(mat[-1, 1])
+    return sps.csc_matrix((data, (rows, cols)), shape=(nrows, ncols)).toarray()
 
 
 def avg_fdt(list_of_matfiles: list) -> np.array:
