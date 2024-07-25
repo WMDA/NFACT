@@ -7,14 +7,14 @@ from NFACT.utils.utils import Timer, Signit_handler, colours
 from NFACT.regression.glm import GLM
 from NFACT.regression.dual_regression import dualreg
 from NFACT.setup.args import nfact_args
-from NFACT.setup.setup import (
+from NFACT.setup.file_setup import create_folder_set_up, get_group_average_files
+from NFACT.setup.configure_setup import (
     get_subjects,
-    check_subject_exist,
     process_seeds,
-    create_folder_set_up,
     list_of_fdt_mat,
     check_config_file,
     load_config_file,
+    check_subject_exist,
 )
 from NFACT.decomposition.decomp import matrix_decomposition, get_parameters
 from NFACT.decomposition.matrix_handling import (
@@ -77,6 +77,9 @@ def nfact_main() -> None:
             shutil.rmtree(os.path.join(args["outdir"], "nfact"), ignore_errors=True)
 
     create_folder_set_up(args["outdir"])
+    get_group_average_files(
+        args["ptxdir"][0], os.path.join(args["outdir"], "nfact", "group_averages")
+    )
     args["ptx_fdt"] = list_of_fdt_mat(args["ptxdir"])
 
     # load matrix
@@ -114,11 +117,7 @@ def nfact_main() -> None:
     )
 
     # Save the results
-    # If group mode, save average then run dualreg to save the individual stuff (if user requested)
-    if group_mode:
-        print("...Saving group average results")
-    else:
-        print("...Saving group decomposition results")
+
     save_W(
         components["white_components"],
         args["ptxdir"][0],
