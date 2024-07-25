@@ -14,8 +14,9 @@ from NFACT.setup.setup import (
     create_folder_set_up,
     list_of_fdt_mat,
     check_config_file,
+    load_config_file,
 )
-from NFACT.decomposition.decomp import matrix_decomposition
+from NFACT.decomposition.decomp import matrix_decomposition, get_parameters
 from NFACT.decomposition.matrix_handling import (
     process_fdt_matrix2,
     load_previous_matrix,
@@ -64,7 +65,8 @@ def nfact_main() -> None:
     seeds = process_seeds(args["seeds"])
 
     if args["config"]:
-        check_config_file(args["config"])
+        args["config"] = load_config_file(args["config"], args["algo"])
+        check_config_file(args["config"], args["algo"])
 
     # Build out folder structure
     if args["overwrite"]:
@@ -94,18 +96,21 @@ def nfact_main() -> None:
     print(
         f"{col['darker_pink']}loaded matrix in {matrix_time.toc()} secs.{col['reset']}"
     )
-
+    parameters = get_parameters(args["config"], args["algo"], args["dim"])
     # Run the decomposition
     decomposition_timer = Timer()
     decomposition_timer.tic()
     print(f"\nDecomposing fdt matrix using {args['algo'].upper()}")
     components = matrix_decomposition(
         fdt_2_conn,
-        n_components=args["dim"],
         algo=args["algo"],
         normalise=args["normalise"],
         sign_flip=args["sign_flip"],
         pca_dim=args["migp"],
+        parameters=parameters,
+    )
+    print(
+        f'{col["darker_pink"]}Decomposition took {decomposition_timer.toc()} secs{col["reset"]}'
     )
 
     # Save the results

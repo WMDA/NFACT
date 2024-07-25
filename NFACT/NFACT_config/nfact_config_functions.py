@@ -106,7 +106,10 @@ def create_combined_algo_dict():
         dict of ICA and NMF
         arguments
     """
-    return {"ica": get_arguments(FastICA), "nfm": get_arguments(NMF)}
+    dictionary_to_save = {"ica": get_arguments(FastICA), "nfm": get_arguments(NMF)}
+    del dictionary_to_save["nfm"]["n_components"]
+    del dictionary_to_save["ica"]["n_components"]
+    return dictionary_to_save
 
 
 def save_to_json(path: str, dictionary_to_save: dict):
@@ -126,6 +129,7 @@ def save_to_json(path: str, dictionary_to_save: dict):
     -------
     None
     """
-    config_file = json.dumps(dictionary_to_save, indent=4)
-    with open("nfact_config.config", "w") as json_file:
-        json_file.write(os.path.join(path, config_file))
+
+    config_file = json.dumps(dictionary_to_save)
+    with open(os.path.join(path, "nfact_config.config"), "w") as json_file:
+        json_file.write(config_file)
