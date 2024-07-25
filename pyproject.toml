@@ -32,3 +32,4 @@ development = ['ruff']
 [project.scripts]
 nfact = "NFACT.__main__:nfact_main"
 nfact_pp = "NFACT.NFACT_PP.__main__:nfact_pp_main"
+nfact_config = "NFACT.NFACT_config.__main__:nfact_config_main"
