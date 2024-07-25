@@ -175,8 +175,8 @@ def melodic_incremental_group_pca(
 
     migpa_timer = Timer()
     migpa_timer.tic()
-
-    print("Performing MIGP")
+    col = colours()
+    print(f"{col['purple']}\nPerforming MIGP{col['reset']}")
     if keep_mean:
         matrix_mean = np.mean(fdt_matrix, axis=1, keepdims=True)
 
@@ -190,7 +190,7 @@ def melodic_incremental_group_pca(
 
     print(f"Old matrix size was: {fdt_matrix.shape[0]}x{fdt_matrix.shape[1]}")
     print(f"New matrix size is : {pca_matrix.shape[0]}x{pca_matrix.shape[1]}")
-    print(f"...MIGP done in {migpa_timer.toc()} secs.")
+    print(f"MIGP finished in : {migpa_timer.toc()} secs.")
     return pca_matrix
 
 
