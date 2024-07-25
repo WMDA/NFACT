@@ -31,8 +31,6 @@ Pre-processing of tractgraphy data for decomposition with NFacT (Non-negative ma
 
 Under the hood NFACT PP is probtrackx2 omatrix2 option to get a seed by target connectivity matrix 
 
-
-
 ## Input for nfact_preproc
 
 Required before runing NFACT PP:
@@ -170,4 +168,45 @@ Example Usage:
             --list /home/mr_robot/for_axon/nfact_dev/sub_list
             --image_standard_space $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz
             --gpu --n_cores 3
+```
+
+------------------------------------------------------------------------------------------------------------------------------------------
+```
+ _   _______ ___  _____ _____                    __ _
+| \ | |  ___/ _ \/  __ \_   _|                  / _(_)
+|  \| | |_ / /_\ \ /  \/ | |     ___ ___  _ __ | |_ _  __ _
+| . ` |  _||  _  | |     | |    / __/ _ \| '_ \|  _| |/ _` |
+| |\  | |  | | | | \__/\ | |   | (_| (_) | | | | | | | (_| |
+\_| \_|_|  \_| |_/\____/ \_/    \___\___/|_| |_|_| |_|\__, |
+                                                       __/ |
+                                                      |___/
+
+```
+## NFACT config
+
+NFACT config creates a json file of the available hyper parameters for the ICA and NFM functions. This json file can then be edited and fed into
+NFACT to change the hyperparameters of the FastICA and NFM functions.
+
+NFACT does its decomposition using sckit learn's FastICA (https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.FastICA.html#sklearn.decomposition) 
+and NFM (https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.NMF.html) so any of the hyperparameters of these functions can be altered.
+
+## Usage:
+```
+ _   _______ ___  _____ _____                    __ _
+| \ | |  ___/ _ \/  __ \_   _|                  / _(_)
+|  \| | |_ / /_\ \ /  \/ | |     ___ ___  _ __ | |_ _  __ _
+| . ` |  _||  _  | |     | |    / __/ _ \| '_ \|  _| |/ _` |
+| |\  | |  | | | | \__/\ | |   | (_| (_) | | | | | | | (_| |
+\_| \_|_|  \_| |_/\____/ \_/    \___\___/|_| |_|_| |_|\__, |
+                                                       __/ |
+                                                      |___/
+
+
+usage: nfact_config [-h] [-o OUTPUT_DIR]
+
+options:
+  -h, --help            show this help message and exit
+  -o OUTPUT_DIR, --output_dir OUTPUT_DIR
+                        Where to save config file
+
 ```

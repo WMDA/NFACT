@@ -50,7 +50,8 @@ def nfact_args() -> dict:
         help="MELODIC's Incremental Group-PCA dimensionality (default is 1000)",
     )
     args.add_argument(
-        "-S" "--skip_dual_reg",
+        "-S",
+        "--skip_dual_reg",
         dest="skip_dual_reg",
         action="store_true",
         default=False,
@@ -88,7 +89,7 @@ def nfact_args() -> dict:
         help="normalise components by scaling",
     )
     args.add_argument(
-        "-S",
+        "-F",
         "--sign_flip",
         dest="sign_flip",
         action="store_true",
@@ -115,6 +116,13 @@ def nfact_args() -> dict:
         action="store_true",
         default=False,
         help="Overwrite previous file structure. Useful if wanting to perform multiple GLMs or ICA and NFM",
+    )
+    args.add_argument(
+        "-c",
+        "--config",
+        dest="config",
+        default=False,
+        help="Provide config file to change hyperparameters for ICA and NFM. Please see sckit learn documentation for NFM and FASTICA for further details",
     )
 
     return vars(args.parse_args())

@@ -9,17 +9,18 @@ warnings.filterwarnings("ignore")
 
 from NFACT.decomposition.matrix_handling import melodic_incremental_group_pca
 from NFACT.utils.utils import error_and_exit
+from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
 
 
 @ignore_warnings(category=ConvergenceWarning)
-def ICA_decomp(n_components: int, fdt_matrix: np.array) -> dict:
+def ICA_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
     """
     Function to perform ica decomposition
 
     Parameters
     ----------
-    n_components: int
-        number of components
+    parameters: dict
+        dictionary of hyperparameters
     fdt_matrix: np.array
         matrix to perform decomposition
         on
@@ -30,13 +31,13 @@ def ICA_decomp(n_components: int, fdt_matrix: np.array) -> dict:
         dictionary of grey and white matter
         components
     """
-    decomp = FastICA(n_components=n_components)
+
+    decomp = FastICA(**parameters)
 
     try:
         grey_matter = decomp.fit_transform(fdt_matrix)
     except Exception as e:
         error_and_exit(False, f"Unable to perform ICA due to {e}")
-
     return {
         "grey_components": grey_matter,
         "white_components": np.linalg.pinv(grey_matter) @ fdt_matrix,
@@ -44,14 +45,14 @@ def ICA_decomp(n_components: int, fdt_matrix: np.array) -> dict:
 
 
 @ignore_warnings(category=ConvergenceWarning)
-def NFM_decomp(n_components: int, fdt_matrix: np.array) -> dict:
+def NFM_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
     """
     Function to perform NFM.
 
     Parameters
     ----------
-    n_components: int
-        number of components
+    parameters: dict
+        dictionary of hyperparameters
     fdt_matrix: np.array
         matrix to perform decomposition
         on
@@ -62,13 +63,7 @@ def NFM_decomp(n_components: int, fdt_matrix: np.array) -> dict:
         dictionary of grey and white matter
         components
     """
-    decomp = NMF(
-        n_components=n_components,
-        alpha_W=0.1,
-        l1_ratio=1,
-        init="nndsvd",
-        random_state=1,
-    )
+    decomp = NMF(**parameters)
     try:
         grey_matter = decomp.fit_transform(fdt_matrix)
     except Exception as e:
@@ -76,13 +71,49 @@ def NFM_decomp(n_components: int, fdt_matrix: np.array) -> dict:
     return {"grey_components": grey_matter, "white_components": decomp.components_}
 
 
+def get_parameters(parameters: dict, algo: str, n_components: int):
+    """
+    Function to get parameters for
+    decomp. If no parameters are
+    given then for ICA will use sckit learn defaults
+    for NFM it will use defaults aside from
+    alpha_w, random_state, l1_ratio and init.
+
+    Parameters
+    ----------
+    parameters: dict
+       dictionary of parameters
+    algo: str
+       str of algo to use
+    n_components: int
+        number of components
+
+    Returns
+    -------
+    parameters: dict
+        dictionary of parameters
+    """
+    if parameters:
+        parameters["n_components"] = n_components
+        return parameters
+
+    parameters = create_combined_algo_dict()[algo]
+    parameters["n_components"] = n_components
+    if algo == "nfm":
+        parameters["alpha_W"] = 0.1
+        parameters["init"] = "nndsvd"
+        parameters["random_state"] = 1
+        parameters["l1_ratio"] = 1
+    return parameters
+
+
 def matrix_decomposition(
     fdt_matrix: np.array,
-    n_components: int,
     algo: str,
     normalise: bool,
     sign_flip: bool,
     pca_dim: int,
+    parameters: dict,
 ) -> dict:
     """
     Wrapper function to decompose a matrix2 into
@@ -96,8 +127,6 @@ def matrix_decomposition(
     ----------
     fdt_matrix: np.array
         matrix to decompose
-    n_components: int
-        number of components
     algo: str
         which algo
     normalise: bool
@@ -116,7 +145,7 @@ def matrix_decomposition(
     if algo == "ica":
         # TODO: either change function to accept single argument or offer differnt inputs
         pca_matrix = melodic_incremental_group_pca(fdt_matrix, pca_dim, pca_dim)
-        components = ICA_decomp(n_components, pca_matrix)
+        components = ICA_decomp(parameters, pca_matrix)
 
         if sign_flip:
             print("Sign-flipping components")
@@ -124,7 +153,7 @@ def matrix_decomposition(
             components["white_components"] = SignFlip(components["white_components"])
 
     if algo == "nfm":
-        components = NFM_decomp(n_components, fdt_matrix)
+        components = NFM_decomp(parameters, fdt_matrix)
 
     demean = True if algo == "ica" else False
 

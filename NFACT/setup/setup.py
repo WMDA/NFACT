@@ -1,6 +1,13 @@
 import os
-from NFACT.utils.utils import error_and_exit, read_file_to_list, colours, make_directory
+from NFACT.utils.utils import (
+    error_and_exit,
+    read_file_to_list,
+    colours,
+    make_directory,
+    load_json,
+)
 from NFACT.pipes.image_handling import check_files_are_imaging_files
+from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
 
 
 def get_subjects(args: dict) -> dict:
@@ -232,4 +239,55 @@ def list_of_fdt_mat(list_ptx_folder: list) -> list:
     """
     return [
         os.path.join(sub_folder, "fdt_matrix2.dot") for sub_folder in list_ptx_folder
+    ]
+
+
+def load_config_file(path: str, algo: str) -> dict:
+    """
+    Function to read in a config file
+    and return only the appropriate
+
+    Parameters
+    ----------
+    path: str
+       path to config file
+    algo: str
+       which algo is being ran
+
+    Returns
+    -------
+    dict: dictionary object
+        dictionary of arguments
+
+    """
+    config = load_json(path)
+    return config[algo]
+
+
+def check_config_file(config_file: dict, algo: str) -> None:
+    """
+    Function to check that parameters
+    in the config file match parameters of
+    a given function.
+
+    Parameters
+    ----------
+    config_file: dict
+       config file
+    algo: str
+       which algo is being ran
+
+    Returns
+    -------
+    None
+
+    """
+    default_values = create_combined_algo_dict()[algo].keys()
+    [
+        error_and_exit(
+            False,
+            f"{val} is not a {algo} parameter. Please check the sckit learn documentation for parameters",
+        )
+        for val in config_file.keys()
+        if val not in default_values
     ]
