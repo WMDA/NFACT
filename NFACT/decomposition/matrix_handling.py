@@ -101,9 +101,9 @@ def load_fdt_matrix(matfile: str) -> np.array:
     data = mat[:-1, -1]
     rows = np.array(mat[:-1, 0] - 1, dtype=int)
     cols = np.array(mat[:-1, 1] - 1, dtype=int)
-    nrows, ncols = int(mat[-1, 0]), int(mat[-1, 1])
-    sparse_matrix = sps.csc_matrix((data, (rows, cols)), shape=(nrows, ncols)).toarray()
-    return sparse_matrix
+    nrows = int(mat[-1, 0])
+    ncols = int(mat[-1, 1])
+    return sps.csc_matrix((data, (rows, cols)), shape=(nrows, ncols)).toarray()
 
 
 def avg_fdt(list_of_matfiles: list) -> np.array:
@@ -131,62 +131,120 @@ def avg_fdt(list_of_matfiles: list) -> np.array:
     return sparse_matrix
 
 
-def demean(X, axis=0):
-    return X - np.mean(X, axis=axis, keepdims=True)
-
-
-def matrix_MIGP(C, n_dim=1000, d_pca=1000, keep_mean=False):
+def demean(matrix: np.array, axis: int = 0):
     """
-    Apply incremental PCA to C
-    Inputs:
-    C (2D array) : should be wide i.e. nxN where N bigger than n
-    We pretend that the matrix C is made of column blocks, each block is
-    one 'subject', and 'time' is the column dimension.
+    Function to demean a matrix
 
-    n_dim (int)  : C is split up into nXn_dim matrices
-    n_pca (int)  : maximum number of pcs kept (set to n_dim if larger than n_dim)
-    keep_mean (bool) : keep the mean of C
-
-    Returns:
-    reduced version of C (size nxmin(n_dim,n_pca)
+    Parameters
+    ----------
+    matrix: np.array
+        matrix
+    axis: int
+        which axis to calculate
+        the mean from
     """
-    # Random order for columns of C (create a view rather than copy the data)
+    return matrix - np.mean(matrix, axis=axis, keepdims=True)
 
+
+def melodic_incremental_group_pca(
+    fdt_matrix: np.array, n_dim: int = 1000, d_pca: int = 1000, keep_mean: bool = False
+):
+    """
+    Function wrapper around matrix_MIGP.
+
+    Parameters
+    ----------
+    fdt_matrix: np.array,
+        Should be wide i.e. nxN where N bigger than n t
+        fdt_matrix is made of column blocks, each block is
+        one 'subject', and 'time' is the column dimension
+    n_dim: int
+        number of dimensions that fdt_matrix is split into.
+        Default is 1000.
+    d_pca: int
+        maximum number of prinicple components kept
+        (set to n_dim if larger than n_dim) Default is 1000.
+
+
+    Returns
+    -------
+    pca_matrix: np.array
+        matrix that has been reduced.
+
+    """
+
+    migpa_timer = Timer()
+    migpa_timer.tic()
+    col = colours()
+    print(f"{col['purple']}\nPerforming MIGP{col['reset']}")
     if keep_mean:
-        C_mean = np.mean(C, axis=1, keepdims=True)
-        # raise(Exception('Not implemented keep_mean yet!'))
+        matrix_mean = np.mean(fdt_matrix, axis=1, keepdims=True)
 
     if d_pca > n_dim:
         d_pca = n_dim
 
-    print("...Starting MIGP")
-    t = Timer()
-    t.tic()
-    _, N = C.shape
-    random_idx = np.random.permutation(N)
-    Cview = C[:, random_idx]
-    W = None
-    for i in tqdm(range(0, N, n_dim)):
-        data = Cview[
-            :, i : min(i + n_dim, N + 1)
-        ].T  # transpose to get time as 1st dimension
-        if W is not None:
-            W = np.concatenate((W, demean(data)), axis=0)
-        else:
-            W = demean(data)
-        k = min(d_pca, n_dim)
-        _, U = eigsh(W @ W.T, k)
+    pca_matrix = matrix_MIGP(fdt_matrix, n_dim, d_pca)
 
-        W = U.T @ W
-
-    data = W[: min(W.shape[0], d_pca), :].T
-
-    # Add mean back
     if keep_mean:
-        print("... Adding back mean.")
-        data = data + C_mean
+        pca_matrix = pca_matrix + matrix_mean
 
-    print(f"...Old matrix size : {C.shape[0]}x{C.shape[1]}")
-    print(f"...New matrix size : {data.shape[0]}x{data.shape[1]}")
-    print(f"...MIGP done in {t.toc()} secs.")
-    return data
+    print(f"Old matrix size was: {fdt_matrix.shape[0]}x{fdt_matrix.shape[1]}")
+    print(f"New matrix size is : {pca_matrix.shape[0]}x{pca_matrix.shape[1]}")
+    print(f"MIGP finished in : {migpa_timer.toc()} secs.")
+    return pca_matrix
+
+
+def matrix_MIGP(
+    fdt_matrix: np.array,
+    n_dim: int = 1000,
+    d_pca: int = 1000,
+):
+    """
+    Function to apply
+    MELODIC's Incremental Group-PCA dimensionality to
+    a given matrix.
+
+    Parameters
+    ----------
+    fdt_matrix: np.array,
+        Should be wide i.e. nxN where N bigger than n t
+        fdt_matrix is made of column blocks, each block is
+        one 'subject', and 'time' is the column dimension
+    n_dim: int
+        number of dimensions that fdt_matrix is split into.
+        Default is 1000.
+    d_pca: int
+        maximum number of prinicple components kept
+        (set to n_dim if larger than n_dim) Default is 1000.
+
+
+    Returns
+    -------
+    pca_matrix: np.array
+        matrix that has been reduced.
+    """
+
+    random_idx = np.random.permutation(fdt_matrix.shape[1])
+    shuffled_column = fdt_matrix[:, random_idx]
+    intermediary_matrix = None
+
+    for matrix_index in tqdm(range(0, fdt_matrix.shape[1], n_dim), colour="magenta"):
+        pca_matrix = shuffled_column[
+            :, matrix_index : min(matrix_index + n_dim, fdt_matrix.shape[1] + 1)
+        ].T
+
+        if intermediary_matrix is not None:
+            intermediary_matrix = np.concatenate(
+                (intermediary_matrix, demean(pca_matrix)), axis=0
+            )
+        else:
+            intermediary_matrix = demean(pca_matrix)
+
+        k = min(d_pca, n_dim)
+        _, k_eignvectors = eigsh(intermediary_matrix @ intermediary_matrix.T, k)
+
+        intermediary_matrix = k_eignvectors.T @ intermediary_matrix
+
+    pca_matrix = intermediary_matrix[: min(intermediary_matrix.shape[0], d_pca), :].T
+
+    return pca_matrix

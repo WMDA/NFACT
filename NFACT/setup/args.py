@@ -96,7 +96,6 @@ def nfact_args() -> dict:
         help="sign flip components",
     )
 
-    # If a design is provided, run the stats
     args.add_argument(
         "-G",
         "--glm_mat",
