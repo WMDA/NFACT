@@ -23,7 +23,7 @@ from NFACT.decomposition.matrix_handling import (
     save_avg_matrix,
     load_fdt_matrix,
 )
-from NFACT.pipes.image_handling import save_W, save_G
+from NFACT.pipes.image_handling import save_white_matter, save_G
 from NFACT.pipes.image_handling import winner_takes_all
 from NFACT.setup.arg_check import (
     check_complusory_arguments,
@@ -118,7 +118,7 @@ def nfact_main() -> None:
 
     # Save the results
 
-    save_W(
+    save_white_matter(
         components["white_components"],
         args["ptxdir"][0],
         os.path.join(args["outdir"], f"W_dim{args['dim']}"),
@@ -139,7 +139,7 @@ def nfact_main() -> None:
         G_wta = winner_takes_all(
             components["grey_components"], axis=1, z_thr=args["wta_zthr"]
         )
-        save_W(
+        save_white_matter(
             W_wta,
             args["ptxdir"][0],
             os.path.join(args["outdir"], f"W_dim{args['dim']}_wta"),
@@ -170,7 +170,7 @@ def nfact_main() -> None:
                 out_dualreg = os.path.join(
                     args["outdir"], args["algo"].upper(), "dual_reg", "G"
                 )
-                save_W(
+                save_white_matter(
                     Ws,
                     args["ptxdir"][idx],
                     os.path.join(out_dualreg, f"Ws_{idx3}_dim{args['dim']}"),
@@ -190,7 +190,7 @@ def nfact_main() -> None:
                 out_dualreg = os.path.join(
                     args["outdir"], args["algo"].upper(), "dual_reg", "W"
                 )
-                save_W(
+                save_white_matter(
                     Ws,
                     args["ptxdir"][idx],
                     os.path.join(out_dualreg, f"Ws_{idx3}_dim{args['dim']}"),
@@ -264,7 +264,7 @@ def nfact_main() -> None:
                                 seeds=seeds,
                             )
                         elif y == "W":
-                            save_W(
+                            save_white_matter(
                                 X[con].T,
                                 args["ptxdir"][0],
                                 os.path.join(out_glm, f"{y}_{stat}{con+1}"),

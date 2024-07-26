@@ -81,18 +81,38 @@ def is_nifti(filename):
             return False
 
 
-def save_W(W, ptx_folder, out_file):
-    lut_vol = Image(os.path.join(ptx_folder, "lookup_tractspace_fdt_matrix2"))
+def save_white_matter(
+    white_matter_components: np.array, path_to_lookup_vol: str, out_file: str
+) -> None:
+    """
+    Function to save white matter compponents
+    as a volume.
+
+    Parameters
+    ----------
+    white_matter_components: np.array
+        The white matter components from ICA/NFM
+        to save
+    path_to_lookup_vol: str
+        path to look up volume from probtrackx
+    out_file: str
+        string to path to save images
+
+    Returns
+    -------
+    None
+
+    """
+    lut_vol = Image(path_to_lookup_vol)
     # check that lookup is compatible with matrix
-    if sum(lut_vol.data.flatten() > 0) != W.shape[1]:
-        raise (
-            Warning(
-                f"Lookup_tractspace_fdt_matrix2 (size={sum(lut_vol.data.flatten()>0)} does not seem to be compatible with output W matrix (size={W.shape[1]})"
-            )
+    if sum(lut_vol.data.flatten() > 0) != white_matter_components.shape[1]:
+        error_and_exit(
+            False,
+            f"Lookup_tractspace_fdt_matrix2 (size={sum(lut_vol.data.flatten()>0)} is not compatible with output W matrix (size={white_matter_components.shape[1]})",
         )
-    Wvol = mat2vol(W, lut_vol)
-    tmp = Image(Wvol, header=lut_vol.header)
-    tmp.save(out_file)
+
+    White_matter_vol = mat2vol(white_matter_components, lut_vol)
+    Image(White_matter_vol, header=lut_vol.header).save(out_file)
 
 
 def save_G(G, ptx_folder, out_file, seeds):
@@ -142,11 +162,34 @@ def winner_takes_all(X, axis=1, z_thr=0.0):
 
 
 # Helper functions to save the results
-def mat2vol(mat, lut_vol):
-    mask = lut_vol.data > 0
-    matvol = np.zeros(lut_vol.shape + (len(mat),))
+def mat2vol(matrix: np.array, lut_vol: object) -> np.array:
+    """
+    Function to reshape a matrix
+    to be saved as a volume.
 
-    for i in range(len(mat)):
-        matvol.reshape(-1, len(mat))[mask.flatten(), i] = mat[i, lut_vol.data[mask] - 1]
+    Parameters
+    ----------
+    matrix: np.array
+        array to  be saved as volume
+    lut_vol: object
+        image object of lookup volume
+    """
+    mask = lut_vol.data > 0
+    matvol = np.zeros(lut_vol.shape + (len(matrix),))
+
+    for row in range(len(matrix)):
+        matvol.reshape(-1, len(matrix))[mask.flatten(), row] = matrix[
+            row, lut_vol.data[mask] - 1
+        ]
 
     return matvol
+
+
+def save_components(components: dict):
+    """
+    Function to save components.
+
+    Parameters
+    ----------
+    """
+    return None
