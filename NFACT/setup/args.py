@@ -124,6 +124,13 @@ def nfact_args() -> dict:
         default=False,
         help="Provide config file to change hyperparameters for ICA and NFM. Please see sckit learn documentation for NFM and FASTICA for further details",
     )
+    args.add_argument(
+        "-C",
+        "--save_grey_as_cifit",
+        dest="save_grey_as_cifit",
+        default=False,
+        help="Instead of saving grey matter components as gifti save them in cifit form. Must provide a list of ROIS ",
+    )
 
     return vars(args.parse_args())
 

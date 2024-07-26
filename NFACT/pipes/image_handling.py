@@ -115,7 +115,7 @@ def save_white_matter(
     Image(White_matter_vol, header=lut_vol.header).save(out_file)
 
 
-def save_G(G, ptx_folder, out_file, seeds):
+def save_grey_matter_volume(grey_matter_components, ptx_folder, out_file, seeds):
     # get seed files and work out if they are surfaces of volumes
     coord_mat2 = np.loadtxt(
         os.path.join(ptx_folder, "coords_for_fdt_matrix2"), dtype=int
@@ -152,6 +152,36 @@ def save_G(G, ptx_folder, out_file, seeds):
             img.save(out_file + f"_{idx}")
 
 
+def save_grey_matter_gifit(grey_matter_seeds, file_name, seed):
+    surf = nib.load(seed)
+    darrays = [
+        nib.gifti.GiftiDataArray(
+            data=np.array(x, dtype=float),
+            datatype="NIFTI_TYPE_FLOAT32",
+            intent=2001,
+            meta=surf.darrays[0].meta,
+        )
+        for x in grey_matter_seeds.T
+    ]
+    gii = nib.GiftiImage(darrays=darrays).to_filename(file_name)
+
+
+def save_grey_matter_cifit():
+    return None
+
+
+def save_grey_matter_components(
+    save_type: str, grey_matter_components, coord_mat2_path, seeds
+):
+    coord_mat2 = np.loadtxt(coord_mat2_path, dtype=int)
+
+    seeds_id = coord_mat2[:, -2]
+    for idx, seed in enumerate(seeds):
+        G_seed = grey_matter_components[seeds_id == idx, :]
+
+    return None
+
+
 def winner_takes_all(X, axis=1, z_thr=0.0):
     # must apply scaling for z_thr to make sense
     Xs = StandardScaler().fit_transform(X)
@@ -173,6 +203,12 @@ def mat2vol(matrix: np.array, lut_vol: object) -> np.array:
         array to  be saved as volume
     lut_vol: object
         image object of lookup volume
+
+    Returns
+    -------
+    matvol: np.array
+        array reformatted to be converted to
+        a volume
     """
     mask = lut_vol.data > 0
     matvol = np.zeros(lut_vol.shape + (len(matrix),))
@@ -185,11 +221,17 @@ def mat2vol(matrix: np.array, lut_vol: object) -> np.array:
     return matvol
 
 
-def save_components(components: dict):
+def save_components(components: dict, nfact_directory: str):
     """
     Function to save components.
 
     Parameters
     ----------
     """
+
+    lookup_img = os.path.join(nfact_directory, "lookup_tractspace_fdt_matrix2")
+    coord_mat2 = np.loadtxt(
+        os.path.join(nfact_directory, "coords_for_fdt_matrix2"), dtype=int
+    )
+
     return None
