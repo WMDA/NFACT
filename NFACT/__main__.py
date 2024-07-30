@@ -127,13 +127,15 @@ def nfact_main() -> None:
     # )
 
     save_grey_matter_components(
-        "yes",
+        img_type,
         components["grey_components"],
         os.path.join(
-            args["outdir"], "nfact", "group_averages", "coords_for_fdt_matrix2"
+            args["outdir"],
+            "nfact",
         ),
-        # os.path.join(args["outdir"], f"G_dim{args['dim']}"),
-        seeds=seeds,
+        seeds,
+        args["algo"].upper(),
+        args["dim"],
     )
     exit(0)
 

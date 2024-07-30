@@ -140,53 +140,60 @@ def save_white_matter(
     Image(White_matter_vol, header=lut_vol.header).save(out_file)
 
 
-def save_grey_matter_volume(grey_matter_components, ptx_folder, out_file, seeds):
-    # get seed files and work out if they are surfaces of volumes
-    coord_mat2 = np.loadtxt(
-        os.path.join(ptx_folder, "coords_for_fdt_matrix2"), dtype=int
-    )
-    seeds_id = coord_mat2[:, -2]
-    for idx, seed in enumerate(seeds):
-        G_seed = G[seeds_id == idx, :]
-        if is_gifti(seed):
-            surf = nib.load(seed)
-            # Why does the below not preserve the structure code?
-            darrays = [
-                nib.gifti.GiftiDataArray(
-                    data=np.array(x, dtype=float),
-                    datatype="NIFTI_TYPE_FLOAT32",
-                    intent=2001,
-                    meta=surf.darrays[0].meta,
-                )
-                for x in G_seed.T
-            ]
-            gii = nib.GiftiImage(darrays=darrays)
-            if len(seeds) > 1:
-                gii.to_filename(out_file + f"_{idx}.func.gii")
-            else:
-                gii.to_filename(out_file + ".func.gii")
-        elif is_nifti(seed):
-            vol = Image(seed)
-            xyz = coord_mat2[seeds_id == idx, :3]
-            xyz_idx = np.ravel_multi_index(xyz.T, vol.shape)
-            ncols = G_seed.shape[1]
-            out = np.zeros(vol.shape + (ncols,)).reshape(-1, ncols)
-            for i, g in enumerate(G_seed.T):
-                out[xyz_idx, i] = g
-            img = Image(out.reshape(vol.shape + (ncols,)), header=vol.header)
-            img.save(out_file + f"_{idx}")
+def save_grey_matter_volume(
+    grey_matter_component: np.array,
+    file_name: str,
+    seed: str,
+    x_y_z_coordinates: np.array,
+):
+    """
+
+    Function to save grey matter component as
+    a volume
+
+    Parameters
+    ----------
+
+    """
+
+    vol = Image(seed)
+    xyz_idx = np.ravel_multi_index(x_y_z_coordinates.T, vol.shape)
+    ncols = grey_matter_component.shape[1]
+    out = np.zeros(vol.shape + (ncols,)).reshape(-1, ncols)
+    for i, g in enumerate(grey_matter_component.T):
+        out[xyz_idx, i] = g
+    Image(out.reshape(vol.shape + (ncols,)), header=vol.header).save(file_name)
 
 
-def save_grey_matter_gifit(grey_matter_seeds, file_name, seed):
+def save_grey_matter_gifit(
+    grey_matter_component: np.array, file_name: str, seed: str
+) -> None:
+    """
+    Function to save grey matter as gifti
+
+    Parameters
+    ----------
+    grey_matter_component: np.array
+        grey matter component for a
+        single seed
+    file_name: str
+        file name
+    seed: str
+        path to seed
+
+    Returns
+    -------
+    None
+    """
     surf = nib.load(seed)
     darrays = [
         nib.gifti.GiftiDataArray(
-            data=np.array(x, dtype=float),
+            data=np.array(col, dtype=float),
             datatype="NIFTI_TYPE_FLOAT32",
             intent=2001,
             meta=surf.darrays[0].meta,
         )
-        for x in grey_matter_seeds.T
+        for col in grey_matter_component.T
     ]
     nib.GiftiImage(darrays=darrays).to_filename(file_name)
 
@@ -196,13 +203,56 @@ def save_grey_matter_cifit():
 
 
 def save_grey_matter_components(
-    save_type: str, grey_matter_components: np.array, coord_mat2_path: str, seeds: list
-):
-    coord_mat2 = np.loadtxt(coord_mat2_path, dtype=int)
+    save_type: str,
+    grey_matter_components: np.array,
+    nfact_path: str,
+    seeds: list,
+    algo: str,
+    dim: int,
+) -> None:
+    """
+    Function wrapper to save grey matter
+    components.
+
+    Parameters
+    ----------
+    save_type: str
+        should grey matter be saved as
+        gifti, nifit or cifti
+    grey_matter_components: str
+        grey_matter_component matrix
+    nfact_path: str
+        str to nfact directory
+    seeds: list
+        list of seeds
+    algo: str
+        str of algo
+    dim: int
+        number of dimensions
+        used for naming output
+
+    Returns
+    -------
+    None
+
+    """
+
+    coord_mat2 = np.loadtxt(
+        os.path.join(nfact_path, "group_averages", "coords_for_fdt_matrix2"), dtype=int
+    )
     seeds_id = coord_mat2[:, -2]
     for idx, seed in enumerate(seeds):
         mask_to_get_seed = seeds_id == idx
         grey_matter_seed = grey_matter_components[mask_to_get_seed, :]
+        file_name = os.path.join(
+            nfact_path, algo, f"G_{dim}_{os.path.basename(seed).replace('.','_')}"
+        )
+        if save_type == "gifti":
+            save_grey_matter_gifit(grey_matter_seed, file_name, seed)
+        if save_type == "nifti":
+            save_grey_matter_volume(
+                grey_matter_seed, file_name, seed, coord_mat2[seeds_id == idx, :3]
+            )
 
     return None
 
