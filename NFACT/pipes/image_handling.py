@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 import numpy as np
 import os
-from NFACT.utils.utils import error_and_exit
+from NFACT.utils.utils import error_and_exit, colours
 import pathlib
 import re
 
@@ -153,15 +153,27 @@ def save_grey_matter_volume(
 
     Parameters
     ----------
+    grey_matter_component: np.array
+        grey matter component for a
+        single seed
+    file_name: str
+        file name
+    seed: str
+        path to seed
+    x_y_z_coordinates: np.array
+        array of x, y, z co-ordinates
 
+    Returns
+    -------
+    None
     """
 
     vol = Image(seed)
     xyz_idx = np.ravel_multi_index(x_y_z_coordinates.T, vol.shape)
     ncols = grey_matter_component.shape[1]
     out = np.zeros(vol.shape + (ncols,)).reshape(-1, ncols)
-    for i, g in enumerate(grey_matter_component.T):
-        out[xyz_idx, i] = g
+    for idx, col in enumerate(grey_matter_component.T):
+        out[xyz_idx, idx] = col
     Image(out.reshape(vol.shape + (ncols,)), header=vol.header).save(file_name)
 
 
@@ -234,7 +246,6 @@ def save_grey_matter_components(
     Returns
     -------
     None
-
     """
 
     coord_mat2 = np.loadtxt(
@@ -245,16 +256,69 @@ def save_grey_matter_components(
         mask_to_get_seed = seeds_id == idx
         grey_matter_seed = grey_matter_components[mask_to_get_seed, :]
         file_name = os.path.join(
-            nfact_path, algo, f"G_{dim}_{os.path.basename(seed).replace('.','_')}"
+            nfact_path, algo, f"G_{dim}_{os.path.basename(seed).replace('.', '_')}"
         )
         if save_type == "gifti":
             save_grey_matter_gifit(grey_matter_seed, file_name, seed)
         if save_type == "nifti":
             save_grey_matter_volume(
-                grey_matter_seed, file_name, seed, coord_mat2[seeds_id == idx, :3]
+                grey_matter_seed, file_name, seed, coord_mat2[mask_to_get_seed, :3]
             )
+        if save_type == "cifti":
+            return None
 
-    return None
+
+def save_images(
+    save_type: str, components: dict, nfact_path: str, seeds: list, algo: str, dim: int
+):
+    """
+    Function to save  grey and white
+    components.
+
+    Parameters
+    ----------
+    save_type: str
+        should grey matter be saved as
+        gifti, nifit or cifti
+    components: dict
+        dictionary of components
+    nfact_path: str
+        str to nfact directory
+    seeds: list
+        list of seeds
+    algo: str
+        str of algo
+    dim: int
+        number of dimensions
+        used for naming output
+
+    Returns
+    -------
+    None
+
+
+    """
+
+    col = colours()
+    for comp, _ in components.items():
+        algo_path = algo
+        if "normalised":
+            algo_path = os.path.join(algo, "normalised")
+            print(algo)
+        if "grey" in comp:
+            print(f"{col['pink']}Saving {comp}{col['reset']}")
+            save_grey_matter_components(
+                save_type, components[comp], nfact_path, seeds, algo_path, dim
+            )
+        if "white" in comp:
+            print(f"{col['purple']}Saving {comp}{col['reset']}")
+            save_white_matter(
+                components[comp],
+                os.path.join(
+                    nfact_path, "group_averages", "lookup_tractspace_fdt_matrix2.nii.gz"
+                ),
+                os.path.join(nfact_path, algo_path, f"W_dim{dim}"),
+            )
 
 
 def winner_takes_all(X, axis=1, z_thr=0.0):
@@ -266,7 +330,6 @@ def winner_takes_all(X, axis=1, z_thr=0.0):
     return np.array(Xs_wta, dtype=int)
 
 
-# Helper functions to save the results
 def mat2vol(matrix: np.array, lut_vol: object) -> np.array:
     """
     Function to reshape a matrix

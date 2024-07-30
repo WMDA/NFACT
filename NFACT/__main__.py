@@ -24,7 +24,11 @@ from NFACT.decomposition.matrix_handling import (
     save_avg_matrix,
     load_fdt_matrix,
 )
-from NFACT.pipes.image_handling import save_white_matter, save_grey_matter_components
+from NFACT.pipes.image_handling import (
+    save_white_matter,
+    save_grey_matter_components,
+    save_images,
+)
 from NFACT.pipes.image_handling import winner_takes_all
 from NFACT.setup.arg_check import (
     check_complusory_arguments,
@@ -119,16 +123,9 @@ def nfact_main() -> None:
     )
 
     # Save the results
-
-    # save_white_matter(
-    #    components["white_components"],
-    #    args["ptxdir"][0],
-    #    os.path.join(args["outdir"], f"W_dim{args['dim']}"),
-    # )
-
-    save_grey_matter_components(
+    save_images(
         img_type,
-        components["grey_components"],
+        components,
         os.path.join(
             args["outdir"],
             "nfact",
@@ -137,7 +134,6 @@ def nfact_main() -> None:
         args["algo"].upper(),
         args["dim"],
     )
-    exit(0)
 
     if args["wta"]:
         # Save winner-takes-all maps
@@ -153,7 +149,7 @@ def nfact_main() -> None:
             args["ptxdir"][0],
             os.path.join(args["outdir"], f"W_dim{args['dim']}_wta"),
         )
-        save_G(
+        save_grey_matter_components(
             G_wta,
             args["ptxdir"][0],
             os.path.join(args["outdir"], f"G_dim{args['dim']}_wta"),
@@ -184,7 +180,7 @@ def nfact_main() -> None:
                     args["ptxdir"][idx],
                     os.path.join(out_dualreg, f"Ws_{idx3}_dim{args['dim']}"),
                 )
-                save_G(
+                save_grey_matter_components(
                     Gs,
                     args["ptxdir"][idx],
                     os.path.join(out_dualreg, f"Gs_{idx3}_dim{args['dim']}"),
@@ -204,7 +200,7 @@ def nfact_main() -> None:
                     args["ptxdir"][idx],
                     os.path.join(out_dualreg, f"Ws_{idx3}_dim{args['dim']}"),
                 )
-                save_G(
+                save_grey_matter_components(
                     Gs,
                     args["ptxdir"][idx],
                     os.path.join(out_dualreg, f"Gs_{idx3}_dim{args['dim']}"),
@@ -266,7 +262,7 @@ def nfact_main() -> None:
                     X = np.transpose(X, (1, 2, 0))
                     for con in range(X.shape[0]):
                         if y == "G":
-                            save_G(
+                            save_grey_matter_components(
                                 X[con],
                                 args["ptxdir"][0],
                                 os.path.join(out_glm, f"{y}_{stat}{con+1}"),
