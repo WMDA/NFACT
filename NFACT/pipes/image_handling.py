@@ -304,7 +304,6 @@ def save_images(
         algo_path = algo
         if "normalised":
             algo_path = os.path.join(algo, "normalised")
-            print(algo)
         if "grey" in comp:
             print(f"{col['pink']}Saving {comp}{col['reset']}")
             save_grey_matter_components(
