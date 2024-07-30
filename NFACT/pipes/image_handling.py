@@ -6,6 +6,7 @@ import numpy as np
 import os
 from NFACT.utils.utils import error_and_exit
 import pathlib
+import re
 
 
 def get_file(img_file: list, sub: str) -> list:
@@ -38,6 +39,29 @@ def get_file(img_file: list, sub: str) -> list:
     return img_files
 
 
+def get_imaging_details_from_path(path: str) -> dict:
+    """
+    Function to return imaging suffix,
+    subject and file from a path.
+
+    Parameters
+    ----------
+    path: str
+        path as a string
+
+    Returns
+    --------
+    dict: dictionary
+        dict of file extension,
+        subject and file.
+    """
+    return {
+        "file_extensions": pathlib.Path(path).suffixes,
+        "subject": re.findall(r"\b(sub(?:ject)?-?\d+)\b", path),
+        "file": os.path.basename(path),
+    }
+
+
 def check_files_are_imaging_files(path: str) -> bool:
     """
     Function to check that imaging files
@@ -51,9 +75,10 @@ def check_files_are_imaging_files(path: str) -> bool:
     None
     """
     accepted_extenions = [".gii", ".nii"]
-    file_extensions = pathlib.Path(path).suffixes
-    file = os.path.basename(path)
-    sub = os.path.basename(os.path.dirname(path))
+    file_details = get_imaging_details_from_path(path)
+    file_extensions = file_details["file_extensions"]
+    file = file_details["file"]
+    sub = file_details["subject"]
     error_and_exit(
         [file for file in file_extensions if file in accepted_extenions],
         f"{file} for {sub} is an incorrect file type (not gii or nii)",
@@ -163,7 +188,7 @@ def save_grey_matter_gifit(grey_matter_seeds, file_name, seed):
         )
         for x in grey_matter_seeds.T
     ]
-    gii = nib.GiftiImage(darrays=darrays).to_filename(file_name)
+    nib.GiftiImage(darrays=darrays).to_filename(file_name)
 
 
 def save_grey_matter_cifit():
@@ -171,13 +196,13 @@ def save_grey_matter_cifit():
 
 
 def save_grey_matter_components(
-    save_type: str, grey_matter_components, coord_mat2_path, seeds
+    save_type: str, grey_matter_components: np.array, coord_mat2_path: str, seeds: list
 ):
     coord_mat2 = np.loadtxt(coord_mat2_path, dtype=int)
-
     seeds_id = coord_mat2[:, -2]
     for idx, seed in enumerate(seeds):
-        G_seed = grey_matter_components[seeds_id == idx, :]
+        mask_to_get_seed = seeds_id == idx
+        grey_matter_seed = grey_matter_components[mask_to_get_seed, :]
 
     return None
 

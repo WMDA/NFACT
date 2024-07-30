@@ -112,5 +112,5 @@ def get_group_average_files(file_directory: str, nfact_directory: str) -> None:
         os.path.join(nfact_directory, "lookup_tractspace_fdt_matrix2.nii.gz"),
     )
     shutil.copyfile(
-        lookup_space, os.path.join(nfact_directory, "coords_for_fdt_matrix2")
+        coords_for_fdt_matrix2, os.path.join(nfact_directory, "coords_for_fdt_matrix2")
     )

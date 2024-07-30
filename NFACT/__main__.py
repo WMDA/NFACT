@@ -15,6 +15,7 @@ from NFACT.setup.configure_setup import (
     check_config_file,
     load_config_file,
     check_subject_exist,
+    seed_type,
 )
 from NFACT.decomposition.decomp import matrix_decomposition, get_parameters
 from NFACT.decomposition.matrix_handling import (
@@ -23,7 +24,7 @@ from NFACT.decomposition.matrix_handling import (
     save_avg_matrix,
     load_fdt_matrix,
 )
-from NFACT.pipes.image_handling import save_white_matter, save_G
+from NFACT.pipes.image_handling import save_white_matter, save_grey_matter_components
 from NFACT.pipes.image_handling import winner_takes_all
 from NFACT.setup.arg_check import (
     check_complusory_arguments,
@@ -63,6 +64,7 @@ def nfact_main() -> None:
 
     # process seeds
     seeds = process_seeds(args["seeds"])
+    img_type = seed_type(seeds)
 
     if args["config"]:
         args["config"] = load_config_file(args["config"], args["algo"])
@@ -118,17 +120,22 @@ def nfact_main() -> None:
 
     # Save the results
 
-    save_white_matter(
-        components["white_components"],
-        args["ptxdir"][0],
-        os.path.join(args["outdir"], f"W_dim{args['dim']}"),
-    )
-    save_G(
+    # save_white_matter(
+    #    components["white_components"],
+    #    args["ptxdir"][0],
+    #    os.path.join(args["outdir"], f"W_dim{args['dim']}"),
+    # )
+
+    save_grey_matter_components(
+        "yes",
         components["grey_components"],
-        args["ptxdir"][0],
-        os.path.join(args["outdir"], f"G_dim{args['dim']}"),
+        os.path.join(
+            args["outdir"], "nfact", "group_averages", "coords_for_fdt_matrix2"
+        ),
+        # os.path.join(args["outdir"], f"G_dim{args['dim']}"),
         seeds=seeds,
     )
+    exit(0)
 
     if args["wta"]:
         # Save winner-takes-all maps
