@@ -295,8 +295,6 @@ def save_images(
     Returns
     -------
     None
-
-
     """
 
     col = colours()
