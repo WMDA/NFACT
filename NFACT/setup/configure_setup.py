@@ -5,7 +5,10 @@ from NFACT.utils.utils import (
     colours,
     load_json,
 )
-from NFACT.pipes.image_handling import check_files_are_imaging_files
+from NFACT.pipes.image_handling import (
+    check_files_are_imaging_files,
+    get_imaging_details_from_path,
+)
 from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
 
 
@@ -141,6 +144,51 @@ def process_seeds(seeds: str) -> list:
 
     [check_files_are_imaging_files(seed) for seed in list_of_seeds]
     return list_of_seeds
+
+
+def imaging_type(path: str) -> str:
+    """
+    Function to return imaging
+    type based on extension.
+
+    Parameters
+    ----------
+    path: str
+        path to str
+
+    Return
+    ------
+    str: string
+        str of nifit or gifti
+    """
+    file_extensions = get_imaging_details_from_path(path)["file_extensions"]
+    if ".nii" in file_extensions:
+        return "nifti"
+    if ".gii" in file_extensions:
+        return "gifti"
+
+
+def seed_type(seeds: list) -> str:
+    """
+    Function to get seed imaging
+    type from paths.
+
+    Parameter
+    ---------
+    seeds: list
+        list of seed type
+
+    Returns
+    -------
+    str: string
+        str of nifti or gifti.
+    """
+    seed_imaging_file = [imaging_type(path) for path in seeds]
+    error_and_exit(
+        all(item == seed_imaging_file[0] for item in seed_imaging_file),
+        "Seeds are not of the same type.",
+    )
+    return seed_imaging_file[0]
 
 
 def list_of_fdt_mat(list_ptx_folder: list) -> list:

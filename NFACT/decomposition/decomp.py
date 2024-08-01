@@ -158,12 +158,11 @@ def matrix_decomposition(
     demean = True if algo == "ica" else False
 
     if normalise:
-        components["normalised_grey"] = normalise_components(
-            components["grey_components"], demean
+        normalised = normalise_components(
+            components["grey_components"], components["white_components"], demean
         )
-        components["normalised_white"] = normalise_components(
-            components["white_components"], demean
-        )
+        components["normalised_white"] = normalised["white_matter"]
+        components["normalised_grey"] = normalised["grey_matter"]
 
     return components
 

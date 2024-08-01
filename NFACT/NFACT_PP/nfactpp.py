@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+
 # NFACT functions
 from NFACT.NFACT_PP.nfactpp_setup import check_surface_arguments, nfact_pp_folder_setup
 from NFACT.pipes.image_handling import get_file
@@ -55,15 +56,14 @@ def surf_volume_main(arg: dict, handler) -> None:
         get_file(arg["warps"], sub)
 
         nfactpp_diretory = os.path.join(sub, arg["out"])
-        
-        if arg['overwrite']:
+
+        if arg["overwrite"]:
             if os.path.exists(nfactpp_diretory):
                 print(
                     f'{col["red"]}{arg["out"]} directory already exists. Overwriting{col["reset"]}'
                 )
                 shutil.rmtree(nfactpp_diretory, ignore_errors=True)
 
-        
         nfact_pp_folder_setup(nfactpp_diretory)
         if surface_processing:
             roi = get_file(arg["rois"], sub)
@@ -74,10 +74,11 @@ def surf_volume_main(arg: dict, handler) -> None:
                 seeds_to_ascii(
                     seed[img],
                     roi[img],
-                    os.path.join(nfactpp_diretory, 'files', f"{seed_names[img]}.asc"),
+                    os.path.join(nfactpp_diretory, "files", f"{seed_names[img]}.asc"),
                 )
             asc_seeds = [
-                os.path.join(nfactpp_diretory, 'files', f"{seed}.asc") for seed in seed_names
+                os.path.join(nfactpp_diretory, "files", f"{seed}.asc")
+                for seed in seed_names
             ]
             seed_text = "\n".join(asc_seeds)
 
@@ -89,7 +90,7 @@ def surf_volume_main(arg: dict, handler) -> None:
             )
             get_target2(
                 arg["ref"],
-                os.path.join(nfactpp_diretory, 'files' , "target2"),
+                os.path.join(nfactpp_diretory, "files", "target2"),
                 arg["res"],
                 arg["ref"],
                 "nearestneighbour",
@@ -115,6 +116,7 @@ def surf_volume_main(arg: dict, handler) -> None:
             update_seeds_file(os.path.join(sub, arg["out"], "seeds.txt"))
             for sub in arg["list_of_subjects"]
         ]
+
     print("Finished")
     exit(0)
 
@@ -144,15 +146,14 @@ def hcp_stream_main(arg: dict, handler: object) -> None:
         seeds = hcp_get_seeds(sub)
         arg["rois"] = hcp_get_rois(sub)
         nfactpp_diretory = os.path.join(sub, arg["out"])
-        
-        if arg['overwrite']:
+
+        if arg["overwrite"]:
             if os.path.exists(nfactpp_diretory):
                 print(
                     f'{col["red"]}{arg["out"]} directory already exists. Overwriting{col["reset"]}'
                 )
                 shutil.rmtree(nfactpp_diretory, ignore_errors=True)
 
-        
         nfact_pp_folder_setup(nfactpp_diretory)
 
         ordered_by_hemisphere = hcp_reorder_seeds_rois(seeds, arg["rois"])
@@ -161,13 +162,13 @@ def hcp_stream_main(arg: dict, handler: object) -> None:
                 img[0],
                 img[1],
                 os.path.join(
-                    nfactpp_diretory, 'files', f"{hemishphere}_white.32k_fs_LR.surf.asc"
+                    nfactpp_diretory, "files", f"{hemishphere}_white.32k_fs_LR.surf.asc"
                 ),
             )
 
         asc_seeds = [
-            os.path.join(nfactpp_diretory, 'files', "left_white.32k_fs_LR.surf.asc"),
-            os.path.join(nfactpp_diretory, 'files', "right_white.32k_fs_LR.surf.asc"),
+            os.path.join(nfactpp_diretory, "files", "left_white.32k_fs_LR.surf.asc"),
+            os.path.join(nfactpp_diretory, "files", "right_white.32k_fs_LR.surf.asc"),
         ]
         seed_text = "\n".join(asc_seeds)
         error_and_exit(write_options_to_file(nfactpp_diretory, seed_text))
@@ -179,7 +180,7 @@ def hcp_stream_main(arg: dict, handler: object) -> None:
 
             get_target2(
                 arg["ref"],
-                os.path.join(nfactpp_diretory, 'files', "target2"),
+                os.path.join(nfactpp_diretory, "files", "target2"),
                 arg["res"],
                 arg["ref"],
                 "nearestneighbour",

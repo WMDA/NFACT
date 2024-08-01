@@ -43,7 +43,7 @@ def nfact_args() -> dict:
         help="File of seeds used in NFACT_PP/probtrackx",
     )
     args.add_argument(
-        "-M",
+        "-m",
         "--migp",
         dest="migp",
         default=1000,
@@ -65,7 +65,7 @@ def nfact_args() -> dict:
         help="What algorithm to run. Options are: ICA (default), or NMF.",
     )
     args.add_argument(
-        "-W",
+        "-w",
         "--wta",
         dest="wta",
         action="store_true",
@@ -74,7 +74,7 @@ def nfact_args() -> dict:
     )
 
     args.add_argument(
-        "-Z",
+        "-z",
         "--wta_zthr",
         dest="wta_zthr",
         default=0.0,
@@ -104,7 +104,7 @@ def nfact_args() -> dict:
         help="Run a GLM using design and contrast matrices provided (only in dualreg mode)",
     )
     args.add_argument(
-        "-C",
+        "-g",
         "--glm_con",
         dest="glm_con",
         help="Run a GLM using design and contrast matrices provided (only in dualreg mode)",
@@ -123,6 +123,13 @@ def nfact_args() -> dict:
         dest="config",
         default=False,
         help="Provide config file to change hyperparameters for ICA and NFM. Please see sckit learn documentation for NFM and FASTICA for further details",
+    )
+    args.add_argument(
+        "-C",
+        "--save_grey_as_cifit",
+        dest="save_grey_as_cifit",
+        default=False,
+        help="Instead of saving grey matter components as gifti save them in cifit form. Must provide a list of ROIS ",
     )
 
     return vars(args.parse_args())
