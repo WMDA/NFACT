@@ -138,6 +138,8 @@ def nfact_main() -> None:
     if args["wta"]:
         # Save winner-takes-all maps
         print("Saving winner-take-all maps")
+        # TODO: this function needs the dimmension sorted for saving
+        # TODO: file strucutre neds updating to have WTA folder.
         winner_takes_all(
             components,
             args["wta_zthr"],
