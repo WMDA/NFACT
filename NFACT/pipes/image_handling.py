@@ -136,8 +136,8 @@ def save_white_matter(
             f"Lookup_tractspace_fdt_matrix2 (size={sum(lut_vol.data.flatten()>0)} is not compatible with output W matrix (size={white_matter_components.shape[1]})",
         )
 
-    White_matter_vol = mat2vol(white_matter_components, lut_vol)
-    Image(White_matter_vol, header=lut_vol.header).save(out_file)
+    white_matter_vol = mat2vol(white_matter_components, lut_vol)
+    Image(white_matter_vol, header=lut_vol.header).save(out_file)
 
 
 def save_grey_matter_volume(
@@ -219,7 +219,7 @@ def save_grey_matter_components(
     grey_matter_components: np.array,
     nfact_path: str,
     seeds: list,
-    algo: str,
+    directory: str,
     dim: int,
 ) -> None:
     """
@@ -237,8 +237,8 @@ def save_grey_matter_components(
         str to nfact directory
     seeds: list
         list of seeds
-    algo: str
-        str of algo
+    directory: str
+        str of directory to save component to
     dim: int
         number of dimensions
         used for naming output
@@ -256,7 +256,7 @@ def save_grey_matter_components(
         mask_to_get_seed = seeds_id == idx
         grey_matter_seed = grey_matter_components[mask_to_get_seed, :]
         file_name = os.path.join(
-            nfact_path, algo, f"G_{dim}_{os.path.basename(seed).replace('.', '_')}"
+            nfact_path, directory, f"G_{dim}_{os.path.basename(seed).replace('.', '_')}"
         )
         if save_type == "gifti":
             save_grey_matter_gifit(grey_matter_seed, file_name, seed)
@@ -318,13 +318,59 @@ def save_images(
             )
 
 
-def winner_takes_all(X, axis=1, z_thr=0.0):
-    # must apply scaling for z_thr to make sense
-    Xs = StandardScaler().fit_transform(X)
-    Xs_max = np.max(Xs, axis=axis, keepdims=True)
-    Xs_wta = np.argmax(Xs, axis=axis, keepdims=True) + 1
-    Xs_wta[Xs_max < z_thr] = 0.0
-    return np.array(Xs_wta, dtype=int)
+def winner_takes_all(
+    components: dict,
+    z_thr: float,
+    algo: str,
+    nfact_path: str,
+    save_type: str,
+    seeds: list,
+):
+    demean = True if algo == "ica" else False
+    white_wta_map = create_wta_map(components["white_components"], 0, z_thr, demean)
+    grey_wta_map = create_wta_map(components["grey_components"], 1, z_thr)
+    save_white_matter(
+        white_wta_map,
+        os.path.join(
+            nfact_path, "group_averages", "lookup_tractspace_fdt_matrix2.nii.gz"
+        ),
+    )
+    return None
+
+
+def create_wta_map(
+    component: np.array,
+    axis: int,
+    z_thr: float,
+    demean: bool,
+) -> np.array:
+    """
+    Function to create a winner takes all
+    map from a component
+
+    Parameters
+    ----------
+    component: np.array
+        component to create a
+    axis: int
+        axis to get max values
+        from
+    z_thr: float
+        threshold the map at
+    demean: bool
+        to demean when z scoring
+
+    Returns
+    -------
+    np.array: array
+        array of thresholded component
+    """
+
+    component_zscored = StandardScaler(with_mean=demean).fit_transform(component)
+    component_max = np.max(component_zscored, axis=axis, keepdims=True)
+    component_wta = np.argmax(component_zscored, axis=axis, keepdims=True) + 1
+    component_wta[component_max < z_thr] = 0.0
+    return np.array(component_wta, dtype=int)
 
 
 def mat2vol(matrix: np.array, lut_vol: object) -> np.array:
@@ -354,19 +400,3 @@ def mat2vol(matrix: np.array, lut_vol: object) -> np.array:
         ]
 
     return matvol
-
-
-def save_components(components: dict, nfact_directory: str):
-    """
-    Function to save components.
-
-    Parameters
-    ----------
-    """
-
-    lookup_img = os.path.join(nfact_directory, "lookup_tractspace_fdt_matrix2")
-    coord_mat2 = np.loadtxt(
-        os.path.join(nfact_directory, "coords_for_fdt_matrix2"), dtype=int
-    )
-
-    return None

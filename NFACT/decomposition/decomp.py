@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from NFACT.decomposition.matrix_handling import melodic_incremental_group_pca
-from NFACT.utils.utils import error_and_exit
+from NFACT.utils.utils import error_and_exit, colours
 from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
 
 
@@ -189,7 +189,8 @@ def normalise_components(
     dict: dictionary.
         dictionary of normalised components
     """
-    print("Normalising components")
+    col = colours()
+    print(f"{col['plum']}\nNormalising components\n{col['reset']}")
 
     return {
         "grey_matter": StandardScaler(with_mean=demean).fit_transform(grey_matter),

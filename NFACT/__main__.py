@@ -123,37 +123,31 @@ def nfact_main() -> None:
     )
 
     # Save the results
-    save_images(
-        img_type,
-        components,
-        os.path.join(
-            args["outdir"],
-            "nfact",
-        ),
-        seeds,
-        args["algo"].upper(),
-        args["dim"],
-    )
+    # save_images(
+    #    img_type,
+    #    components,
+    #    os.path.join(
+    #        args["outdir"],
+    #        "nfact",
+    #    ),
+    #    seeds,
+    #    args["algo"].upper(),
+    #    args["dim"],
+    # )
 
     if args["wta"]:
         # Save winner-takes-all maps
-        print("...Saving winner-take-all maps")
-        W_wta = winner_takes_all(
-            components["white_components"], axis=0, z_thr=args["wta_zthr"]
-        )
-        G_wta = winner_takes_all(
-            components["grey_components"], axis=1, z_thr=args["wta_zthr"]
-        )
-        save_white_matter(
-            W_wta,
-            args["ptxdir"][0],
-            os.path.join(args["outdir"], f"W_dim{args['dim']}_wta"),
-        )
-        save_grey_matter_components(
-            G_wta,
-            args["ptxdir"][0],
-            os.path.join(args["outdir"], f"G_dim{args['dim']}_wta"),
-            seeds=seeds,
+        print("Saving winner-take-all maps")
+        winner_takes_all(
+            components,
+            args["wta_zthr"],
+            args["algo"].upper(),
+            os.path.join(
+                args["outdir"],
+                "nfact",
+            ),
+            img_type,
+            seeds,
         )
 
     glm_data = {
