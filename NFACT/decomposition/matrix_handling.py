@@ -34,7 +34,6 @@ def process_fdt_matrix2(
             fdt_matrix2 = load_fdt_matrix(list_of_fdt[0])
         except Exception as e:
             error_and_exit(False, f"Unable to load fdt_matrix2 due to {e}")
-    save_avg_matrix(fdt_matrix2, directory)
     return fdt_matrix2
 
 

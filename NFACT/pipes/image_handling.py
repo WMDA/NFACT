@@ -199,6 +199,7 @@ def save_grey_matter_components(
     seeds: list,
     directory: str,
     dim: int,
+    prefix: str = "G",
 ) -> None:
     """
     Function wrapper to save grey matter
@@ -234,7 +235,9 @@ def save_grey_matter_components(
         mask_to_get_seed = seeds_id == idx
         grey_matter_seed = grey_matter_components[mask_to_get_seed, :]
         file_name = os.path.join(
-            nfact_path, directory, f"G_{dim}_{os.path.basename(seed).replace('.', '_')}"
+            nfact_path,
+            directory,
+            f"{prefix}_{dim}_{os.path.basename(seed).replace('.', '_')}",
         )
         if save_type == "gifti":
             save_grey_matter_gifit(grey_matter_seed, file_name, seed)
@@ -277,13 +280,25 @@ def save_images(
 
     col = colours()
     for comp, _ in components.items():
-        algo_path = algo
-        if "normalised":
+        algo_path = os.path.join(algo, "components")
+        w_file_name = f"W_dim{dim}"
+        grey_prefix = "G"
+
+        if "normalised" in comp:
             algo_path = os.path.join(algo, "normalised")
+            w_file_name = f"W_norm_dim{dim}"
+            grey_prefix = "G_norm"
+
         if "grey" in comp:
             print(f"{col['pink']}Saving {comp}{col['reset']}")
             save_grey_matter_components(
-                save_type, components[comp], nfact_path, seeds, algo_path, dim
+                save_type,
+                components[comp],
+                nfact_path,
+                seeds,
+                algo_path,
+                dim,
+                grey_prefix,
             )
         if "white" in comp:
             print(f"{col['purple']}Saving {comp}{col['reset']}")
@@ -292,7 +307,7 @@ def save_images(
                 os.path.join(
                     nfact_path, "group_averages", "lookup_tractspace_fdt_matrix2.nii.gz"
                 ),
-                os.path.join(nfact_path, algo_path, f"W_dim{dim}"),
+                os.path.join(nfact_path, algo_path, w_file_name),
             )
 
 
@@ -328,13 +343,13 @@ def winner_takes_all(
     """
     demean = True if algo == "ICA" else False
     white_wta_map = create_wta_map(components["white_components"], 0, z_thr, demean)
-    grey_wta_map = create_wta_map(components["grey_components"], 1, z_thr)
+    grey_wta_map = create_wta_map(components["grey_components"], 1, z_thr, demean)
     save_white_matter(
         white_wta_map,
         os.path.join(
             nfact_path, "group_averages", "lookup_tractspace_fdt_matrix2.nii.gz"
         ),
-        os.path.join(nfact_path, algo, "WTA", f"W_dim{dim}"),
+        os.path.join(nfact_path, algo, "WTA", f"W_WTA_dim{dim}"),
     )
     save_grey_matter_components(
         save_type,
@@ -343,6 +358,7 @@ def winner_takes_all(
         seeds,
         os.path.join(nfact_path, algo, "WTA"),
         dim,
+        "G_WTA",
     )
 
 

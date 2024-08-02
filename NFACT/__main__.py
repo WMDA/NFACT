@@ -105,7 +105,10 @@ def nfact_main() -> None:
     print(
         f"{col['darker_pink']}loaded matrix in {matrix_time.toc()} secs.{col['reset']}"
     )
+
+    # Get hyperparameters
     parameters = get_parameters(args["config"], args["algo"], args["dim"])
+
     # Run the decomposition
     decomposition_timer = Timer()
     decomposition_timer.tic()
@@ -123,23 +126,21 @@ def nfact_main() -> None:
     )
 
     # Save the results
-    # save_images(
-    #    img_type,
-    #    components,
-    #    os.path.join(
-    #        args["outdir"],
-    #        "nfact",
-    #    ),
-    #    seeds,
-    #    args["algo"].upper(),
-    #    args["dim"],
-    # )
+    save_images(
+        img_type,
+        components,
+        os.path.join(
+            args["outdir"],
+            "nfact",
+        ),
+        seeds,
+        args["algo"].upper(),
+        args["dim"],
+    )
 
     if args["wta"]:
         # Save winner-takes-all maps
-        print("Saving winner-take-all maps")
-        # TODO: this function needs the dimmension sorted for saving
-        # TODO: file strucutre neds updating to have WTA folder.
+        print("\nSaving winner-take-all maps")
         winner_takes_all(
             components,
             args["wta_zthr"],
@@ -150,6 +151,7 @@ def nfact_main() -> None:
             ),
             img_type,
             seeds,
+            args["dim"],
         )
 
     glm_data = {

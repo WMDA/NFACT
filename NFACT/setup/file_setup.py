@@ -30,6 +30,8 @@ def create_folder_set_up(directory: str) -> None:
         "ICA",
         "NFM",
         "GLM",
+        "NFM/components",
+        "ICA/components",
         "ICA/dual_reg",
         "NFM/dual_reg",
         "ICA/normalised",
