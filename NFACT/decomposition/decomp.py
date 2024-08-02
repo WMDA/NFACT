@@ -71,7 +71,7 @@ def NFM_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
     return {"grey_components": grey_matter, "white_components": decomp.components_}
 
 
-def get_parameters(parameters: dict, algo: str, n_components: int):
+def get_parameters(parameters: dict, algo: str, n_components: int) -> dict:
     """
     Function to get parameters for
     decomp. If no parameters are
@@ -200,7 +200,7 @@ def normalise_components(
     }
 
 
-def SignFlip(decomp_matrix: np.array, thr: int = 0) -> np.array:
+def SignFlip(decomp_matrix: np.array, thr: int = 0) -> np.ndarray:
     """
     Function to sign flip the rows of
     the decomp matrix so that the heavy tail

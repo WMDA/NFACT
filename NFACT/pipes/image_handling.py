@@ -85,27 +85,6 @@ def check_files_are_imaging_files(path: str) -> bool:
     )
 
 
-# TODO: fade these functions out in favour of checking file extensions as faster
-def is_gifti(filename):
-    try:
-        x = nib.load(filename)
-        return type(x) == nib.gifti.gifti.GiftiImage
-    except:
-        return False
-
-
-def is_nifti(filename):
-    try:
-        x = nib.load(filename)
-        return type(x) == nib.nifti1.Nifti1Image
-    except:
-        try:
-            Image(filename)
-            return True
-        except:
-            return False
-
-
 def save_white_matter(
     white_matter_components: np.array, path_to_lookup_vol: str, out_file: str
 ) -> None:
@@ -129,11 +108,10 @@ def save_white_matter(
 
     """
     lut_vol = Image(path_to_lookup_vol)
-    # check that lookup is compatible with matrix
     if sum(lut_vol.data.flatten() > 0) != white_matter_components.shape[1]:
         error_and_exit(
             False,
-            f"Lookup_tractspace_fdt_matrix2 (size={sum(lut_vol.data.flatten()>0)} is not compatible with output W matrix (size={white_matter_components.shape[1]})",
+            f"Lookup_tractspace_fdt_matrix2 (size={sum(lut_vol.data.flatten()>0)} is not compatible with output white matter component (size={white_matter_components.shape[1]})",
         )
 
     white_matter_vol = mat2vol(white_matter_components, lut_vol)
@@ -145,7 +123,7 @@ def save_grey_matter_volume(
     file_name: str,
     seed: str,
     x_y_z_coordinates: np.array,
-):
+) -> None:
     """
 
     Function to save grey matter component as
@@ -270,7 +248,7 @@ def save_grey_matter_components(
 
 def save_images(
     save_type: str, components: dict, nfact_path: str, seeds: list, algo: str, dim: int
-):
+) -> None:
     """
     Function to save  grey and white
     components.
@@ -325,8 +303,30 @@ def winner_takes_all(
     nfact_path: str,
     save_type: str,
     seeds: list,
-):
-    demean = True if algo == "ica" else False
+    dim: str,
+) -> None:
+    """
+    Wrapper function around creating WTA and saving
+    the components
+
+    Parameters
+    ---------
+    components: dict
+        dictionary of components
+    z_thr: float
+        threshold the map at
+    algo: str
+        ICA or NFM
+    nfact_path: str
+        Path to NFACT directory
+    save_type: str
+        Should grey components be gifti/nifit
+    seeds: list
+        list of seeds
+    dim: str
+        number of dimensions (for saving files)
+    """
+    demean = True if algo == "ICA" else False
     white_wta_map = create_wta_map(components["white_components"], 0, z_thr, demean)
     grey_wta_map = create_wta_map(components["grey_components"], 1, z_thr)
     save_white_matter(
@@ -334,8 +334,16 @@ def winner_takes_all(
         os.path.join(
             nfact_path, "group_averages", "lookup_tractspace_fdt_matrix2.nii.gz"
         ),
+        os.path.join(nfact_path, algo, "WTA", f"W_dim{dim}"),
     )
-    return None
+    save_grey_matter_components(
+        save_type,
+        grey_wta_map,
+        nfact_path,
+        seeds,
+        os.path.join(nfact_path, algo, "WTA"),
+        dim,
+    )
 
 
 def create_wta_map(
@@ -343,7 +351,7 @@ def create_wta_map(
     axis: int,
     z_thr: float,
     demean: bool,
-) -> np.array:
+) -> np.ndarray:
     """
     Function to create a winner takes all
     map from a component
@@ -373,7 +381,7 @@ def create_wta_map(
     return np.array(component_wta, dtype=int)
 
 
-def mat2vol(matrix: np.array, lut_vol: object) -> np.array:
+def mat2vol(matrix: np.array, lut_vol: object) -> np.ndarray:
     """
     Function to reshape a matrix
     to be saved as a volume.

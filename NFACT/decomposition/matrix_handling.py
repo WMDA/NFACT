@@ -8,7 +8,7 @@ from NFACT.utils.utils import Timer, error_and_exit, colours
 
 def process_fdt_matrix2(
     list_of_fdt: list, directory: str, group_mode: bool
-) -> np.array:
+) -> np.ndarray:
     """
     Function to get group average matrix
 
@@ -38,7 +38,7 @@ def process_fdt_matrix2(
     return fdt_matrix2
 
 
-def load_previous_matrix(path: str) -> np.array:
+def load_previous_matrix(path: str) -> np.ndarray:
     """
     Function to load previous matrix.
 
@@ -81,7 +81,7 @@ def save_avg_matrix(matrix: np.array, directory: str) -> None:
         error_and_exit(False, f"Unable to save matrix due to {e}")
 
 
-def load_fdt_matrix(matfile: str) -> np.array:
+def load_fdt_matrix(matfile: str) -> np.ndarray:
     """
     Function to load a single fdt matrix
     as a ptx sparse matrix format.
@@ -106,7 +106,7 @@ def load_fdt_matrix(matfile: str) -> np.array:
     return sps.csc_matrix((data, (rows, cols)), shape=(nrows, ncols)).toarray()
 
 
-def avg_fdt(list_of_matfiles: list) -> np.array:
+def avg_fdt(list_of_matfiles: list) -> np.ndarray:
     """
     Function to create and create
     an average group matrix.
@@ -131,7 +131,7 @@ def avg_fdt(list_of_matfiles: list) -> np.array:
     return sparse_matrix
 
 
-def demean(matrix: np.array, axis: int = 0):
+def demean(matrix: np.array, axis: int = 0) -> np.ndarray:
     """
     Function to demean a matrix
 
@@ -148,7 +148,7 @@ def demean(matrix: np.array, axis: int = 0):
 
 def melodic_incremental_group_pca(
     fdt_matrix: np.array, n_dim: int = 1000, d_pca: int = 1000, keep_mean: bool = False
-):
+) -> np.ndarray:
     """
     Function wrapper around matrix_MIGP.
 
@@ -198,7 +198,7 @@ def matrix_MIGP(
     fdt_matrix: np.array,
     n_dim: int = 1000,
     d_pca: int = 1000,
-):
+) -> np.ndarray:
     """
     Function to apply
     MELODIC's Incremental Group-PCA dimensionality to
