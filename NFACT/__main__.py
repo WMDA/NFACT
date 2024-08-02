@@ -184,6 +184,7 @@ def nfact_main() -> None:
                     os.path.join(out_dualreg, f"Gs_{idx3}_dim{args['dim']}"),
                     seeds=seeds,
                 )
+
                 # keep data for GLM?
                 if args["glm_mat"]:
                     glm_data["dualreg_on_G"].append([Gs, Ws])
