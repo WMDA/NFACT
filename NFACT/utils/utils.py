@@ -92,6 +92,7 @@ def colours():
         "pink": "\033[1;35m",
         "purple": "\033[38;5;93m",
         "darker_pink": "\033[38;5;129m",
+        "plum": "\033[0;35m",
     }
 
 

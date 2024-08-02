@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from NFACT.decomposition.matrix_handling import melodic_incremental_group_pca
-from NFACT.utils.utils import error_and_exit
+from NFACT.utils.utils import error_and_exit, colours
 from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
 
 
@@ -71,7 +71,7 @@ def NFM_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
     return {"grey_components": grey_matter, "white_components": decomp.components_}
 
 
-def get_parameters(parameters: dict, algo: str, n_components: int):
+def get_parameters(parameters: dict, algo: str, n_components: int) -> dict:
     """
     Function to get parameters for
     decomp. If no parameters are
@@ -189,7 +189,8 @@ def normalise_components(
     dict: dictionary.
         dictionary of normalised components
     """
-    print("Normalising components")
+    col = colours()
+    print(f"{col['plum']}\nNormalising components\n{col['reset']}")
 
     return {
         "grey_matter": StandardScaler(with_mean=demean).fit_transform(grey_matter),
@@ -199,7 +200,7 @@ def normalise_components(
     }
 
 
-def SignFlip(decomp_matrix: np.array, thr: int = 0) -> np.array:
+def SignFlip(decomp_matrix: np.array, thr: int = 0) -> np.ndarray:
     """
     Function to sign flip the rows of
     the decomp matrix so that the heavy tail

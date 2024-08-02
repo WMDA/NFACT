@@ -30,14 +30,18 @@ def create_folder_set_up(directory: str) -> None:
         "ICA",
         "NFM",
         "GLM",
+        "NFM/components",
+        "ICA/components",
         "ICA/dual_reg",
         "NFM/dual_reg",
         "ICA/normalised",
         "NFM/normalised",
-        "ICA/dual_reg/G",
-        "ICA/dual_reg/W",
-        "NFM/dual_reg/G",
-        "NFM/dual_reg/W",
+        "ICA/WTA",
+        "NFM/WTA",
+        "ICA/dual_reg/grey",
+        "ICA/dual_reg/white",
+        "NFM/dual_reg/grey",
+        "NFM/dual_reg/white",
     ]
 
     does_exist = os.path.exists(nfact_directory)
