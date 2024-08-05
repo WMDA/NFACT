@@ -31,3 +31,37 @@ def dualreg(Cs, X, normalise=False):
         Ws = StandardScaler().fit_transform(Ws.T).T
 
     return Gs, Ws
+
+
+# def
+def ICA_dual_regression(
+    connectivity_matrix: np.array,
+    component: np.array,
+) -> np.darray:
+    """
+    Dual regression function for ICA.
+    Regresses the invidiual connectivity matrix
+    onto the group components.
+
+    If white matter component then regresses
+    grey matter map onto connectivity matrix and vice versa.
+
+
+    """
+    wm_component_grey_weights = (
+        np.linalg.pinv(component["white_components"].T) @ connectivity_matrix.T
+    ).T
+    wm_component_white_weights = (
+        np.linalg.pinv(wm_component_grey_weights) @ connectivity_matrix
+    )
+    gm_component_white_weights = (
+        np.linalg.pinv(component["grey_components"]) @ connectivity_matrix
+    )
+    gm_component_grey_weights = (
+        np.linalg.pinv(gm_component_white_weights.T) @ connectivity_matrix.T
+    ).T
+
+    return {
+        "white_matter": wm_component_white_weights,
+        "grey_matter": gm_component_grey_weights,
+    }
