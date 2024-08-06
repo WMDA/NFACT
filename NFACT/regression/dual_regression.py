@@ -57,7 +57,7 @@ class Dual_regression:
             return None
     def run_dual_regress_single(self):
         for subject in self.list_of_file:
-            lo
+            return None
 
 
     def ICA_dual_regression(self,
