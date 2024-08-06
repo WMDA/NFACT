@@ -36,67 +36,72 @@ def dualreg(
 
 
 class Dual_regression:
-    
-    def __init__(self, 
-                 algo, 
-                 normalise, 
-                 parallel,
-                 list_of_files,
-                 component) -> None:
-        
+    def __init__(self, algo, normalise, parallel, list_of_files, component) -> None:
         self.algo = algo
         self.normalise = normalise
         self.parallel = parallel
-        self.list_of_file = list_of_files 
+        self.list_of_file = list_of_files
         self.component = component
-    
+
     def fit(self):
         if self.parallel:
             return None
         if not self.parallel:
             return None
+
     def run_dual_regress_single(self):
         for subject in self.list_of_file:
             return None
 
+    def ICA_dual_regression(
+        self,
+    ) -> dict:
+        """
+        Dual regression method for ICA.
+        Regresses the invidiual connectivity matrix
+        onto the group components.
 
-    def ICA_dual_regression(self,
+        If white matter component then regresses
+        grey matter map onto connectivity matrix and vice versa.
 
-        ) -> dict:
-            """
-            Dual regression method for ICA.
-            Regresses the invidiual connectivity matrix
-            onto the group components.
-        
-            If white matter component then regresses
-            grey matter map onto connectivity matrix and vice versa.
-        
-            """
-            self.wm_component_grey_map = (
-                np.linalg.pinv(self.component["white_components"].T) @ self.connectivity_matrix.T
-            ).T
-            self.wm_component_white_map = np.linalg.pinv(self.wm_component_grey_map) @ self.connectivity_matrix
-            self.gm_component_white_map = (
-                np.linalg.pinv(self.component["grey_components"]) @ self.connectivity_matrix
-            )
-            self.gm_component_grey_map = (
-                np.linalg.pinv(self.gm_component_white_map.T) @ self.connectivity_matrix.T
-            ).T
-        
+        """
+        self.wm_component_grey_map = (
+            np.linalg.pinv(self.component["white_components"].T)
+            @ self.connectivity_matrix.T
+        ).T
+        self.wm_component_white_map = (
+            np.linalg.pinv(self.wm_component_grey_map) @ self.connectivity_matrix
+        )
+        self.gm_component_white_map = (
+            np.linalg.pinv(self.component["grey_components"]) @ self.connectivity_matrix
+        )
+        self.gm_component_grey_map = (
+            np.linalg.pinv(self.gm_component_white_map.T) @ self.connectivity_matrix.T
+        ).T
 
     def nfm_dual_regression(self, connectivity_matrix, component, dim):
-        return np.array([nnls(component, connectivity_matrix[:, col])[0] for col in range(connectivity_matrix.shape[dim])]).T
-    
-    def return_data_for_glm(self)
-        return {
-                "white_matter": self.wm_component_white_map,
-                "grey_matter": self.gm_component_grey_map,
-            }
-    
+        return np.array(
+            [
+                nnls(component, connectivity_matrix[:, col])[0]
+                for col in range(connectivity_matrix.shape[dim])
+            ]
+        ).T
 
-#TODO: shape needs checking depending on what component is being 
+    def return_data_for_glm(self):
+        return {
+            "white_matter": self.wm_component_white_map,
+            "grey_matter": self.gm_component_grey_map,
+        }
+
+
+# TODO: shape needs checking depending on what component is being
 def nfm_dual_regression(connectivity_matrix, component):
-    return np.array([nnls(component, connectivity_matrix[:, i])[0] for i in range(connectivity_matrix.shape[1])]).T
+    return np.array(
+        [
+            nnls(component, connectivity_matrix[:, i])[0]
+            for i in range(connectivity_matrix.shape[1])
+        ]
+    ).T
 
 
 # def
