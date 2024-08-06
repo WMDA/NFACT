@@ -1,7 +1,9 @@
 from NFACT.decomposition.decomp import normalise_components
 from NFACT.decomposition.matrix_handling import load_fdt_matrix
+
 import numpy as np
 from scipy.optimize import nnls
+import os
 
 
 def dualreg(
@@ -36,26 +38,50 @@ def dualreg(
 
 
 class Dual_regression:
-    def __init__(self, algo, normalise, parallel, list_of_files, component) -> None:
+    def __init__(
+        self,
+        algo: str,
+        normalise: str,
+        parallel: str,
+        list_of_files: list,
+        component: dict,
+        glm: bool,
+    ) -> None:
         self.algo = algo
         self.normalise = normalise
         self.parallel = parallel
         self.list_of_file = list_of_files
         self.component = component
+        self.glm = glm
 
-    def fit(self):
+        if glm:
+            self.glm_data = {
+                "dualreg_on_G": [],
+                "dualreg_on_W": [],
+            }
+
+    def fit(self) -> None:
         if self.parallel:
+            print("Not implemented yet")
             return None
         if not self.parallel:
-            return None
+            self.__run_dual_regress_single()
 
-    def run_dual_regress_single(self):
+    def __run_dual_regress_single(self) -> None:
+        decomp = (
+            self.__ICA_dual_regression
+            if self.algo == "ica"
+            else self.__nfm_dual_regression
+        )
         for subject in self.list_of_file:
-            return None
+            self.connectivity_matrix = load_fdt_matrix(
+                os.path.join(subject, "fdt_matrix2.dot")
+            )
+            decomp()
 
-    def ICA_dual_regression(
+    def __ICA_dual_regression(
         self,
-    ) -> dict:
+    ) -> None:
         """
         Dual regression method for ICA.
         Regresses the invidiual connectivity matrix
@@ -79,32 +105,39 @@ class Dual_regression:
             np.linalg.pinv(self.gm_component_white_map.T) @ self.connectivity_matrix.T
         ).T
 
-    def nfm_dual_regression(self, connectivity_matrix, component, dim):
-        return np.array(
+        if self.glm:
+            self.glm_data["dualreg_on_G"].append(self.gm_component_grey_map)
+            self.glm_data["dualreg_on_W"].append(self.wm_component_white_map)
+
+    def __nfm_dual_regression(self) -> None:
+        """
+        Dual regression method for NFM.
+        """
+        self.gm_component_grey_map = np.array(
             [
-                nnls(component, connectivity_matrix[:, col])[0]
-                for col in range(connectivity_matrix.shape[dim])
+                nnls(
+                    self.component["grey_components"], self.connectivity_matrix[:, col]
+                )[0]
+                for col in range(self.connectivity_matrix.shape[1])
+            ]
+        ).T
+        self.wm_component_white_map = np.array(
+            [
+                nnls(
+                    self.component["white_components"], self.connectivity_matrix[:, col]
+                )[0]
+                for col in range(self.connectivity_matrix.shape[0])
             ]
         ).T
 
-    def return_data_for_glm(self):
-        return {
-            "white_matter": self.wm_component_white_map,
-            "grey_matter": self.gm_component_grey_map,
-        }
+        if self.glm:
+            self.glm_data["dualreg_on_G"].append(self.gm_component_grey_map)
+            self.glm_data["dualreg_on_W"].append(self.wm_component_white_map)
+
+    def return_data_for_glm(self) -> dict:
+        return self.glm_data
 
 
-# TODO: shape needs checking depending on what component is being
-def nfm_dual_regression(connectivity_matrix, component):
-    return np.array(
-        [
-            nnls(component, connectivity_matrix[:, i])[0]
-            for i in range(connectivity_matrix.shape[1])
-        ]
-    ).T
-
-
-# def
 def ICA_dual_regression(
     connectivity_matrix: np.array,
     component: dict,

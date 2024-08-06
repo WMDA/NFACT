@@ -4,16 +4,14 @@ import os
 import json
 
 
-# Helper class for timing
 class Timer:
+    """
+    Wrapper around timer
+    to calculate how long
+    processes take to run
+    """
+
     def __init__(self):
-        """
-        Matlab-style timer class
-        t = timer()
-        t.tic()
-        .... do stuff
-        t.toc()
-        """
         self._t = time.time()
 
     def tic(self):
