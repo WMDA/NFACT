@@ -31,7 +31,7 @@ def nfact_args() -> dict:
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
-        help="Filepath to a list of subjects. If not given then --ptxdir must be",
+        help="Filepath to a list of subjects. If not given then --ptxdir must be directories.",
     )
     args.add_argument("-o", "--outdir", dest="outdir", help="Path to output folder")
     args.add_argument("-d", "--dim", dest="dim", help="Number of dimensions/components")
