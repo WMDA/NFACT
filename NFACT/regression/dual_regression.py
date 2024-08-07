@@ -4,6 +4,7 @@ from NFACT.decomposition.matrix_handling import load_fdt_matrix
 import numpy as np
 from scipy.optimize import nnls
 import os
+import re
 
 
 def dualreg(
@@ -37,12 +38,15 @@ def dualreg(
         return dual_reg
 
 
+# TODO: Add in normalisation.
+# TODO: Add in parallelization.
+# TODO: Add in save images
 class Dual_regression:
     def __init__(
         self,
         algo: str,
-        normalise: str,
-        parallel: str,
+        normalise: bool,
+        parallel: bool,
         list_of_files: list,
         component: dict,
         glm: bool,
@@ -73,11 +77,19 @@ class Dual_regression:
             if self.algo == "ica"
             else self.__nfm_dual_regression
         )
-        for subject in self.list_of_file:
+        for idx, subject in enumerate(self.list_of_file):
+            self.get_subject_id(subject, idx)
+            print(f"Dual regressing on {self.subject_id}")
             self.connectivity_matrix = load_fdt_matrix(
                 os.path.join(subject, "fdt_matrix2.dot")
             )
             decomp()
+
+    def get_subject_id(self, path, number):
+        try:
+            self.subject_id = re.findall(r"sub[a-zA-Z0-9]*", path)[0]
+        except Exception:
+            self.subject_id = f"sub-{number}"
 
     def __ICA_dual_regression(
         self,

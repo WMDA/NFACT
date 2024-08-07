@@ -5,7 +5,7 @@ from fsl.data.vest import loadVestFile
 
 from NFACT.utils.utils import Timer, Signit_handler, colours
 from NFACT.regression.glm import GLM
-from NFACT.regression.dual_regression import dualreg
+from NFACT.regression.dual_regression import Dual_regression
 from NFACT.setup.args import nfact_args
 from NFACT.setup.file_setup import create_folder_set_up, get_group_average_files
 from NFACT.setup.configure_setup import (
@@ -124,7 +124,11 @@ def nfact_main() -> None:
     print(
         f'{col["darker_pink"]}Decomposition took {decomposition_timer.toc()} secs{col["reset"]}'
     )
-
+    dual_reg = Dual_regression(
+        args["algo"], False, False, args["ptx_fdt"], components, False
+    )
+    dual_reg.fit()
+    exit()
     # Save the results
     save_images(
         img_type,
