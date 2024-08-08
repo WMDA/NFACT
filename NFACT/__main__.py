@@ -11,7 +11,6 @@ from NFACT.setup.file_setup import create_folder_set_up, get_group_average_files
 from NFACT.setup.configure_setup import (
     get_subjects,
     process_seeds,
-    list_of_fdt_mat,
     check_config_file,
     load_config_file,
     check_subject_exist,
@@ -86,7 +85,6 @@ def nfact_main() -> None:
     get_group_average_files(
         args["ptxdir"][0], os.path.join(args["outdir"], "nfact", "group_averages")
     )
-    args["ptx_fdt"] = list_of_fdt_mat(args["ptxdir"])
 
     # load matrix
     print(f"{col['darker_pink']}\nLoading matrix{col['reset']}")
@@ -98,7 +96,7 @@ def nfact_main() -> None:
     )
 
     if fdt_2_conn is None:
-        fdt_2_conn = process_fdt_matrix2(args["ptx_fdt"], group_mode)
+        fdt_2_conn = process_fdt_matrix2(args["ptxdir"], group_mode)
         save_avg_matrix(fdt_2_conn, os.path.join(args["outdir"], "nfact"))
     print(
         f"{col['darker_pink']}loaded matrix in {matrix_time.toc()} secs.{col['reset']}"
@@ -153,12 +151,12 @@ def nfact_main() -> None:
         )
     if group_mode and not args["skip_dual_reg"]:
         print(
-            f"{col['plum']}Performing dual regression on {len(args["ptxdir"])} subjects{col['reset']}"
+            f"{col['plum']}Performing dual regression on {len(args['ptxdir'])} subjects{col['reset']}"
         )
         dual_reg = Dual_regression(
-            args["algo"], False, False, args["ptx_fdt"], components, False
+            args["algo"], False, False, args["ptxdir"], components, False
         )
-        dual_reg.fit()
+        dual_reg.run()
     print(f"\n{col['darker_pink']}NFACT has finished{col['reset']}")
 
     exit(0)

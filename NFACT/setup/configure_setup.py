@@ -191,26 +191,6 @@ def seed_type(seeds: list) -> str:
     return seed_imaging_file[0]
 
 
-def list_of_fdt_mat(list_ptx_folder: list) -> list:
-    """
-    Function to get list of matricies
-
-    Parameters
-    ----------
-    list_ptx_folder: list
-        list of ptx folders
-
-    Returns
-    -------
-    list: list object
-       list of subjects fdt_matrix2.dot
-       paths
-    """
-    return [
-        os.path.join(sub_folder, "fdt_matrix2.dot") for sub_folder in list_ptx_folder
-    ]
-
-
 def load_config_file(path: str, algo: str) -> dict:
     """
     Function to read in a config file
