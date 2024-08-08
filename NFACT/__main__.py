@@ -98,9 +98,7 @@ def nfact_main() -> None:
     )
 
     if fdt_2_conn is None:
-        fdt_2_conn = process_fdt_matrix2(
-            args["ptx_fdt"], os.path.join(args["outdir"], "nfact"), group_mode
-        )
+        fdt_2_conn = process_fdt_matrix2(args["ptx_fdt"], group_mode)
         save_avg_matrix(fdt_2_conn, os.path.join(args["outdir"], "nfact"))
     print(
         f"{col['darker_pink']}loaded matrix in {matrix_time.toc()} secs.{col['reset']}"
@@ -122,13 +120,9 @@ def nfact_main() -> None:
         parameters=parameters,
     )
     print(
-        f'{col["darker_pink"]}Decomposition took {decomposition_timer.toc()} secs{col["reset"]}'
+        f'{col["darker_pink"]}Decomposition took {decomposition_timer.toc()} secs{col["reset"]}\n'
     )
-    dual_reg = Dual_regression(
-        args["algo"], False, False, args["ptx_fdt"], components, False
-    )
-    dual_reg.fit()
-    exit()
+
     # Save the results
     save_images(
         img_type,
@@ -144,7 +138,7 @@ def nfact_main() -> None:
 
     if args["wta"]:
         # Save winner-takes-all maps
-        print("\nSaving winner-take-all maps")
+        print("\nSaving winner-take-all maps\n")
         winner_takes_all(
             components,
             args["wta_zthr"],
@@ -157,7 +151,17 @@ def nfact_main() -> None:
             seeds,
             args["dim"],
         )
+    if group_mode and not args["skip_dual_reg"]:
+        print(
+            f"{col['plum']}Performing dual regression on {len(args["ptxdir"])} subjects{col['reset']}"
+        )
+        dual_reg = Dual_regression(
+            args["algo"], False, False, args["ptx_fdt"], components, False
+        )
+        dual_reg.fit()
+    print(f"\n{col['darker_pink']}NFACT has finished{col['reset']}")
 
+    exit(0)
     glm_data = {
         "dualreg_on_G": [],
         "dualreg_on_W": [],

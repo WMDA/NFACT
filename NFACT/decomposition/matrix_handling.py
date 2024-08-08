@@ -6,9 +6,7 @@ import os
 from NFACT.utils.utils import Timer, error_and_exit, colours
 
 
-def process_fdt_matrix2(
-    list_of_fdt: list, directory: str, group_mode: bool
-) -> np.ndarray:
+def process_fdt_matrix2(list_of_fdt: list, group_mode: bool) -> np.ndarray:
     """
     Function to get group average matrix
 
@@ -175,7 +173,7 @@ def melodic_incremental_group_pca(
     migpa_timer = Timer()
     migpa_timer.tic()
     col = colours()
-    print(f"{col['purple']}\nPerforming MIGP{col['reset']}")
+    print(f"{col['purple']}\nPerforming PCA (MIGP){col['reset']}")
     if keep_mean:
         matrix_mean = np.mean(fdt_matrix, axis=1, keepdims=True)
 

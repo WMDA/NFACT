@@ -1,9 +1,9 @@
 from NFACT.decomposition.decomp import normalise_components
 from NFACT.decomposition.matrix_handling import load_fdt_matrix
+from NFACT.utils.utils import error_and_exit
 
 import numpy as np
 from scipy.optimize import nnls
-import os
 import re
 
 
@@ -77,15 +77,21 @@ class Dual_regression:
             if self.algo == "ica"
             else self.__nfm_dual_regression
         )
-        for idx, subject in enumerate(self.list_of_file):
-            self.get_subject_id(subject, idx)
-            print(f"Dual regressing on {self.subject_id}")
-            self.connectivity_matrix = load_fdt_matrix(
-                os.path.join(subject, "fdt_matrix2.dot")
-            )
-            decomp()
 
-    def get_subject_id(self, path, number):
+        for idx, subject in enumerate(self.list_of_file):
+            self.__get_subject_id(subject, idx)
+            print(f"Dual regressing on {self.subject_id}")
+            self.connectivity_matrix = load_fdt_matrix(subject)
+            try:
+                decomp()
+            except ValueError:
+                error_and_exit(
+                    False, "Components have incompatable size with connectivity Matrix"
+                )
+            except Exception as e:
+                error_and_exit(False, f"Unable to perform dual regression due to {e}")
+
+    def __get_subject_id(self, path, number):
         try:
             self.subject_id = re.findall(r"sub[a-zA-Z0-9]*", path)[0]
         except Exception:
@@ -103,6 +109,7 @@ class Dual_regression:
         grey matter map onto connectivity matrix and vice versa.
 
         """
+
         self.wm_component_grey_map = (
             np.linalg.pinv(self.component["white_components"].T)
             @ self.connectivity_matrix.T
@@ -110,11 +117,12 @@ class Dual_regression:
         self.wm_component_white_map = (
             np.linalg.pinv(self.wm_component_grey_map) @ self.connectivity_matrix
         )
-        self.gm_component_white_map = (
+
+        self.gm_component_grey = (
             np.linalg.pinv(self.component["grey_components"]) @ self.connectivity_matrix
         )
         self.gm_component_grey_map = (
-            np.linalg.pinv(self.gm_component_white_map.T) @ self.connectivity_matrix.T
+            np.linalg.pinv(self.gm_component_grey.T) @ self.connectivity_matrix.T
         ).T
 
         if self.glm:
