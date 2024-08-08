@@ -6,11 +6,11 @@ from NFACT.pipes.image_handling import save_dual_regression_images
 import numpy as np
 from scipy.optimize import nnls
 import re
+import os
 
 
 # TODO: Add in normalisation.
 # TODO: Add in parallelization.
-# TODO: Add in save images
 class Dual_regression:
     """
     Dual regression Class.
@@ -44,6 +44,7 @@ class Dual_regression:
         component: dict,
         save_type: str,
         seeds: list,
+        nfact_directory: str,
     ) -> None:
         self.algo = algo
         self.normalise = normalise
@@ -51,6 +52,8 @@ class Dual_regression:
         self.list_of_file = list_of_files
         self.component = component
         self.save_type = save_type
+        self.seeds = seeds
+        self.nfact_directory = nfact_directory
 
     def run(self) -> None:
         """
@@ -74,21 +77,35 @@ class Dual_regression:
 
         for idx, subject in enumerate(self.list_of_file):
             self.__get_subject_id(subject, idx)
-            print(f"Dual regressing on {self.subject_id}")
-            self.connectivity_matrix = load_fdt_matrix(subject)
+            print(f"Dual regressing on {self.subject_id}:")
+            self.connectivity_matrix = load_fdt_matrix(
+                os.path.join(subject, "fdt_matrix2.dot")
+            )
             try:
                 components = decomp()
-            except ValueError:
+            except ValueError as e:
                 error_and_exit(
-                    False, "Components have incompatable size with connectivity Matrix"
+                    False,
+                    f"Components have incompatable size with connectivity Matrix {e}",
                 )
             except Exception as e:
                 error_and_exit(False, f"Unable to perform dual regression due to {e}")
             if self.normalise:
-                normalised = normalise_components()
+                normalised = normalise_components(
+                    components["grey_components"], components["white_components"]
+                )
                 components["normalised_white"] = normalised["white_matter"]
                 components["normalised_grey"] = normalised["grey_matter"]
-            save_dual_regression_images(self.save_type)
+            save_dual_regression_images(
+                self.save_type,
+                components,
+                self.nfact_directory,
+                self.seeds,
+                self.algo.upper(),
+                self.component["white_components"].shape[0],
+                self.subject_id,
+                subject,
+            )
 
     def __get_subject_id(self, path, number):
         """
@@ -135,10 +152,6 @@ class Dual_regression:
             np.linalg.pinv(gm_component_grey.T) @ self.connectivity_matrix.T
         ).T
 
-        if self.glm:
-            self.glm_data["dualreg_on_G"].append(gm_component_grey_map)
-            self.glm_data["dualreg_on_W"].append(wm_component_white_map)
-
         return {
             "grey_components": gm_component_grey_map,
             "white_components": wm_component_white_map,
@@ -148,7 +161,7 @@ class Dual_regression:
         """
         Dual regression method for NFM.
         """
-        gm_component_grey_map = np.array(
+        wm_component_white_map = np.array(
             [
                 nnls(
                     self.component["grey_components"], self.connectivity_matrix[:, col]
@@ -156,10 +169,10 @@ class Dual_regression:
                 for col in range(self.connectivity_matrix.shape[1])
             ]
         ).T
-        wm_component_white_map = np.array(
+        gm_component_grey_map = np.array(
             [
                 nnls(
-                    self.component["white_components"], self.connectivity_matrix[:, col]
+                    self.component["grey_components"], self.connectivity_matrix[:, col]
                 )[0]
                 for col in range(self.connectivity_matrix.shape[0])
             ]

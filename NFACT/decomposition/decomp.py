@@ -193,7 +193,7 @@ def normalise_components(
         dictionary of normalised components
     """
     col = colours()
-    print(f"{col['plum']}\nNormalising components\n{col['reset']}")
+    print(f"{col['plum']}Normalising components\n{col['reset']}")
 
     return {
         "grey_matter": StandardScaler(with_mean=demean).fit_transform(grey_matter),

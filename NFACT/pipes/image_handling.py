@@ -237,7 +237,7 @@ def save_grey_matter_components(
         file_name = os.path.join(
             nfact_path,
             directory,
-            f"{prefix}_{dim}_{os.path.basename(seed).replace('.', '_')}",
+            f"{prefix}_dim{dim}_{os.path.basename(seed).replace('.', '_')}",
         )
         if save_type == "gifti":
             save_grey_matter_gifit(grey_matter_seed, file_name, seed)
@@ -347,6 +347,7 @@ def save_dual_regression_images(
     """
 
     col = colours()
+    print(f"{col['purple']}Saving Dual regression components{col['reset']}\n")
     for comp, _ in components.items():
         algo_path = os.path.join(algo, "dual_reg")
         w_file_name = f"W_{sub}_dim{dim}"
@@ -354,11 +355,10 @@ def save_dual_regression_images(
 
         if "normalised" in comp:
             algo_path = os.path.join(algo, "dual_reg", "normalised")
-            w_file_name = f"W__{sub}_norm_dim{dim}"
+            w_file_name = f"W_{sub}_norm_dim{dim}"
             grey_prefix = f"G_{sub}_norm"
 
         if "grey" in comp:
-            print(f"{col['pink']}Saving {comp}{col['reset']}")
             save_grey_matter_components(
                 save_type,
                 components[comp],
@@ -370,7 +370,6 @@ def save_dual_regression_images(
                 grey_prefix,
             )
         if "white" in comp:
-            print(f"{col['purple']}Saving {comp}{col['reset']}")
             save_white_matter(
                 components[comp],
                 os.path.join(ptx_directory, "lookup_tractspace_fdt_matrix2.nii.gz"),
@@ -425,6 +424,7 @@ def winner_takes_all(
         seeds,
         os.path.join(nfact_path, algo, "WTA"),
         dim,
+        os.path.join(nfact_path, "group_averages", "coords_for_fdt_matrix2"),
         "G_WTA",
     )
 
