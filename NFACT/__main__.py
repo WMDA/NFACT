@@ -170,7 +170,6 @@ def nfact_main() -> None:
         dual_reg.run()
     print(f"\n{col['darker_pink']}NFACT has finished{col['reset']}")
 
-    exit(0)
     glm_data = {
         "dualreg_on_G": [],
         "dualreg_on_W": [],
