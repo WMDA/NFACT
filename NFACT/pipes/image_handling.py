@@ -192,6 +192,7 @@ def save_grey_matter_cifit():
     return None
 
 
+# TODO: seprate getting seeds out from saving
 def save_grey_matter_components(
     save_type: str,
     grey_matter_components: np.array,
@@ -199,6 +200,7 @@ def save_grey_matter_components(
     seeds: list,
     directory: str,
     dim: int,
+    coord_path: str,
     prefix: str = "G",
 ) -> None:
     """
@@ -227,9 +229,7 @@ def save_grey_matter_components(
     None
     """
 
-    coord_mat2 = np.loadtxt(
-        os.path.join(nfact_path, "group_averages", "coords_for_fdt_matrix2"), dtype=int
-    )
+    coord_mat2 = np.loadtxt(coord_path, dtype=int)
     seeds_id = coord_mat2[:, -2]
     for idx, seed in enumerate(seeds):
         mask_to_get_seed = seeds_id == idx
@@ -237,7 +237,7 @@ def save_grey_matter_components(
         file_name = os.path.join(
             nfact_path,
             directory,
-            f"{prefix}_{dim}_{os.path.basename(seed).replace('.', '_')}",
+            f"{prefix}_dim{dim}_{os.path.basename(seed).replace('.', '_')}",
         )
         if save_type == "gifti":
             save_grey_matter_gifit(grey_matter_seed, file_name, seed)
@@ -298,6 +298,7 @@ def save_images(
                 seeds,
                 algo_path,
                 dim,
+                os.path.join(nfact_path, "group_averages", "coords_for_fdt_matrix2"),
                 grey_prefix,
             )
         if "white" in comp:
@@ -307,6 +308,71 @@ def save_images(
                 os.path.join(
                     nfact_path, "group_averages", "lookup_tractspace_fdt_matrix2.nii.gz"
                 ),
+                os.path.join(nfact_path, algo_path, w_file_name),
+            )
+
+
+def save_dual_regression_images(
+    save_type: str,
+    components: dict,
+    nfact_path: str,
+    seeds: list,
+    algo: str,
+    dim: int,
+    sub: str,
+    ptx_directory: str,
+):
+    """
+    Function to save regression images
+    TODO: combine with save_images function
+
+    Parameters
+    ----------
+    save_type: str
+        should grey matter be saved as
+        gifti, nifit or cifti
+    components: dict
+        dictionary of components
+    nfact_path: str
+        str to nfact directory
+    seeds: list
+        list of seeds
+    algo: str
+        str of algo
+    dim: int
+        number of dimensions
+        used for naming output
+    sub: str
+        Subject id in string format
+    """
+
+    col = colours()
+    print(f"{col['purple']}Saving Dual regression components{col['reset']}\n")
+    for comp, _ in components.items():
+        algo_path = os.path.join(algo, "dual_reg")
+        w_file_name = f"W_{sub}_dim{dim}"
+        grey_prefix = f"G_{sub}"
+
+        if "normalised" in comp:
+            algo_path = os.path.join(algo, "dual_reg", "normalised")
+            w_file_name = f"W_{sub}_norm_dim{dim}"
+            grey_prefix = f"G_{sub}_norm"
+
+        if "grey" in comp:
+            save_grey_matter_components(
+                save_type,
+                components[comp],
+                nfact_path,
+                seeds,
+                algo_path,
+                dim,
+                os.path.join(ptx_directory, "coords_for_fdt_matrix2"),
+                grey_prefix,
+            )
+        if "white" in comp:
+            save_white_matter(
+                components[comp],
+                os.path.join(ptx_directory, "lookup_tractspace_fdt_matrix2.nii.gz"),
                 os.path.join(nfact_path, algo_path, w_file_name),
             )
 
@@ -358,6 +424,7 @@ def winner_takes_all(
         seeds,
         os.path.join(nfact_path, algo, "WTA"),
         dim,
+        os.path.join(nfact_path, "group_averages", "coords_for_fdt_matrix2"),
         "G_WTA",
     )
 

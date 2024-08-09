@@ -13,7 +13,7 @@ from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
 
 
 @ignore_warnings(category=ConvergenceWarning)
-def ICA_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
+def ICA_decomp(parameters: dict, pca_matrix: np.array, fdt_matrix: np.array) -> dict:
     """
     Function to perform ica decomposition
 
@@ -21,6 +21,8 @@ def ICA_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
     ----------
     parameters: dict
         dictionary of hyperparameters
+    pca_matrix: np.array
+        matrix that has been reduced.
     fdt_matrix: np.array
         matrix to perform decomposition
         on
@@ -35,7 +37,8 @@ def ICA_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
     decomp = FastICA(**parameters)
 
     try:
-        grey_matter = decomp.fit_transform(fdt_matrix)
+        decomp.fit(pca_matrix)
+        grey_matter = decomp.transform(pca_matrix)
     except Exception as e:
         error_and_exit(False, f"Unable to perform ICA due to {e}")
     return {
@@ -145,7 +148,7 @@ def matrix_decomposition(
     if algo == "ica":
         # TODO: either change function to accept single argument or offer differnt inputs
         pca_matrix = melodic_incremental_group_pca(fdt_matrix, pca_dim, pca_dim)
-        components = ICA_decomp(parameters, pca_matrix)
+        components = ICA_decomp(parameters, pca_matrix, fdt_matrix)
 
         if sign_flip:
             print("Sign-flipping components")
@@ -190,7 +193,7 @@ def normalise_components(
         dictionary of normalised components
     """
     col = colours()
-    print(f"{col['plum']}\nNormalising components\n{col['reset']}")
+    print(f"{col['plum']}Normalising components\n{col['reset']}")
 
     return {
         "grey_matter": StandardScaler(with_mean=demean).fit_transform(grey_matter),

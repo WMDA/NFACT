@@ -6,16 +6,14 @@ import os
 from NFACT.utils.utils import Timer, error_and_exit, colours
 
 
-def process_fdt_matrix2(
-    list_of_fdt: list, directory: str, group_mode: bool
-) -> np.ndarray:
+def process_fdt_matrix2(list_of_ptx_folds: list, group_mode: bool) -> np.ndarray:
     """
     Function to get group average matrix
 
     Parameters
     ----------
-    list_of_fdt: list
-        list of fdt2 dot files
+    list_of_ptx_folds: list
+        list of probtrackx folders
 
     Returns
     -------
@@ -23,7 +21,9 @@ def process_fdt_matrix2(
        np.array of fdt2 matrix either averaged
        across subjects or single subjects
     """
-
+    list_of_fdt = [
+        os.path.join(sub_folder, "fdt_matrix2.dot") for sub_folder in list_of_ptx_folds
+    ]
     if group_mode:
         try:
             fdt_matrix2 = avg_fdt(list_of_fdt)
@@ -175,7 +175,7 @@ def melodic_incremental_group_pca(
     migpa_timer = Timer()
     migpa_timer.tic()
     col = colours()
-    print(f"{col['purple']}\nPerforming MIGP{col['reset']}")
+    print(f"{col['purple']}\nPerforming PCA (MIGP){col['reset']}")
     if keep_mean:
         matrix_mean = np.mean(fdt_matrix, axis=1, keepdims=True)
 

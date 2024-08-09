@@ -5,13 +5,12 @@ from fsl.data.vest import loadVestFile
 
 from NFACT.utils.utils import Timer, Signit_handler, colours
 from NFACT.regression.glm import GLM
-from NFACT.regression.dual_regression import dualreg
+from NFACT.regression.dual_regression import Dual_regression
 from NFACT.setup.args import nfact_args
 from NFACT.setup.file_setup import create_folder_set_up, get_group_average_files
 from NFACT.setup.configure_setup import (
     get_subjects,
     process_seeds,
-    list_of_fdt_mat,
     check_config_file,
     load_config_file,
     check_subject_exist,
@@ -78,7 +77,7 @@ def nfact_main() -> None:
     if args["overwrite"]:
         if os.path.exists(os.path.join(args["outdir"], "nfact")):
             print(
-                f'{col["red"]}Overwrite flag given. {args["outdir"]} directory being overwritten{col["reset"]}'
+                f'{col["red"]}Overwrite flag given. {args["outdir"]} directory being overwritten{col["reset"]}\n'
             )
             shutil.rmtree(os.path.join(args["outdir"], "nfact"), ignore_errors=True)
 
@@ -86,10 +85,9 @@ def nfact_main() -> None:
     get_group_average_files(
         args["ptxdir"][0], os.path.join(args["outdir"], "nfact", "group_averages")
     )
-    args["ptx_fdt"] = list_of_fdt_mat(args["ptxdir"])
 
     # load matrix
-    print(f"{col['darker_pink']}\nLoading matrix{col['reset']}")
+    print(f"{col['darker_pink']}\nLoading matrix{col['reset']}\n")
     matrix_time = Timer()
     matrix_time.tic()
 
@@ -98,12 +96,10 @@ def nfact_main() -> None:
     )
 
     if fdt_2_conn is None:
-        fdt_2_conn = process_fdt_matrix2(
-            args["ptx_fdt"], os.path.join(args["outdir"], "nfact"), group_mode
-        )
+        fdt_2_conn = process_fdt_matrix2(args["ptxdir"], group_mode)
         save_avg_matrix(fdt_2_conn, os.path.join(args["outdir"], "nfact"))
     print(
-        f"{col['darker_pink']}loaded matrix in {matrix_time.toc()} secs.{col['reset']}"
+        f"{col['darker_pink']}loaded matrix in {matrix_time.toc()} secs.{col['reset']}\n"
     )
 
     # Get hyperparameters
@@ -112,7 +108,7 @@ def nfact_main() -> None:
     # Run the decomposition
     decomposition_timer = Timer()
     decomposition_timer.tic()
-    print(f"\nDecomposing fdt matrix using {args['algo'].upper()}")
+    print(f"Decomposing fdt matrix using {args['algo'].upper()}")
     components = matrix_decomposition(
         fdt_2_conn,
         algo=args["algo"],
@@ -122,7 +118,7 @@ def nfact_main() -> None:
         parameters=parameters,
     )
     print(
-        f'{col["darker_pink"]}Decomposition took {decomposition_timer.toc()} secs{col["reset"]}'
+        f'{col["darker_pink"]}Decomposition took {decomposition_timer.toc()} secs{col["reset"]}\n'
     )
 
     # Save the results
@@ -140,7 +136,7 @@ def nfact_main() -> None:
 
     if args["wta"]:
         # Save winner-takes-all maps
-        print("\nSaving winner-take-all maps")
+        print("Saving winner-take-all maps\n")
         winner_takes_all(
             components,
             args["wta_zthr"],
@@ -153,6 +149,26 @@ def nfact_main() -> None:
             seeds,
             args["dim"],
         )
+
+    if group_mode and not args["skip_dual_reg"]:
+        print(
+            f"{col['plum']}Performing dual regression on {len(args['ptxdir'])} subjects{col['reset']}"
+        )
+        dual_reg = Dual_regression(
+            algo=args["algo"],
+            normalise=args["normalise"],
+            parallel=False,
+            list_of_files=args["ptxdir"],
+            component=components,
+            save_type=img_type,
+            seeds=seeds,
+            nfact_directory=os.path.join(
+                args["outdir"],
+                "nfact",
+            ),
+        )
+        dual_reg.run()
+    print(f"\n{col['darker_pink']}NFACT has finished{col['reset']}")
 
     glm_data = {
         "dualreg_on_G": [],
@@ -184,6 +200,7 @@ def nfact_main() -> None:
                     os.path.join(out_dualreg, f"Gs_{idx3}_dim{args['dim']}"),
                     seeds=seeds,
                 )
+
                 # keep data for GLM?
                 if args["glm_mat"]:
                     glm_data["dualreg_on_G"].append([Gs, Ws])
