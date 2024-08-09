@@ -21,7 +21,6 @@ from NFACT.decomposition.matrix_handling import (
     process_fdt_matrix2,
     load_previous_matrix,
     save_avg_matrix,
-    load_fdt_matrix,
 )
 from NFACT.pipes.image_handling import (
     save_white_matter,
@@ -174,58 +173,6 @@ def nfact_main() -> None:
         "dualreg_on_G": [],
         "dualreg_on_W": [],
     }  # stores data for glm if user wants to run that
-    if group_mode:
-        # Only run the dual regression if the user asked for it
-        if not args["skip_dual_reg"]:
-            print("...Doing dual regression")
-
-            for idx, matfile in enumerate(args["ptx_fdt"]):
-                print(f"... subj-{idx} - mat: {matfile}")
-                idx3 = str(idx).zfill(3)  # zero-pad index
-                Cs = load_fdt_matrix(os.path.join(matfile))
-
-                # dual reg on G
-                Gs, Ws = dualreg(Cs, components["grey_components"])
-                out_dualreg = os.path.join(
-                    args["outdir"], args["algo"].upper(), "dual_reg", "G"
-                )
-                save_white_matter(
-                    Ws,
-                    args["ptxdir"][idx],
-                    os.path.join(out_dualreg, f"Ws_{idx3}_dim{args['dim']}"),
-                )
-                save_grey_matter_components(
-                    Gs,
-                    args["ptxdir"][idx],
-                    os.path.join(out_dualreg, f"Gs_{idx3}_dim{args['dim']}"),
-                    seeds=seeds,
-                )
-
-                # keep data for GLM?
-                if args["glm_mat"]:
-                    glm_data["dualreg_on_G"].append([Gs, Ws])
-
-                # dual reg on W
-                Gs, Ws = dualreg(Cs, components["white_components"])
-                out_dualreg = os.path.join(
-                    args["outdir"], args["algo"].upper(), "dual_reg", "W"
-                )
-                save_white_matter(
-                    Ws,
-                    args["ptxdir"][idx],
-                    os.path.join(out_dualreg, f"Ws_{idx3}_dim{args['dim']}"),
-                )
-                save_grey_matter_components(
-                    Gs,
-                    args["ptxdir"][idx],
-                    os.path.join(out_dualreg, f"Gs_{idx3}_dim{args['dim']}"),
-                    seeds=seeds,
-                )
-                if args["glm_mat"]:
-                    glm_data["dualreg_on_W"].append([Gs, Ws])
-
-                # memory management
-                del Cs
 
     # GLM?
     if args["glm_mat"]:
@@ -289,7 +236,6 @@ def nfact_main() -> None:
                                 args["ptxdir"][0],
                                 os.path.join(out_glm, f"{y}_{stat}{con+1}"),
                             )
-    print("---- Done ----")
 
 
 if __name__ == "__main__":
