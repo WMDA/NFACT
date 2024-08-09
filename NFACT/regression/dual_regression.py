@@ -171,12 +171,10 @@ class Dual_regression:
         ).T
         gm_component_grey_map = np.array(
             [
-                nnls(
-                    self.component["grey_components"], self.connectivity_matrix[:, col]
-                )[0]
+                nnls(wm_component_white_map.T, self.connectivity_matrix.T[:, col])[0]
                 for col in range(self.connectivity_matrix.shape[0])
             ]
-        ).T
+        )
 
         return {
             "grey_components": gm_component_grey_map,
