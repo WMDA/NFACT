@@ -1,7 +1,7 @@
-from NFACT.decomposition.decomp import normalise_components
-from NFACT.decomposition.matrix_handling import load_fdt_matrix
-from NFACT.utils.utils import error_and_exit
-from NFACT.pipes.image_handling import save_dual_regression_images
+from NFACT.NFACT_decomp.decomposition.decomp import normalise_components
+from NFACT.NFACT_decomp.decomposition.matrix_handling import load_fdt_matrix
+from NFACT.NFACT_decomp.utils.utils import error_and_exit
+from NFACT.NFACT_decomp.pipes.image_handling import save_dual_regression_images
 
 import numpy as np
 from scipy.optimize import nnls

@@ -1,11 +1,11 @@
 import os
-from NFACT.utils.utils import (
+from NFACT.NFACT_decomp.utils.utils import (
     error_and_exit,
     read_file_to_list,
     colours,
     load_json,
 )
-from NFACT.pipes.image_handling import (
+from NFACT.NFACT_decomp.pipes.image_handling import (
     check_files_are_imaging_files,
     get_imaging_details_from_path,
 )

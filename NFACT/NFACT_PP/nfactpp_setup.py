@@ -2,7 +2,7 @@ import os
 import glob
 import re
 from NFACT.NFACT_PP.probtrackx_functions import get_probtrack2_arguments
-from NFACT.utils.utils import colours, error_and_exit, make_directory
+from NFACT.NFACT_decomp.utils.utils import colours, error_and_exit, make_directory
 
 
 def directory_contains_subjects(study_folder_path: str) -> bool:
@@ -227,6 +227,7 @@ def check_ptx_options_are_valid(ptx_options: list):
         if arg not in probtrack_args
     ]
 
+
 def nfact_pp_folder_setup(nfactpp_diretory: str) -> None:
     """
     Function to create nfact pp folder set up
@@ -235,13 +236,15 @@ def nfact_pp_folder_setup(nfactpp_diretory: str) -> None:
     ----------
     nfactpp_diretory: str
         path to directory
-    
+
     Returns
     -------
     None
     """
     col = colours()
-    print(f"{col['pink']}nfact pre-processing folder is in {nfactpp_diretory}{col['reset']}")
+    print(
+        f"{col['pink']}nfact pre-processing folder is in {nfactpp_diretory}{col['reset']}"
+    )
     make_directory(nfactpp_diretory)
-    sub_folders = ['logs', 'files']
+    sub_folders = ["logs", "files"]
     [make_directory(os.path.join(nfactpp_diretory, sub)) for sub in sub_folders]

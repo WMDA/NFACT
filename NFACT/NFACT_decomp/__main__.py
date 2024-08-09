@@ -3,12 +3,15 @@ import shutil
 import numpy as np
 from fsl.data.vest import loadVestFile
 
-from NFACT.utils.utils import Timer, Signit_handler, colours
-from NFACT.regression.glm import GLM
-from NFACT.regression.dual_regression import Dual_regression
-from NFACT.setup.args import nfact_args
-from NFACT.setup.file_setup import create_folder_set_up, get_group_average_files
-from NFACT.setup.configure_setup import (
+from NFACT.NFACT_decomp.utils.utils import Timer, Signit_handler, colours
+from NFACT.NFACT_decomp.regression.glm import GLM
+from NFACT.NFACT_decomp.regression.dual_regression import Dual_regression
+from NFACT.NFACT_decomp.setup.args import nfact_args
+from NFACT.NFACT_decomp.setup.file_setup import (
+    create_folder_set_up,
+    get_group_average_files,
+)
+from NFACT.NFACT_decomp.setup.configure_setup import (
     get_subjects,
     process_seeds,
     check_config_file,
@@ -16,19 +19,19 @@ from NFACT.setup.configure_setup import (
     check_subject_exist,
     seed_type,
 )
-from NFACT.decomposition.decomp import matrix_decomposition, get_parameters
-from NFACT.decomposition.matrix_handling import (
+from NFACT.NFACT_decomp.decomposition.decomp import matrix_decomposition, get_parameters
+from NFACT.NFACT_decomp.decomposition.matrix_handling import (
     process_fdt_matrix2,
     load_previous_matrix,
     save_avg_matrix,
 )
-from NFACT.pipes.image_handling import (
+from NFACT.NFACT_decomp.pipes.image_handling import (
     save_white_matter,
     save_grey_matter_components,
     save_images,
 )
-from NFACT.pipes.image_handling import winner_takes_all
-from NFACT.setup.arg_check import (
+from NFACT.NFACT_decomp.pipes.image_handling import winner_takes_all
+from NFACT.NFACT_decomp.setup.arg_check import (
     check_complusory_arguments,
     check_algo,
     process_command_args,

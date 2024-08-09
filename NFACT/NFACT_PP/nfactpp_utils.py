@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 import glob
-from NFACT.utils.utils import error_and_exit
+from NFACT.NFACT_decomp.utils.utils import error_and_exit
 
 
 def write_to_file(file_path: str, name: str, text: str) -> bool:
