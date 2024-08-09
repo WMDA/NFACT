@@ -24,16 +24,36 @@ def nfact_glm_args() -> dict:
     col = colours()
 
     option.add_argument(
+        '-n',
+        "--nfact_dir",
+        dest='nfact_dir',
+        help=f"{col['red']}REQUIRED:{col['reset']} Path to nfact directory"
+    )
+    option.add_argument(
+        '-t',
+        "-type_of_decomp",
+        dest="type_of_decomp",
+       help=f"{col['red']}REQUIRED:{col['reset']} type of decompoistion to regress on. Options are nfm and ica (case insensitive)",
+    )
+    option.add_argument(
         "-d",
         "--design_matrix",
         dest="design_matrix",
-        help="A path to a GLM design matrix",
+        help=f"{col['red']}REQUIRED:{col['reset']} A path to a GLM design matrix",
     )
     option.add_argument(
         "-c",
         "--contrasts",
         dest="contrast",
-        help="A path to a contrast matrix",
+        help=f"{col['red']}REQUIRED:{col['reset']} A path to a contrast matrix",
+    )
+
+    option.add_argument(
+        '-a',
+        '--analysis_name',
+        dest='analysis_name',
+        default='nfact_glm',
+        help="Optional name to give analysis. Default is nfact_glm"
     )
     return vars(option.parse_args())
 

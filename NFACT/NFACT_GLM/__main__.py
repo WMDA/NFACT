@@ -6,7 +6,7 @@ from fsl.data.vest import loadVestFile
 
 def nfact_glm_main() -> None:
     args = nfact_glm_args()
-    print("Currently not implemented")
+    print(args)
     exit(0)
 
     glm_data = {
