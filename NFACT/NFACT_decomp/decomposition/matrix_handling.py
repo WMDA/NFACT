@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 from scipy.sparse.linalg import eigsh
 import os
-from NFACT.utils.utils import Timer, error_and_exit, colours
+from NFACT.NFACT_decomp.utils.utils import Timer, error_and_exit, colours
 
 
 def process_fdt_matrix2(list_of_ptx_folds: list, group_mode: bool) -> np.ndarray:
@@ -187,9 +187,9 @@ def melodic_incremental_group_pca(
     if keep_mean:
         pca_matrix = pca_matrix + matrix_mean
 
-    print(f"Old matrix size was: {fdt_matrix.shape[0]}x{fdt_matrix.shape[1]}")
-    print(f"New matrix size is : {pca_matrix.shape[0]}x{pca_matrix.shape[1]}")
-    print(f"MIGP finished in : {migpa_timer.toc()} secs.")
+    print(f"Old matrix size {fdt_matrix.shape[0]}x{fdt_matrix.shape[1]}")
+    print(f"New matrix size now {pca_matrix.shape[0]}x{pca_matrix.shape[1]}")
+    print(f"MIGP finished in {migpa_timer.toc()} secs.\n")
     return pca_matrix
 
 
