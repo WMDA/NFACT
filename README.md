@@ -184,8 +184,8 @@ Example Usage:
 ```
 ## NFACT config
 
-NFACT config creates a json file of the available hyper parameters for the ICA and NFM functions. This json file can then be edited and fed into
-NFACT to change the hyperparameters of the FastICA and NFM functions.
+NFACT config creates a json file of the available hyper parameters for the ICA and NMF functions. This json file can then be edited and fed into
+NFACT to change the hyperparameters of the FastICA and NMF functions.
 
 NFACT does its decomposition using sckit learn's FastICA (https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.FastICA.html#sklearn.decomposition) 
 and NFM (https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.NMF.html) so any of the hyperparameters of these functions can be altered.
