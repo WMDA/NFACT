@@ -9,11 +9,7 @@ from NFACT.NFACT_PP.nfactpp_setup import (
     check_ptx_options_are_valid,
 )
 
-from NFACT.utils.utils import (
-    error_and_exit,
-    Signit_handler,
-    read_file_to_list,
-)
+from NFACT.utils.utils import error_and_exit, Signit_handler, read_file_to_list
 from NFACT.NFACT_decomp.setup.configure_setup import (
     return_list_of_subjects_from_file,
     does_list_of_subjects_exist,
