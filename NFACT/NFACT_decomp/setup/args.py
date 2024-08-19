@@ -98,18 +98,6 @@ def nfact_args() -> dict:
     )
 
     args.add_argument(
-        "-G",
-        "--glm_mat",
-        dest="glm_mat",
-        help="Run a GLM using design and contrast matrices provided (only in dualreg mode)",
-    )
-    args.add_argument(
-        "-g",
-        "--glm_con",
-        dest="glm_con",
-        help="Run a GLM using design and contrast matrices provided (only in dualreg mode)",
-    )
-    args.add_argument(
         "-O",
         "--overwrite",
         dest="overwrite",
