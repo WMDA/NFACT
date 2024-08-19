@@ -1,49 +1,6 @@
 import os
-from datetime import datetime
 import glob
-from NFACT.NFACT_decomp.utils.utils import error_and_exit
-
-
-def write_to_file(file_path: str, name: str, text: str) -> bool:
-    """
-    Function to write to file.
-
-    Parameters
-    ----------
-    file_path: str
-        abosulte file path to
-        where file is created
-    name: str
-        name of file
-    text: str
-        string to add to file
-    """
-    try:
-        with open(f"{file_path}/{name}", "w") as file:
-            file.write(text)
-    except Exception as e:
-        print(f"Unable to write to {file_path}/{name} due to :", e)
-        return False
-    return True
-
-
-def date_for_filename() -> str:
-    """
-    Function to get the
-    date and time in format
-    useful for a file name.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    str: string
-        string of datetime object
-    """
-    now = datetime.now()
-    return now.strftime("%Y_%m_%d_%H_%M_%S")
+from NFACT.utils.utils import error_and_exit
 
 
 def hcp_get_seeds(sub: str) -> list:

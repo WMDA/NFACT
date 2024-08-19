@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from NFACT.NFACT_decomp.utils.utils import Timer, Signit_handler, colours
+from NFACT.utils.utils import Timer, Signit_handler, colours
 from NFACT.NFACT_decomp.regression.dual_regression import Dual_regression
 from NFACT.NFACT_decomp.setup.args import nfact_args
 from NFACT.NFACT_decomp.setup.file_setup import (
