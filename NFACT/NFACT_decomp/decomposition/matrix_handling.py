@@ -182,7 +182,7 @@ def melodic_incremental_group_pca(
     if d_pca > n_dim:
         d_pca = n_dim
 
-    pca_matrix = matrix_MIGP(fdt_matrix, n_dim, d_pca)
+    pca_matrix = matrix_migp(fdt_matrix, n_dim, d_pca)
 
     if keep_mean:
         pca_matrix = pca_matrix + matrix_mean
@@ -193,7 +193,7 @@ def melodic_incremental_group_pca(
     return pca_matrix
 
 
-def matrix_MIGP(
+def matrix_migp(
     fdt_matrix: np.array,
     n_dim: int = 1000,
     d_pca: int = 1000,

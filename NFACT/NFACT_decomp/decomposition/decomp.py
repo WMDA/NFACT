@@ -15,7 +15,7 @@ from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
 
 
 @ignore_warnings(category=ConvergenceWarning)
-def ICA_decomp(parameters: dict, pca_matrix: np.array, fdt_matrix: np.array) -> dict:
+def ica_decomp(parameters: dict, pca_matrix: np.array, fdt_matrix: np.array) -> dict:
     """
     Function to perform ica decomposition
 
@@ -50,7 +50,7 @@ def ICA_decomp(parameters: dict, pca_matrix: np.array, fdt_matrix: np.array) -> 
 
 
 @ignore_warnings(category=ConvergenceWarning)
-def NFM_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
+def nmf_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
     """
     Function to perform NFM.
 
@@ -72,7 +72,7 @@ def NFM_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
     try:
         grey_matter = decomp.fit_transform(fdt_matrix)
     except Exception as e:
-        error_and_exit(False, f"Unable to perform NFM due to {e}")
+        error_and_exit(False, f"Unable to perform NMF due to {e}")
     return {"grey_components": grey_matter, "white_components": decomp.components_}
 
 
@@ -104,7 +104,7 @@ def get_parameters(parameters: dict, algo: str, n_components: int) -> dict:
 
     parameters = create_combined_algo_dict()[algo]
     parameters["n_components"] = n_components
-    if algo == "nfm":
+    if algo == "nmf":
         parameters["alpha_W"] = 0.1
         parameters["init"] = "nndsvd"
         parameters["random_state"] = 1
@@ -116,7 +116,7 @@ def matrix_decomposition(
     fdt_matrix: np.array,
     algo: str,
     normalise: bool,
-    sign_flip: bool,
+    signflip: bool,
     pca_dim: int,
     parameters: dict,
 ) -> dict:
@@ -150,15 +150,15 @@ def matrix_decomposition(
     if algo == "ica":
         # TODO: either change function to accept single argument or offer differnt inputs
         pca_matrix = melodic_incremental_group_pca(fdt_matrix, pca_dim, pca_dim)
-        components = ICA_decomp(parameters, pca_matrix, fdt_matrix)
+        components = ica_decomp(parameters, pca_matrix, fdt_matrix)
 
-        if sign_flip:
+        if signflip:
             print("Sign-flipping components")
-            components["grey_components"] = SignFlip(components["grey_components"].T).T
-            components["white_components"] = SignFlip(components["white_components"])
+            components["grey_components"] = sign_flip(components["grey_components"].T).T
+            components["white_components"] = sign_flip(components["white_components"])
 
-    if algo == "nfm":
-        components = NFM_decomp(parameters, fdt_matrix)
+    if algo == "nmf":
+        components = nmf_decomp(parameters, fdt_matrix)
 
     demean = True if algo == "ica" else False
 
@@ -205,7 +205,7 @@ def normalise_components(
     }
 
 
-def SignFlip(decomp_matrix: np.array, thr: int = 0) -> np.ndarray:
+def sign_flip(decomp_matrix: np.array, thr: int = 0) -> np.ndarray:
     """
     Function to sign flip the rows of
     the decomp matrix so that the heavy tail
