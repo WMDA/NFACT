@@ -46,7 +46,7 @@ def nfact_args() -> dict:
         "-m",
         "--migp",
         dest="migp",
-        default=1000,
+        default="1000",
         help="MELODIC's Incremental Group-PCA dimensionality (default is 1000)",
     )
     args.add_argument(
