@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 import numpy as np
 import os
-from NFACT.NFACT_decomp.utils.utils import error_and_exit, colours
+from NFACT.utils.utils import error_and_exit, colours
 import pathlib
 import re
 

@@ -9,7 +9,7 @@ from NFACT.NFACT_PP.nfactpp_setup import (
     check_ptx_options_are_valid,
 )
 
-from NFACT.NFACT_decomp.utils.utils import (
+from NFACT.utils.utils import (
     error_and_exit,
     Signit_handler,
     read_file_to_list,

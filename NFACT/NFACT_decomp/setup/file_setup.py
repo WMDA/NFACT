@@ -1,4 +1,4 @@
-from NFACT.NFACT_decomp.utils.utils import make_directory, error_and_exit, colours
+from NFACT.utils.utils import make_directory, error_and_exit, colours
 import os
 import shutil
 

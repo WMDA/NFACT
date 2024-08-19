@@ -18,7 +18,7 @@ from NFACT.NFACT_PP.probtrackx_functions import (
     get_target2,
     seeds_to_ascii,
 )
-from NFACT.NFACT_decomp.utils.utils import colours, error_and_exit
+from NFACT.utils.utils import colours, error_and_exit
 
 
 def surf_volume_main(arg: dict, handler) -> None:

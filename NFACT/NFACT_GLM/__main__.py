@@ -1,4 +1,4 @@
-from NFACT.NFACT_decomp.utils.utils import colours
+from NFACT.utils.utils import colours
 
 
 def nfact_glm_main() -> None:

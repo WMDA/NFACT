@@ -1,5 +1,5 @@
 import os
-from NFACT.NFACT_decomp.utils.utils import (
+from NFACT.utils.utils import (
     error_and_exit,
     read_file_to_list,
     colours,
