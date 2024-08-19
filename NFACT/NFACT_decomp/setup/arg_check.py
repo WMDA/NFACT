@@ -50,7 +50,7 @@ def check_algo(algo: str) -> str:
     if algo.lower() not in implemented_decomp_methods:
         error_and_exit(
             False,
-            f"{algo} is not implemented in NFACT. NFACT currently implements ICA and NFM. Please specify with --algo",
+            f"{algo} is not implemented in NFACT. NFACT currently implements ICA and NMF (case insensitive). Please specify with --algo",
         )
     return algo.lower()
 
@@ -89,7 +89,7 @@ def process_command_args(args: dict) -> dict:
 
     if ".0" in args["migp"]:
         args["migp"] = float(args["migp"])
-    if args["algo"] != "nfm":
+    if args["algo"] != "nmf":
         if args["migp"]:
             try:
                 args["migp"] = int(args["migp"])
@@ -98,6 +98,6 @@ def process_command_args(args: dict) -> dict:
                     False,
                     f"migp must be a interger value. {args['migp']} is not a interger type",
                 )
-    if args["algo"] == "nfm":
+    if args["algo"] == "nmf":
         args["migp"] = None
     return args

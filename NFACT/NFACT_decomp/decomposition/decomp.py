@@ -72,7 +72,7 @@ def nmf_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
     try:
         grey_matter = decomp.fit_transform(fdt_matrix)
     except Exception as e:
-        error_and_exit(False, f"Unable to perform NFM due to {e}")
+        error_and_exit(False, f"Unable to perform NMF due to {e}")
     return {"grey_components": grey_matter, "white_components": decomp.components_}
 
 
