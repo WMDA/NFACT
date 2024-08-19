@@ -239,9 +239,15 @@ def save_grey_matter_components(
             directory,
             f"{prefix}_dim{dim}_{os.path.basename(seed).replace('.', '_')}",
         )
+
         if save_type == "gifti":
+            file_name = re.sub("_gii", "", file_name)
             save_grey_matter_gifit(grey_matter_seed, file_name, seed)
+
         if save_type == "nifti":
+            file_name = re.sub("_nii", "", file_name)
+            if "_gz" in file_name:
+                file_name = re.sub("_gz", "", file_name)
             save_grey_matter_volume(
                 grey_matter_seed, file_name, seed, coord_mat2[mask_to_get_seed, :3]
             )
