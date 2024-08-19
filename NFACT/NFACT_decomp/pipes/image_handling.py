@@ -246,10 +246,8 @@ def save_grey_matter_components(
 
         if save_type == "nifti":
             file_name = re.sub("_nii", "", file_name)
-            try:
+            if "_gz" in file_name:
                 file_name = re.sub("_gz", "", file_name)
-            except Exception:
-                file_name = file_name
             save_grey_matter_volume(
                 grey_matter_seed, file_name, seed, coord_mat2[mask_to_get_seed, :3]
             )
