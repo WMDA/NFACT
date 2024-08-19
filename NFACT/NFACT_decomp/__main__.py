@@ -108,7 +108,7 @@ def nfact_main() -> None:
         fdt_2_conn,
         algo=args["algo"],
         normalise=args["normalise"],
-        sign_flip=args["sign_flip"],
+        signflip=args["sign_flip"],
         pca_dim=args["migp"],
         parameters=parameters,
     )
