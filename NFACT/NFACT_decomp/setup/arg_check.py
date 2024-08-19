@@ -46,7 +46,7 @@ def check_algo(algo: str) -> str:
        returns lower case
        of str
     """
-    implemented_decomp_methods = ["nfm", "ica"]
+    implemented_decomp_methods = ["nmf", "ica"]
     if algo.lower() not in implemented_decomp_methods:
         error_and_exit(
             False,
