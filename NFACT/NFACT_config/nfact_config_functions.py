@@ -94,7 +94,7 @@ def get_arguments(function: object) -> dict:
 def create_combined_algo_dict():
     """
     Function to create a combined dictionary
-    for NFM and ICA function arguments.
+    for nmf and ICA function arguments.
 
     Parameters
     ----------
@@ -106,8 +106,8 @@ def create_combined_algo_dict():
         dict of ICA and NMF
         arguments
     """
-    dictionary_to_save = {"ica": get_arguments(FastICA), "nfm": get_arguments(NMF)}
-    del dictionary_to_save["nfm"]["n_components"]
+    dictionary_to_save = {"ica": get_arguments(FastICA), "nmf": get_arguments(NMF)}
+    del dictionary_to_save["nmf"]["n_components"]
     del dictionary_to_save["ica"]["n_components"]
     return dictionary_to_save
 

@@ -28,17 +28,17 @@ def create_folder_set_up(directory: str) -> None:
     sub_folders = [
         "group_averages",
         "ICA",
-        "NFM",
-        "NFM/components",
+        "NMF",
+        "NMF/components",
         "ICA/components",
         "ICA/dual_reg",
-        "NFM/dual_reg",
+        "NMF/dual_reg",
         "ICA/dual_reg/normalised",
-        "NFM/dual_reg/normalised",
+        "NMF/dual_reg/normalised",
         "ICA/normalised",
-        "NFM/normalised",
+        "NMF/normalised",
         "ICA/WTA",
-        "NFM/WTA",
+        "NMF/WTA",
     ]
 
     does_exist = os.path.exists(nfact_directory)
