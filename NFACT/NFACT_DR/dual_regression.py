@@ -1,12 +1,80 @@
 from NFACT.NFACT_decomp.decomposition.decomp import normalise_components
 from NFACT.NFACT_decomp.decomposition.matrix_handling import load_fdt_matrix
-from NFACT.NFACT_base.utils import error_and_exit
-from NFACT.NFACT_decomp.pipes.image_handling import save_dual_regression_images
+from NFACT.NFACT_base.utils import error_and_exit, colours
+from NFACT.NFACT_base.imagehandling import (
+    save_grey_matter_components,
+    save_white_matter,
+)
 
 import numpy as np
 from scipy.optimize import nnls
 import re
 import os
+
+
+def save_dual_regression_images(
+    save_type: str,
+    components: dict,
+    nfact_path: str,
+    seeds: list,
+    algo: str,
+    dim: int,
+    sub: str,
+    ptx_directory: str,
+):
+    """
+    Function to save regression images
+    TODO: combine with save_images function
+
+    Parameters
+    ----------
+    save_type: str
+        should grey matter be saved as
+        gifti, nifit or cifti
+    components: dict
+        dictionary of components
+    nfact_path: str
+        str to nfact directory
+    seeds: list
+        list of seeds
+    algo: str
+        str of algo
+    dim: int
+        number of dimensions
+        used for naming output
+    sub: str
+        Subject id in string format
+    """
+
+    col = colours()
+    print(f"{col['purple']}Saving Dual regression components{col['reset']}\n")
+    for comp, _ in components.items():
+        algo_path = os.path.join(algo, "dual_reg")
+        w_file_name = f"W_{sub}_dim{dim}"
+        grey_prefix = f"G_{sub}"
+
+        if "normalised" in comp:
+            algo_path = os.path.join(algo, "dual_reg", "normalised")
+            w_file_name = f"W_{sub}_norm_dim{dim}"
+            grey_prefix = f"G_{sub}_norm"
+
+        if "grey" in comp:
+            save_grey_matter_components(
+                save_type,
+                components[comp],
+                nfact_path,
+                seeds,
+                algo_path,
+                dim,
+                os.path.join(ptx_directory, "coords_for_fdt_matrix2"),
+                grey_prefix,
+            )
+        if "white" in comp:
+            save_white_matter(
+                components[comp],
+                os.path.join(ptx_directory, "lookup_tractspace_fdt_matrix2.nii.gz"),
+                os.path.join(nfact_path, algo_path, w_file_name),
+            )
 
 
 # TODO: Add in normalisation.
