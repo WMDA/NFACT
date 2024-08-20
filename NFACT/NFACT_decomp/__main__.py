@@ -1,8 +1,8 @@
 import os
 import shutil
 
-from NFACT.utils.utils import Timer, Signit_handler, colours
-from NFACT.NFACT_decomp.regression.dual_regression import Dual_regression
+from NFACT.utils.utils import Timer, colours
+from NFACT.utils.signithandler import Signit_handler
 from NFACT.NFACT_decomp.setup.args import nfact_args
 from NFACT.NFACT_decomp.setup.file_setup import (
     create_folder_set_up,
@@ -144,25 +144,6 @@ def nfact_main() -> None:
             seeds,
             args["dim"],
         )
-
-    if group_mode and not args["skip_dual_reg"]:
-        print(
-            f"{col['plum']}Performing dual regression on {len(args['ptxdir'])} subjects{col['reset']}"
-        )
-        dual_reg = Dual_regression(
-            algo=args["algo"],
-            normalise=args["normalise"],
-            parallel=False,
-            list_of_files=args["ptxdir"],
-            component=components,
-            save_type=img_type,
-            seeds=seeds,
-            nfact_directory=os.path.join(
-                args["outdir"],
-                "nfact",
-            ),
-        )
-        dual_reg.run()
     print(f"\n{col['darker_pink']}NFACT has finished{col['reset']}")
     exit(0)
 

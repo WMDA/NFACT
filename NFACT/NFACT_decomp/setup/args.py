@@ -50,14 +50,6 @@ def nfact_args() -> dict:
         help="MELODIC's Incremental Group-PCA dimensionality (default is 1000)",
     )
     args.add_argument(
-        "-S",
-        "--skip_dual_reg",
-        dest="skip_dual_reg",
-        action="store_true",
-        default=False,
-        help="Options to skip dual regression",
-    )
-    args.add_argument(
         "-a",
         "--algo",
         required=False,
@@ -89,7 +81,7 @@ def nfact_args() -> dict:
         help="normalise components by scaling",
     )
     args.add_argument(
-        "-F",
+        "-S",
         "--sign_flip",
         dest="sign_flip",
         action="store_true",
