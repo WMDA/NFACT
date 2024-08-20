@@ -1,9 +1,11 @@
 from NFACT.NFACT_base.utils import colours
-from NFACT_DR.dual_regression import Dual_regression
+from NFACT.NFACT_DR.dual_regression import Dual_regression
+from NFACT.NFACT_DR.nfact_dr_args import nfact_dr_args
 
 
 def nfact_dr_main():
-    print("Currently not implemented")
+    args = nfact_dr_args()
+
     exit(0)
     print(
         f"{col['plum']}Performing dual regression on {len(args['ptxdir'])} subjects{col['reset']}"
