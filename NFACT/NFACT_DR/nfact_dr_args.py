@@ -21,11 +21,42 @@ def nfact_dr_args() -> dict:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     col = colours()
-
+    args.add_argument(
+        "-p",
+        "--ptxdir",
+        nargs="+",
+        dest="ptxdir",
+        help="List of file paths to probtrackx directories. If not provided will then --list_ofsubjects must be provided",
+    )
+    args.add_argument(
+        "-l",
+        "--list_of_subjects",
+        dest="list_of_subjects",
+        help="Filepath to a list of subjects. If not given then --ptxdir must be directories.",
+    )
     args.add_argument(
         "-n",
         "--nfact_dir",
         help=f"{col['red']}REQUIRED{col['reset']}: Path to NFACT directory",
+    )
+    args.add_argument(
+        "-a",
+        "--algo",
+        help=f"{col['red']}REQUIRED{col['reset']}: Which NFACT algorithm to perform dual regression on",
+    )
+    args.add_argument(
+        "--seeds",
+        "-s",
+        dest="seeds",
+        help=f"{col['red']}REQUIRED{col['reset']}: File of seeds used in NFACT_PP/probtrackx",
+    )
+    args.add_argument(
+        "-N",
+        "--normalise",
+        dest="normalise",
+        action="store_true",
+        default=False,
+        help="normalise components by scaling",
     )
 
     return vars(args.parse_args())

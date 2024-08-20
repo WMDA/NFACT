@@ -4,14 +4,13 @@ import shutil
 from NFACT.NFACT_base.utils import Timer, colours
 from NFACT.NFACT_base.signithandler import Signit_handler
 
-from NFACT.NFACT_base.setup import check_subject_exist
+from NFACT.NFACT_base.setup import check_subject_exist, check_algo, get_subjects
 from NFACT.NFACT_decomp.setup.args import nfact_args
 from NFACT.NFACT_decomp.setup.file_setup import (
     create_folder_set_up,
     get_group_average_files,
 )
 from NFACT.NFACT_decomp.setup.configure_setup import (
-    get_subjects,
     process_seeds,
     check_config_file,
     load_config_file,
@@ -28,7 +27,6 @@ from NFACT.NFACT_decomp.decomposition.matrix_handling import (
 from NFACT.NFACT_decomp.pipes.image_handling import winner_takes_all, save_images
 from NFACT.NFACT_decomp.setup.arg_check import (
     check_complusory_arguments,
-    check_algo,
     process_command_args,
 )
 

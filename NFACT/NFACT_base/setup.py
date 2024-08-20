@@ -78,3 +78,61 @@ def return_list_of_subjects_from_file(path_to_list: str) -> list:
     except Exception as e:
         error_and_exit(False, f"Unable to open subject list due to: {e}")
     return list_of_subjects
+
+
+def check_algo(algo: str) -> str:
+    """
+    Function to check that decomposition
+    is implemented in NFACT.
+
+    Parameters
+    ----------
+    algo: str
+       string of decomp method.
+
+    Returns
+    -------
+    algo: str
+       returns lower case
+       of str
+    """
+    implemented_decomp_methods = ["nmf", "ica"]
+    if algo.lower() not in implemented_decomp_methods:
+        error_and_exit(
+            False,
+            f"{algo} is not implemented in NFACT. NFACT currently implements ICA and NMF (case insensitive). Please specify with --algo",
+        )
+    return algo.lower()
+
+
+def get_subjects(args: dict) -> dict:
+    """
+    Function to get subjects directly from
+    ptx list or from list of subjects.
+
+    Parameters
+    ----------
+    args: dict
+       dictionary of command line
+       arguments
+
+    Returns
+    -------
+    args: dict
+       dictionary of command line
+       arguments with valid list of subjects
+    """
+    if args["ptxdir"]:
+        if args["list_of_subjects"]:
+            col = colours()
+            print(
+                f'{col["red"]}ptxdir specified. Ignoring list of subjects{col["reset"]}'
+            )
+        return args
+    if args["list_of_subjects"]:
+        error_and_exit(
+            does_list_of_subjects_exist(args["list_of_subjects"]),
+            "List of subjects doesn't exist",
+        )
+        args["ptxdir"] = return_list_of_subjects_from_file(args["list_of_subjects"])
+        return args
