@@ -4,7 +4,7 @@ import shutil
 from NFACT.NFACT_base.utils import Timer, colours
 from NFACT.NFACT_base.signithandler import Signit_handler
 from NFACT.NFACT_base.imagehandling import save_images
-
+from NFACT.NFACT_base.setup import check_subject_exist
 from NFACT.NFACT_decomp.setup.args import nfact_args
 from NFACT.NFACT_decomp.setup.file_setup import (
     create_folder_set_up,
@@ -15,9 +15,9 @@ from NFACT.NFACT_decomp.setup.configure_setup import (
     process_seeds,
     check_config_file,
     load_config_file,
-    check_subject_exist,
     seed_type,
 )
+
 from NFACT.NFACT_decomp.decomposition.decomp import matrix_decomposition, get_parameters
 from NFACT.NFACT_decomp.decomposition.matrix_handling import (
     process_fdt_matrix2,

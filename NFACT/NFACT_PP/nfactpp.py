@@ -4,7 +4,7 @@ import shutil
 
 # NFACT functions
 from NFACT.NFACT_PP.nfactpp_setup import check_surface_arguments, nfact_pp_folder_setup
-from NFACT.NFACT_decomp.pipes.image_handling import get_file
+from NFACT.NFACT_base.imagehandling import get_file
 from NFACT.NFACT_PP.nfactpp_functions import (
     hcp_get_seeds,
     hcp_get_rois,

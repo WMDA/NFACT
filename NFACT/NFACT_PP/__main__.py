@@ -12,10 +12,10 @@ from NFACT.NFACT_PP.nfactpp_setup import (
 from NFACT.NFACT_base.utils import error_and_exit
 from NFACT.NFACT_base.signithandler import Signit_handler
 from NFACT.NFACT_base.filesystem import read_file_to_list
-from NFACT.NFACT_decomp.setup.configure_setup import (
+from NFACT.NFACT_base.setup import (
+    check_subject_exist,
     return_list_of_subjects_from_file,
     does_list_of_subjects_exist,
-    check_subject_exist,
 )
 
 
