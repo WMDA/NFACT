@@ -3,7 +3,7 @@ import shutil
 
 from NFACT.NFACT_base.utils import Timer, colours
 from NFACT.NFACT_base.signithandler import Signit_handler
-from NFACT.NFACT_base.imagehandling import save_images
+
 from NFACT.NFACT_base.setup import check_subject_exist
 from NFACT.NFACT_decomp.setup.args import nfact_args
 from NFACT.NFACT_decomp.setup.file_setup import (
@@ -25,7 +25,7 @@ from NFACT.NFACT_decomp.decomposition.matrix_handling import (
     save_avg_matrix,
 )
 
-from NFACT.NFACT_decomp.pipes.image_handling import winner_takes_all
+from NFACT.NFACT_decomp.pipes.image_handling import winner_takes_all, save_images
 from NFACT.NFACT_decomp.setup.arg_check import (
     check_complusory_arguments,
     check_algo,
@@ -146,7 +146,7 @@ def nfact_main() -> None:
             seeds,
             args["dim"],
         )
-    print(f"\n{col['darker_pink']}NFACT has finished{col['reset']}")
+    print(f"{col['darker_pink']}NFACT has finished{col['reset']}")
     exit(0)
 
 

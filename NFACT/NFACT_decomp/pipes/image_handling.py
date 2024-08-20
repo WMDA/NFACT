@@ -6,6 +6,70 @@ from NFACT.NFACT_base.imagehandling import (
     save_white_matter,
     save_grey_matter_components,
 )
+from NFACT.NFACT_base.utils import colours
+
+
+def save_images(
+    save_type: str, components: dict, nfact_path: str, seeds: list, algo: str, dim: int
+) -> None:
+    """
+    Function to save  grey and white
+    components.
+
+    Parameters
+    ----------
+    save_type: str
+        should grey matter be saved as
+        gifti, nifit or cifti
+    components: dict
+        dictionary of components
+    nfact_path: str
+        str to nfact directory
+    seeds: list
+        list of seeds
+    algo: str
+        str of algo
+    dim: int
+        number of dimensions
+        used for naming output
+
+    Returns
+    -------
+    None
+    """
+
+    col = colours()
+    for comp, _ in components.items():
+        algo_path = os.path.join("components", algo, "decomp")
+        w_file_name = f"W_dim{dim}"
+        grey_prefix = "G"
+
+        if "normalised" in comp:
+            algo_path = os.path.join("components", algo, "normalised")
+            w_file_name = f"W_norm_dim{dim}"
+            grey_prefix = "G_norm"
+
+        if "grey" in comp:
+            print(f"{col['pink']}Saving {comp}{col['reset']}")
+            save_grey_matter_components(
+                save_type,
+                components[comp],
+                nfact_path,
+                seeds,
+                algo_path,
+                dim,
+                os.path.join(nfact_path, "group_averages", "coords_for_fdt_matrix2"),
+                grey_prefix,
+            )
+        if "white" in comp:
+            print(f"{col['purple']}Saving {comp}{col['reset']}")
+            save_white_matter(
+                components[comp],
+                os.path.join(
+                    nfact_path, "group_averages", "lookup_tractspace_fdt_matrix2.nii.gz"
+                ),
+                os.path.join(nfact_path, algo_path, w_file_name),
+            )
 
 
 def winner_takes_all(
@@ -46,14 +110,14 @@ def winner_takes_all(
         os.path.join(
             nfact_path, "group_averages", "lookup_tractspace_fdt_matrix2.nii.gz"
         ),
-        os.path.join(nfact_path, algo, "WTA", f"W_WTA_dim{dim}"),
+        os.path.join(nfact_path, "components", algo, "WTA", f"W_WTA_dim{dim}"),
     )
     save_grey_matter_components(
         save_type,
         grey_wta_map,
         nfact_path,
         seeds,
-        os.path.join(nfact_path, algo, "WTA"),
+        os.path.join(nfact_path, "components", algo, "WTA"),
         dim,
         os.path.join(nfact_path, "group_averages", "coords_for_fdt_matrix2"),
         "G_WTA",

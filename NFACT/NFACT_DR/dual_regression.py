@@ -77,7 +77,6 @@ def save_dual_regression_images(
             )
 
 
-# TODO: Add in normalisation.
 # TODO: Add in parallelization.
 class Dual_regression:
     """
