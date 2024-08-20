@@ -3,7 +3,7 @@ from sklearn.decomposition import FastICA, NMF
 import json
 import os
 import argparse
-from NFACT.utils.utils import colours
+from NFACT.NFACT_base.utils import colours
 
 
 def nfact_config_args():

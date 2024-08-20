@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 from scipy.sparse.linalg import eigsh
 import os
-from NFACT.utils.utils import Timer, error_and_exit, colours
+from NFACT.NFACT_base.utils import Timer, error_and_exit, colours
 
 
 def process_fdt_matrix2(list_of_ptx_folds: list, group_mode: bool) -> np.ndarray:

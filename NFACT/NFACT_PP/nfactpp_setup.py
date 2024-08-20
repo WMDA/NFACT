@@ -2,7 +2,8 @@ import os
 import glob
 import re
 from NFACT.NFACT_PP.probtrackx_functions import get_probtrack2_arguments
-from NFACT.utils.utils import colours, error_and_exit, make_directory
+from NFACT.NFACT_base.utils import colours, error_and_exit
+from NFACT.NFACT_base.filesystem import make_directory
 
 
 def directory_contains_subjects(study_folder_path: str) -> bool:

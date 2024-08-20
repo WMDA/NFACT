@@ -1,4 +1,4 @@
-from NFACT.utils.utils import error_and_exit
+from NFACT.NFACT_base.utils import error_and_exit
 
 
 def check_complusory_arguments(args: dict) -> None:

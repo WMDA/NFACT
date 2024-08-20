@@ -2,8 +2,8 @@ import os
 import subprocess
 import multiprocessing
 import signal
-from NFACT.utils.utils import write_to_file, date_for_filename
-from NFACT.utils.utils import colours, error_and_exit
+from NFACT.NFACT_base.filesystem import write_to_file, date_for_filename
+from NFACT.NFACT_base.utils import colours, error_and_exit
 
 
 def hcp_files(sub: str, out_dir: str) -> dict:

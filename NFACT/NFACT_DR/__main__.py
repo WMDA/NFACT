@@ -1,4 +1,4 @@
-from NFACT.utils.utils import colours
+from NFACT.NFACT_base.utils import colours
 from NFACT_DR.dual_regression import Dual_regression
 
 

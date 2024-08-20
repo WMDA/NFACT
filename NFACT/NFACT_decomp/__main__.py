@@ -1,8 +1,8 @@
 import os
 import shutil
 
-from NFACT.utils.utils import Timer, colours
-from NFACT.utils.signithandler import Signit_handler
+from NFACT.NFACT_base.utils import Timer, colours
+from NFACT.NFACT_base.signithandler import Signit_handler
 from NFACT.NFACT_decomp.setup.args import nfact_args
 from NFACT.NFACT_decomp.setup.file_setup import (
     create_folder_set_up,

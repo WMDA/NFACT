@@ -1,4 +1,5 @@
-from NFACT.utils.utils import make_directory, error_and_exit, colours
+from NFACT.NFACT_base.filesystem import make_directory, error_and_exit
+from NFACT.NFACT_base.utils import colours
 import os
 import shutil
 

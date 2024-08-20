@@ -10,7 +10,7 @@ warnings.filterwarnings("ignore")
 from NFACT.NFACT_decomp.decomposition.matrix_handling import (
     melodic_incremental_group_pca,
 )
-from NFACT.utils.utils import error_and_exit, colours
+from NFACT.NFACT_base.utils import error_and_exit, colours
 from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
 
 
