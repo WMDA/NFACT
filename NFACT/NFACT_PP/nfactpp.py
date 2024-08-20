@@ -4,7 +4,7 @@ import shutil
 
 # NFACT functions
 from NFACT.NFACT_PP.nfactpp_setup import check_surface_arguments, nfact_pp_folder_setup
-from NFACT.NFACT_decomp.pipes.image_handling import get_file
+from NFACT.NFACT_base.imagehandling import get_file
 from NFACT.NFACT_PP.nfactpp_functions import (
     hcp_get_seeds,
     hcp_get_rois,
@@ -18,7 +18,7 @@ from NFACT.NFACT_PP.probtrackx_functions import (
     get_target2,
     seeds_to_ascii,
 )
-from NFACT.utils.utils import colours, error_and_exit
+from NFACT.NFACT_base.utils import colours, error_and_exit
 
 
 def surf_volume_main(arg: dict, handler) -> None:

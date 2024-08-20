@@ -1,6 +1,6 @@
 import os
 import glob
-from NFACT.utils.utils import error_and_exit
+from NFACT.NFACT_base.utils import error_and_exit
 
 
 def hcp_get_seeds(sub: str) -> list:

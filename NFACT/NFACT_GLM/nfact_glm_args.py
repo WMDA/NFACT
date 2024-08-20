@@ -1,5 +1,5 @@
 import argparse
-from NFACT.NFACT_decomp.utils.utils import colours
+from NFACT.NFACT_base.utils import colours
 
 
 def nfact_glm_args() -> dict:
@@ -24,16 +24,16 @@ def nfact_glm_args() -> dict:
     col = colours()
 
     option.add_argument(
-        '-n',
+        "-n",
         "--nfact_dir",
-        dest='nfact_dir',
-        help=f"{col['red']}REQUIRED:{col['reset']} Path to nfact directory"
+        dest="nfact_dir",
+        help=f"{col['red']}REQUIRED:{col['reset']} Path to nfact directory",
     )
     option.add_argument(
-        '-t',
+        "-t",
         "-type_of_decomp",
         dest="type_of_decomp",
-       help=f"{col['red']}REQUIRED:{col['reset']} type of decompoistion to regress on. Options are nfm and ica (case insensitive)",
+        help=f"{col['red']}REQUIRED:{col['reset']} type of decompoistion to regress on. Options are nfm and ica (case insensitive)",
     )
     option.add_argument(
         "-d",
@@ -49,11 +49,11 @@ def nfact_glm_args() -> dict:
     )
 
     option.add_argument(
-        '-a',
-        '--analysis_name',
-        dest='analysis_name',
-        default='nfact_glm',
-        help="Optional name to give analysis. Default is nfact_glm"
+        "-a",
+        "--analysis_name",
+        dest="analysis_name",
+        default="nfact_glm",
+        help="Optional name to give analysis. Default is nfact_glm",
     )
     return vars(option.parse_args())
 

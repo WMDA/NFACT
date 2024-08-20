@@ -1,8 +1,10 @@
 import os
 import shutil
 
-from NFACT.utils.utils import Timer, Signit_handler, colours
-from NFACT.NFACT_decomp.regression.dual_regression import Dual_regression
+from NFACT.NFACT_base.utils import Timer, colours
+from NFACT.NFACT_base.signithandler import Signit_handler
+
+from NFACT.NFACT_base.setup import check_subject_exist
 from NFACT.NFACT_decomp.setup.args import nfact_args
 from NFACT.NFACT_decomp.setup.file_setup import (
     create_folder_set_up,
@@ -13,17 +15,17 @@ from NFACT.NFACT_decomp.setup.configure_setup import (
     process_seeds,
     check_config_file,
     load_config_file,
-    check_subject_exist,
     seed_type,
 )
+
 from NFACT.NFACT_decomp.decomposition.decomp import matrix_decomposition, get_parameters
 from NFACT.NFACT_decomp.decomposition.matrix_handling import (
     process_fdt_matrix2,
     load_previous_matrix,
     save_avg_matrix,
 )
-from NFACT.NFACT_decomp.pipes.image_handling import save_images
-from NFACT.NFACT_decomp.pipes.image_handling import winner_takes_all
+
+from NFACT.NFACT_decomp.pipes.image_handling import winner_takes_all, save_images
 from NFACT.NFACT_decomp.setup.arg_check import (
     check_complusory_arguments,
     check_algo,
@@ -144,26 +146,7 @@ def nfact_main() -> None:
             seeds,
             args["dim"],
         )
-
-    if group_mode and not args["skip_dual_reg"]:
-        print(
-            f"{col['plum']}Performing dual regression on {len(args['ptxdir'])} subjects{col['reset']}"
-        )
-        dual_reg = Dual_regression(
-            algo=args["algo"],
-            normalise=args["normalise"],
-            parallel=False,
-            list_of_files=args["ptxdir"],
-            component=components,
-            save_type=img_type,
-            seeds=seeds,
-            nfact_directory=os.path.join(
-                args["outdir"],
-                "nfact",
-            ),
-        )
-        dual_reg.run()
-    print(f"\n{col['darker_pink']}NFACT has finished{col['reset']}")
+    print(f"{col['darker_pink']}NFACT has finished{col['reset']}")
     exit(0)
 
 
