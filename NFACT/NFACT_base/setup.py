@@ -1,6 +1,6 @@
 import os
 from .utils import error_and_exit, colours
-from .filesystem import read_file_to_list
+from .filesystem import read_file_to_list, make_directory
 
 
 def check_study_folder_exists(study_folder_path: str, error_messgae: str) -> bool:
@@ -151,6 +151,14 @@ def get_subjects(args: dict) -> dict:
             print(
                 f'{col["red"]}ptxdir specified. Ignoring list of subjects{col["reset"]}'
             )
+
+        [
+            error_and_exit(
+                os.path.isdir(item),
+                "ptxdir argument is not a list of subject directories.",
+            )
+            for item in args["ptxdir"]
+        ]
         return args
     if args["list_of_subjects"]:
         error_and_exit(
@@ -159,3 +167,63 @@ def get_subjects(args: dict) -> dict:
         )
         args["ptxdir"] = return_list_of_subjects_from_file(args["list_of_subjects"])
         return args
+
+
+def which_folders_dont_exist(nfact_directory: str, sub_folders: list) -> list:
+    """
+    Function to check which nfact sub folders
+    don't exist
+
+    Parameters
+    ----------
+    nfact_directory: str
+        path to nfact directory
+    sub_folders: list
+        list of sub folders
+
+    Returns
+    -------
+    sub_folders_that_dont_exist: list
+        list of sub folders that don't exist
+    """
+
+    sub_folders_that_dont_exist = []
+    [
+        sub_folders_that_dont_exist.append(sub)
+        for sub in sub_folders
+        if not os.path.exists(os.path.join(nfact_directory, sub))
+    ]
+    return sub_folders_that_dont_exist
+
+
+def creat_subfolder_setup(directory: str, sub_folders: list) -> None:
+    """
+    Function to create folder and sub folders
+    used for nfact. Checks if they exist already
+    and if not it creates them.
+
+    Parameters
+    ----------
+    directory: str
+        string to path to check if directory
+        already exists
+
+    sub_folders: list
+        list of sub folders to create
+
+    Returns
+    -------
+    None
+    """
+    does_exist = os.path.exists(directory)
+
+    if does_exist:
+        sub_folders = which_folders_dont_exist(directory, sub_folders)
+
+        if len(sub_folders) == 0:
+            return None
+
+    if not does_exist:
+        make_directory(directory)
+
+    [make_directory(os.path.join(directory, sub)) for sub in sub_folders]

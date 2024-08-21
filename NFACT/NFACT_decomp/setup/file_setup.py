@@ -1,5 +1,5 @@
-from NFACT.NFACT_base.filesystem import make_directory, error_and_exit
-from NFACT.NFACT_base.utils import colours
+from NFACT.NFACT_base.setup import creat_subfolder_setup
+from NFACT.NFACT_base.utils import colours, error_and_exit
 import os
 import shutil
 
@@ -39,46 +39,7 @@ def create_folder_set_up(directory: str) -> None:
         "components/ICA/WTA",
         "components/NMF/WTA",
     ]
-
-    does_exist = os.path.exists(nfact_directory)
-
-    if does_exist:
-        sub_folders = which_nfact_folders_exist(nfact_directory, sub_folders)
-
-        if len(sub_folders) == 0:
-            return None
-
-    if not does_exist:
-        make_directory(nfact_directory)
-
-    [make_directory(os.path.join(nfact_directory, sub)) for sub in sub_folders]
-
-
-def which_nfact_folders_exist(nfact_directory: str, sub_folders: list) -> list:
-    """
-    Function to check which nfact sub folders
-    don't exist
-
-    Parameters
-    ----------
-    nfact_directory: str
-        path to nfact directory
-    sub_folders: list
-        list of sub folders
-
-    Returns
-    -------
-    sub_folders_that_dont_exist: list
-        list of sub folders that don't exist
-    """
-
-    sub_folders_that_dont_exist = []
-    [
-        sub_folders_that_dont_exist.append(sub)
-        for sub in sub_folders
-        if not os.path.exists(os.path.join(nfact_directory, sub))
-    ]
-    return sub_folders_that_dont_exist
+    creat_subfolder_setup(nfact_directory, sub_folders)
 
 
 def get_group_average_files(file_directory: str, nfact_directory: str) -> None:
