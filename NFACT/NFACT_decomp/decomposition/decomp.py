@@ -7,7 +7,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-from NFACT.NFACT_decomp.decomposition.matrix_handling import (
+from ..decomposition.matrix_handling import (
     melodic_incremental_group_pca,
 )
 from NFACT.NFACT_base.utils import error_and_exit, colours

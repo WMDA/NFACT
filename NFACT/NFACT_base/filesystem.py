@@ -1,7 +1,7 @@
 import os
 import json
 from datetime import datetime
-from NFACT.NFACT_base.utils import error_and_exit
+from .utils import error_and_exit
 
 
 def make_directory(path: str) -> None:

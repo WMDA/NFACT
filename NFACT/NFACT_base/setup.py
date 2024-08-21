@@ -1,6 +1,6 @@
 import os
-from NFACT.NFACT_base.utils import error_and_exit, colours
-from NFACT.NFACT_base.filesystem import read_file_to_list
+from .utils import error_and_exit, colours
+from .filesystem import read_file_to_list
 
 
 def check_study_folder_exists(study_folder_path: str, error_messgae: str) -> bool:

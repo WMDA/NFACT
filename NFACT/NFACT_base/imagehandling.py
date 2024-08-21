@@ -5,7 +5,7 @@ import nibabel as nib
 import numpy as np
 import re
 
-from NFACT.NFACT_base.utils import error_and_exit, colours
+from .utils import error_and_exit, colours
 
 
 def mat2vol(matrix: np.array, lut_vol: object) -> np.ndarray:
