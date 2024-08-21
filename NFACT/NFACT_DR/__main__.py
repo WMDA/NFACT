@@ -6,6 +6,8 @@ from .nfact_dr_set_up import (
     check_compulsory_arguments,
     create_nfact_dr_folder_set_up,
 )
+from .nfact_dr_functions import get_group_level_components
+
 from NFACT.NFACT_base.setup import (
     check_algo,
     get_subjects,
@@ -44,6 +46,8 @@ def nfact_dr_main() -> None:
     print(
         f"{col['plum']}Performing dual regression on {len(args['ptxdir'])} subjects{col['reset']}"
     )
+
+    get_group_level_components(args["nfact_dir"], args["algo"])
     exit(0)
     dual_reg = Dual_regression(
         algo=args["algo"],
