@@ -1,7 +1,13 @@
-from NFACT.NFACT_base.utils import colours
-from NFACT.NFACT_DR.dual_regression import Dual_regression
-from NFACT.NFACT_DR.nfact_dr_args import nfact_dr_args
-from NFACT.NFACT_base.setup import check_algo, get_subjects, check_subject_exist
+from NFACT.NFACT_base.utils import colours, error_and_exit
+from .dual_regression import Dual_regression
+from .nfact_dr_args import nfactdr_args
+from .nfact_dr_set_up import check_nfact_directory
+from NFACT.NFACT_base.setup import (
+    check_algo,
+    get_subjects,
+    check_subject_exist,
+    check_study_folder_exists,
+)
 from NFACT.NFACT_base.signithandler import Signit_handler
 
 
@@ -20,10 +26,12 @@ def nfact_dr_main() -> None:
 
     handler = Signit_handler()
     col = colours()
-    args = nfact_dr_args()
+    args = nfactdr_args()
 
     # Do argument checking
+
     args["algo"] = check_algo(args["algo"])
+    check_nfact_directory(args["nfact_dir"], args["algo"])
 
     # check subjects exist
     args = get_subjects(args)

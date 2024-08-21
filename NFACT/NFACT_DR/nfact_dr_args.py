@@ -2,7 +2,7 @@ import argparse
 from NFACT.NFACT_base.utils import colours
 
 
-def nfact_dr_args() -> dict:
+def nfactdr_args() -> dict:
     """
     Function to define cmd arguments
 

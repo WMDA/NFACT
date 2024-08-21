@@ -1,6 +1,29 @@
 import os
-from NFACT.NFACT_base.utils import error_and_exit
+from NFACT.NFACT_base.utils import error_and_exit, colours
 from NFACT.NFACT_base.filesystem import read_file_to_list
+
+
+def check_study_folder_exists(study_folder_path: str, error_messgae: str) -> bool:
+    """
+    Function to check that study folder exists
+
+    Parameters
+    ----------
+    study_folder_path: str
+        Study folder path
+
+    Returns
+    -------
+    bool: boolean
+       True if does exist
+       else prints error message and
+       returns false
+    """
+    if not os.path.exists(study_folder_path):
+        col = colours()
+        print(f"{col['red']}{error_messgae}{col['reset']}")
+        return False
+    return True
 
 
 def does_list_of_subjects_exist(path_to_list: str) -> bool:

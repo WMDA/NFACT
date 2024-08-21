@@ -1,7 +1,6 @@
-from NFACT.NFACT_PP.nfactpp import surf_volume_main, hcp_stream_main
-from NFACT.NFACT_PP.nfactpp_args import nfact_pp_args
-
-from NFACT.NFACT_PP.nfactpp_setup import (
+from .nfactpp import surf_volume_main, hcp_stream_main
+from .nfactpp_args import nfact_pp_args
+from .nfactpp_setup import (
     check_fsl_is_installed,
     check_study_folder,
     list_of_subjects_from_directory,
