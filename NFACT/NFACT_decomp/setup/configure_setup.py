@@ -4,44 +4,8 @@ from NFACT.NFACT_base.imagehandling import (
     check_files_are_imaging_files,
     get_imaging_details_from_path,
 )
-from NFACT.NFACT_base.setup import (
-    does_list_of_subjects_exist,
-    return_list_of_subjects_from_file,
-)
+
 from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
-
-
-def get_subjects(args: dict) -> dict:
-    """
-    Function to get subjects directly from
-    ptx list or from list of subjects.
-
-    Parameters
-    ----------
-    args: dict
-       dictionary of command line
-       arguments
-
-    Returns
-    -------
-    args: dict
-       dictionary of command line
-       arguments with valid list of subjects
-    """
-    if args["ptxdir"]:
-        if args["list_of_subjects"]:
-            col = colours()
-            print(
-                f'{col["red"]}ptxdir specified. Ignoring list of subjects{col["reset"]}'
-            )
-        return args
-    if args["list_of_subjects"]:
-        error_and_exit(
-            does_list_of_subjects_exist(args["list_of_subjects"]),
-            "List of subjects doesn't exist",
-        )
-        args["ptxdir"] = return_list_of_subjects_from_file(args["list_of_subjects"])
-        return args
 
 
 def process_seeds(seeds: str) -> list:
