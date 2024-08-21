@@ -1,6 +1,79 @@
 import os
 from .utils import error_and_exit, colours
 from .filesystem import read_file_to_list, make_directory
+from .imagehandling import (
+    check_files_are_imaging_files,
+    get_imaging_details_from_path,
+)
+
+
+def process_seeds(seeds: str) -> list:
+    """
+    Function to read in seed file
+
+    Parameters
+    ----------
+    seeds: str
+        str to file with
+        seeds in them.
+
+    Returns
+    -------
+    list_of_seeds: list
+        list of seed files
+    """
+    try:
+        list_of_seeds = read_file_to_list(seeds)
+    except Exception as e:
+        error_and_exit(False, f"Unable to read seeds text file due to {e}")
+
+    [check_files_are_imaging_files(seed) for seed in list_of_seeds]
+    return list_of_seeds
+
+
+def imaging_type(path: str) -> str:
+    """
+    Function to return imaging
+    type based on extension.
+
+    Parameters
+    ----------
+    path: str
+        path to str
+
+    Return
+    ------
+    str: string
+        str of nifit or gifti
+    """
+    file_extensions = get_imaging_details_from_path(path)["file_extensions"]
+    if ".nii" in file_extensions:
+        return "nifti"
+    if ".gii" in file_extensions:
+        return "gifti"
+
+
+def seed_type(seeds: list) -> str:
+    """
+    Function to get seed imaging
+    type from paths.
+
+    Parameter
+    ---------
+    seeds: list
+        list of seed type
+
+    Returns
+    -------
+    str: string
+        str of nifti or gifti.
+    """
+    seed_imaging_file = [imaging_type(path) for path in seeds]
+    error_and_exit(
+        all(item == seed_imaging_file[0] for item in seed_imaging_file),
+        "Seeds are not of the same type.",
+    )
+    return seed_imaging_file[0]
 
 
 def check_study_folder_exists(study_folder_path: str, error_messgae: str) -> bool:

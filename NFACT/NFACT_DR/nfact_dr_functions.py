@@ -48,10 +48,10 @@ def save_dual_regression_images(
     dim: int,
     sub: str,
     ptx_directory: str,
-):
+) -> None:
     """
     Function to save regression images
-    TODO: combine with save_images function
+    TODO: paths need changing
 
     Parameters
     ----------
@@ -71,6 +71,10 @@ def save_dual_regression_images(
         used for naming output
     sub: str
         Subject id in string format
+
+    Returns
+    -------
+    None
     """
 
     col = colours()
@@ -104,7 +108,7 @@ def save_dual_regression_images(
             )
 
 
-def white_component(nfact_dir: str, algo: str) -> np.darray:
+def white_component(nfact_dir: str, algo: str) -> np.ndarray:
     """
     Function to get the group level
     white matter component for dual regression.
@@ -112,7 +116,15 @@ def white_component(nfact_dir: str, algo: str) -> np.darray:
     Parameters
     ----------
     nfact_dir: str
+        path to the nfact directory
     algo: str
+        The algorithm for dual regression
+
+    Returns
+    -------
+    np.darray: np.array
+        array of white matter component
+        from the volume
     """
     lookup_vol = Image(
         os.path.join(
@@ -125,6 +137,29 @@ def white_component(nfact_dir: str, algo: str) -> np.darray:
     return vol2mat(white_matter.get_fdata(), lookup_vol)
 
 
+def load_grey_matter_component(file_name: str) -> np.array:
+    """
+    Load grey matter component from a GIFTI file.
+
+    Parameters
+    ----------
+    file_name: str
+        Path to the GIFTI file.
+
+    Returns
+    -------
+    grey_matter_component: np.array
+        Reconstructed grey matter component.
+    """
+
+    gifti_img = nb.load(file_name)
+    return np.column_stack([darray.data for darray in gifti_img.darrays])
+
+
+def get_grey_components(seeds):
+    return
+
+
 def get_group_level_components(nfact_dir: str, algo: str):
     """
     Function to get group level components
@@ -132,7 +167,17 @@ def get_group_level_components(nfact_dir: str, algo: str):
     Parameters
     ----------
     nfact_dir: str
+        path to the nfact directory
     algo: str
+        The algorithm for dual regression
+
+    Returns
+    -------
+    dict: dictionary
+        dict of components
     """
 
-    return {"white_component": white_component(nfact_dir, algo), "grey_component": ""}
+    return {
+        "white_component": white_component(nfact_dir, algo),
+        "grey_component": get_grey_components(),
+    }

@@ -3,7 +3,13 @@ import shutil
 
 from NFACT.NFACT_base.utils import Timer, colours
 from NFACT.NFACT_base.signithandler import Signit_handler
-from NFACT.NFACT_base.setup import check_subject_exist, check_algo, get_subjects
+from NFACT.NFACT_base.setup import (
+    check_subject_exist,
+    check_algo,
+    get_subjects,
+    seed_type,
+    process_seeds,
+)
 
 from .setup.args import nfact_args
 from .setup.file_setup import (
@@ -11,12 +17,9 @@ from .setup.file_setup import (
     get_group_average_files,
 )
 from .setup.configure_setup import (
-    process_seeds,
     check_config_file,
     load_config_file,
-    seed_type,
 )
-
 from .decomposition.decomp import matrix_decomposition, get_parameters
 from .decomposition.matrix_handling import (
     process_fdt_matrix2,

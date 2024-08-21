@@ -106,7 +106,7 @@ class Dual_regression:
                 subject,
             )
 
-    def __get_subject_id(self, path, number):
+    def __get_subject_id(self, path: str, number: int):
         """
         Method to assign a subjects Id
         """

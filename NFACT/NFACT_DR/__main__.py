@@ -12,6 +12,8 @@ from NFACT.NFACT_base.setup import (
     check_algo,
     get_subjects,
     check_subject_exist,
+    process_seeds,
+    seed_type,
 )
 from NFACT.NFACT_base.signithandler import Signit_handler
 
@@ -42,12 +44,14 @@ def nfact_dr_main() -> None:
     check_subject_exist(args["ptxdir"])
     check_nfact_directory(args["nfact_dir"], args["algo"])
     create_nfact_dr_folder_set_up(args["nfact_dir"])
+    seeds = process_seeds(args["seeds"])
+    img_type = seed_type(seeds)
 
     print(
         f"{col['plum']}Performing dual regression on {len(args['ptxdir'])} subjects{col['reset']}"
     )
 
-    get_group_level_components(args["nfact_dir"], args["algo"])
+    components = get_group_level_components(args["nfact_dir"], args["algo"])
     exit(0)
     dual_reg = Dual_regression(
         algo=args["algo"],
