@@ -2,7 +2,7 @@ import os
 import subprocess
 import multiprocessing
 import signal
-from NFACT.NFACT_base.filesystem import write_to_file, date_for_filename
+from NFACT.NFACT_base.filesystem import write_to_file, get_current_date
 from NFACT.NFACT_base.utils import colours, error_and_exit
 
 
@@ -332,7 +332,7 @@ class Probtrackx:
         )
         try:
             if not self.dont_log:
-                log_name = "PP_log_" + date_for_filename()
+                log_name = "PP_log_" + get_current_date()
                 with open(
                     os.path.join(nfactpp_diretory, "logs", log_name), "w"
                 ) as log_file:

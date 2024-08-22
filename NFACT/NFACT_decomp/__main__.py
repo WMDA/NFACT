@@ -52,7 +52,7 @@ def nfact_main() -> None:
     handler = Signit_handler()
     args = nfact_args()
     col = colours()
-    log = NFACT_logs()
+
     # Do argument checking
     check_complusory_arguments(args)
     args["algo"] = check_algo(args["algo"])
@@ -87,15 +87,13 @@ def nfact_main() -> None:
     parameters = get_parameters(args["config"], args["algo"], args["dim"])
 
     # Set up log
-    log.set_up_logging(os.path.join(args["outdir"], "nfact", "logs", "nfact_log.log"))
-    log.log(nfact_splash())
-    log.log_subjects(len(args["ptxdir"]))
+    log = NFACT_logs(args["algo"], "decomp", len(args["ptxdir"]))
+    log.set_up_logging(os.path.join(args["outdir"], "nfact", "logs"))
+    log.inital_log(nfact_splash())
     log.log_arguments(args)
     log.log_parameters(parameters)
-    print(
-        f"Log file is located at {os.path.join(args["outdir"], "nfact", "logs", "nfact_log.log")}"
-    )
-    exit(0)
+    print(f'Log file is located at {os.path.join(args["outdir"], "nfact", "logs")}')
+
     get_group_average_files(
         args["ptxdir"][0], os.path.join(args["outdir"], "nfact", "group_averages")
     )
@@ -161,6 +159,7 @@ def nfact_main() -> None:
             args["dim"],
         )
     print(f"{col['darker_pink']}NFACT has finished{col['reset']}")
+    log.log(f"{col['darker_pink']}NFACT has finished{col['reset']}")
     exit(0)
 
 
