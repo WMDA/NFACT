@@ -20,7 +20,7 @@ class NFACT_logs:
     log.log_break("nfact decomp workflow")
     """
 
-    def __init__(self, algo, log_prefix, no_subject) -> None:
+    def __init__(self, algo: str, log_prefix: str, no_subject: int) -> None:
         self.algo = algo.upper()
         self.log_prefix = log_prefix
         self.time = get_current_date()
