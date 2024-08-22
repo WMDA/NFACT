@@ -1,10 +1,5 @@
-from NFACT.NFACT_base.utils import error_and_exit, colours
-from NFACT.NFACT_base.filesystem import read_file_to_list, load_json
-from NFACT.NFACT_base.imagehandling import (
-    check_files_are_imaging_files,
-    get_imaging_details_from_path,
-)
-
+from NFACT.NFACT_base.utils import error_and_exit
+from NFACT.NFACT_base.filesystem import load_json
 from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
 
 

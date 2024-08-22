@@ -1,6 +1,6 @@
 from .nfact_dr_functions import save_dual_regression_images
-from NFACT.NFACT_decomp.decomposition.decomp import normalise_components
-from NFACT.NFACT_decomp.decomposition.matrix_handling import load_fdt_matrix
+from NFACT.NFACT_base.matrix_handling import normalise_components
+from NFACT.NFACT_base.matrix_handling import load_fdt_matrix
 from NFACT.NFACT_base.utils import error_and_exit
 
 import numpy as np

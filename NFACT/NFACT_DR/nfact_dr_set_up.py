@@ -88,6 +88,6 @@ def create_nfact_dr_folder_set_up(nfact_path: str) -> None:
     -------
     None
     """
-    subfolders = ["logs", "normalise", "ICA", "NMF"]
+    subfolders = ["logs", "ICA", "NMF", "ICA/normalised", "NMF/normalised"]
     nfactdr_directory = os.path.join(nfact_path, "nfact_dr")
     creat_subfolder_setup(nfactdr_directory, subfolders)

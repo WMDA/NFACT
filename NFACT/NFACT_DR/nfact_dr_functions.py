@@ -80,12 +80,12 @@ def save_dual_regression_images(
     col = colours()
     print(f"{col['purple']}Saving Dual regression components{col['reset']}\n")
     for comp, _ in components.items():
-        algo_path = os.path.join(algo, "dual_reg")
+        algo_path = algo
         w_file_name = f"W_{sub}_dim{dim}"
         grey_prefix = f"G_{sub}"
 
         if "normalised" in comp:
-            algo_path = os.path.join(algo, "dual_reg", "normalised")
+            algo_path = os.path.join(algo, "normalised")
             w_file_name = f"W_{sub}_norm_dim{dim}"
             grey_prefix = f"G_{sub}_norm"
 
@@ -156,11 +156,29 @@ def load_grey_matter_component(file_name: str) -> np.array:
     return np.column_stack([darray.data for darray in gifti_img.darrays])
 
 
-def get_grey_components(seeds):
-    return
+def grey_components(seeds: list, nfact_dir, algo):
+    """
+    Function to get grey components from seeds.
+
+    Parameters
+    ----------
+    nfact_dir: str
+        path to the nfact directory
+    algo: str
+        The algorithm for dual regression
+    seeds: list
+        A list of seeds
+    """
+    grey_matter = glob(
+        os.path.join(nfact_dir, "components", algo.upper(), "decomp", "G_dim*")
+    )
+    sorted_components = [
+        seed for _, seed in sorted(zip(seeds, grey_matter), key=lambda pair: pair[0])
+    ]
+    return np.vstack([load_grey_matter_component(seed) for seed in sorted_components])
 
 
-def get_group_level_components(nfact_dir: str, algo: str):
+def get_group_level_components(nfact_dir: str, algo: str, seeds: list):
     """
     Function to get group level components
 
@@ -170,6 +188,8 @@ def get_group_level_components(nfact_dir: str, algo: str):
         path to the nfact directory
     algo: str
         The algorithm for dual regression
+    seeds: list
+        A list of seeds
 
     Returns
     -------
@@ -178,6 +198,6 @@ def get_group_level_components(nfact_dir: str, algo: str):
     """
 
     return {
-        "white_component": white_component(nfact_dir, algo),
-        "grey_component": get_grey_components(),
+        "white_components": white_component(nfact_dir, algo),
+        "grey_components": grey_components(seeds, nfact_dir, algo),
     }

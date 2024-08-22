@@ -1,9 +1,9 @@
-import scipy.sparse as sps
 import numpy as np
 from tqdm import tqdm
 from scipy.sparse.linalg import eigsh
 import os
 from NFACT.NFACT_base.utils import Timer, error_and_exit, colours
+from NFACT.NFACT_base.matrix_handling import load_fdt_matrix
 
 
 def process_fdt_matrix2(list_of_ptx_folds: list, group_mode: bool) -> np.ndarray:
@@ -78,31 +78,6 @@ def save_avg_matrix(matrix: np.array, directory: str) -> None:
         np.save(os.path.join(directory, "group_averages", "average_matrix2"), matrix)
     except Exception as e:
         error_and_exit(False, f"Unable to save matrix due to {e}")
-
-
-def load_fdt_matrix(matfile: str) -> np.ndarray:
-    """
-    Function to load a single fdt matrix
-    as a ptx sparse matrix format.
-
-    Parameters
-    ----------
-    matfile: str
-       path to file
-
-    Returns
-    -------
-    sparse_matrix: np.array
-       sparse matrix in numpy array
-       form.
-    """
-    mat = np.loadtxt(matfile)
-    data = mat[:-1, -1]
-    rows = np.array(mat[:-1, 0] - 1, dtype=int)
-    cols = np.array(mat[:-1, 1] - 1, dtype=int)
-    nrows = int(mat[-1, 0])
-    ncols = int(mat[-1, 1])
-    return sps.csc_matrix((data, (rows, cols)), shape=(nrows, ncols)).toarray()
 
 
 def avg_fdt(list_of_matfiles: list) -> np.ndarray:

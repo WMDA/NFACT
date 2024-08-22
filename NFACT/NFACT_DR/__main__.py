@@ -1,4 +1,5 @@
 from NFACT.NFACT_base.utils import colours
+from NFACT.NFACT_base.signithandler import Signit_handler
 from .dual_regression import Dual_regression
 from .nfact_dr_args import nfactdr_args
 from .nfact_dr_set_up import (
@@ -15,7 +16,8 @@ from NFACT.NFACT_base.setup import (
     process_seeds,
     seed_type,
 )
-from NFACT.NFACT_base.signithandler import Signit_handler
+
+import os
 
 
 def nfact_dr_main() -> None:
@@ -48,11 +50,13 @@ def nfact_dr_main() -> None:
     img_type = seed_type(seeds)
 
     print(
-        f"{col['plum']}Performing dual regression on {len(args['ptxdir'])} subjects{col['reset']}"
+        f"{col['plum']}Performing dual regression on {len(args['ptxdir'])} subjects{col['reset']}\n"
     )
 
-    components = get_group_level_components(args["nfact_dir"], args["algo"])
-    exit(0)
+    print("Obtaining components\n")
+
+    components = get_group_level_components(args["nfact_dir"], args["algo"], seeds)
+
     dual_reg = Dual_regression(
         algo=args["algo"],
         normalise=args["normalise"],
@@ -61,10 +65,12 @@ def nfact_dr_main() -> None:
         component=components,
         save_type=img_type,
         seeds=seeds,
-        nfact_directory=args["nfact_dir"],
+        nfact_directory=os.path.join(args["nfact_dir"], "nfact_dr"),
     )
     dual_reg.run()
-    return None
+
+    print(f"{col['darker_pink']}NFACT_DR has finished{col['reset']}")
+    exit(0)
 
 
 if __name__ == "__main__":

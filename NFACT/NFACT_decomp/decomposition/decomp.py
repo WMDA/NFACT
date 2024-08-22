@@ -1,5 +1,5 @@
 from sklearn.decomposition import FastICA, NMF
-from sklearn.preprocessing import StandardScaler
+
 import numpy as np
 from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
@@ -10,7 +10,8 @@ warnings.filterwarnings("ignore")
 from ..decomposition.matrix_handling import (
     melodic_incremental_group_pca,
 )
-from NFACT.NFACT_base.utils import error_and_exit, colours
+from NFACT.NFACT_base.utils import error_and_exit
+from NFACT.NFACT_base.matrix_handling import normalise_components
 from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
 
 
@@ -170,39 +171,6 @@ def matrix_decomposition(
         components["normalised_grey"] = normalised["grey_matter"]
 
     return components
-
-
-def normalise_components(
-    grey_matter: np.array, white_matter: np.array, demean: bool = True
-) -> dict:
-    """
-    Normalise components.
-    Useful for visulaization
-
-    Parameters
-    ----------
-    grey_matter: np.array
-        grey matter component
-    white_matter: np.array
-        white matter component
-    demean: bool
-        Demean matrix. default is True
-
-
-    Returns
-    -------
-    dict: dictionary.
-        dictionary of normalised components
-    """
-    col = colours()
-    print(f"{col['plum']}Normalising components\n{col['reset']}")
-
-    return {
-        "grey_matter": StandardScaler(with_mean=demean).fit_transform(grey_matter),
-        "white_matter": StandardScaler(with_mean=demean)
-        .fit_transform(white_matter.T)
-        .T,
-    }
 
 
 def sign_flip(decomp_matrix: np.array, thr: int = 0) -> np.ndarray:
