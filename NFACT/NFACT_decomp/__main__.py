@@ -1,5 +1,7 @@
 import os
 import shutil
+from NFACT.NFACT_base.logging import NFACT_logs
+
 
 from NFACT.NFACT_base.utils import Timer, colours
 from NFACT.NFACT_base.signithandler import Signit_handler
@@ -11,7 +13,7 @@ from NFACT.NFACT_base.setup import (
     process_seeds,
 )
 
-from .setup.args import nfact_args
+from .setup.args import nfact_args, nfact_splash
 from .setup.file_setup import (
     create_folder_set_up,
     get_group_average_files,
@@ -50,7 +52,7 @@ def nfact_main() -> None:
     handler = Signit_handler()
     args = nfact_args()
     col = colours()
-
+    log = NFACT_logs()
     # Do argument checking
     check_complusory_arguments(args)
     args["algo"] = check_algo(args["algo"])
@@ -80,6 +82,20 @@ def nfact_main() -> None:
             shutil.rmtree(os.path.join(args["outdir"], "nfact"), ignore_errors=True)
 
     create_folder_set_up(args["outdir"])
+
+    # Get hyperparameters
+    parameters = get_parameters(args["config"], args["algo"], args["dim"])
+
+    # Set up log
+    log.set_up_logging(os.path.join(args["outdir"], "nfact", "logs", "nfact_log.log"))
+    log.log(nfact_splash())
+    log.log_subjects(len(args["ptxdir"]))
+    log.log_arguments(args)
+    log.log_parameters(parameters)
+    print(
+        f"Log file is located at {os.path.join(args["outdir"], "nfact", "logs", "nfact_log.log")}"
+    )
+    exit(0)
     get_group_average_files(
         args["ptxdir"][0], os.path.join(args["outdir"], "nfact", "group_averages")
     )
@@ -99,9 +115,6 @@ def nfact_main() -> None:
     print(
         f"{col['darker_pink']}loaded matrix in {matrix_time.toc()} secs.{col['reset']}\n"
     )
-
-    # Get hyperparameters
-    parameters = get_parameters(args["config"], args["algo"], args["dim"])
 
     # Run the decomposition
     decomposition_timer = Timer()
