@@ -3,22 +3,22 @@ import re
 import shutil
 
 # NFACT functions
-from NFACT.NFACT_PP.nfactpp_setup import check_surface_arguments, nfact_pp_folder_setup
 from NFACT.NFACT_base.imagehandling import get_file
-from NFACT.NFACT_PP.nfactpp_functions import (
+from NFACT.NFACT_base.utils import colours, error_and_exit
+from .nfactpp_setup import check_surface_arguments, nfact_pp_folder_setup
+from .nfactpp_functions import (
     hcp_get_seeds,
     hcp_get_rois,
     hcp_reorder_seeds_rois,
     update_seeds_file,
 )
-from NFACT.NFACT_PP.probtrackx_functions import (
+from .probtrackx_functions import (
     build_probtrackx2_arguments,
     write_options_to_file,
     Probtrackx,
     get_target2,
     seeds_to_ascii,
 )
-from NFACT.NFACT_base.utils import colours, error_and_exit
 
 
 def surf_volume_main(arg: dict, handler) -> None:

@@ -1,6 +1,6 @@
 from sklearn.preprocessing import StandardScaler
 import scipy.sparse as sps
-from NFACT.NFACT_base.utils import colours
+from NFACT.NFACT_base.utils import colours, nprint
 import numpy as np
 
 
@@ -27,7 +27,7 @@ def normalise_components(
         dictionary of normalised components
     """
     col = colours()
-    print(f"{col['plum']}Normalising components\n{col['reset']}")
+    nprint(f"{col['plum']}Normalising components{col['reset']}")
 
     return {
         "grey_matter": StandardScaler(with_mean=demean).fit_transform(grey_matter),

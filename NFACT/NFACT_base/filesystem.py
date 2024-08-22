@@ -90,7 +90,7 @@ def write_to_file(file_path: str, name: str, text: str) -> bool:
     return True
 
 
-def date_for_filename() -> str:
+def get_current_date() -> str:
     """
     Function to get the
     date and time in format

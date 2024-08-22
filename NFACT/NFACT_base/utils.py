@@ -1,4 +1,5 @@
 import time
+import logging
 
 
 class Timer:
@@ -54,10 +55,36 @@ def error_and_exit(bool_statement: bool, error_message: str = None) -> None:
     error_message: str
         error message to print
         out. Default is None
+
+    Returns
+    -------
+    None
     """
     if not bool_statement:
         if error_message:
             col = colours()
-            print(col["red"] + error_message + col["reset"])
+            nprint(col["red"] + error_message + col["reset"])
         print("Exiting...\n")
         exit(1)
+
+
+def nprint(message: str) -> None:
+    """
+    Function to print to terminal
+    and attempt to log to pre set up
+    log file.
+
+    Parameters
+    ----------
+    message: str
+        string to print and log
+
+    Returns
+    -------
+    None
+    """
+    print(message)
+    try:
+        logging.info(message)
+    except Exception:
+        return None

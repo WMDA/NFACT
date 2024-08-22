@@ -23,7 +23,7 @@ def create_folder_set_up(directory: str) -> None:
         "Output directory does not exist. Please provide actual directory",
     )
     col = colours()
-    print(f"{col['purple']}nfact folder is in {directory}{col['reset']}")
+    print(f"{col['purple']}nfact folder is in {directory}{col['reset']}\n")
     nfact_directory = os.path.join(directory, "nfact")
 
     sub_folders = [
