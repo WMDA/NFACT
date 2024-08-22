@@ -4,8 +4,7 @@ import shutil
 
 # NFACT functions
 from NFACT.NFACT_base.imagehandling import get_file
-from NFACT.NFACT_base.utils import colours, error_and_exit, nprint
-from NFACT.NFACT_base.logging import NFACT_logs
+from NFACT.NFACT_base.utils import colours, error_and_exit
 from .nfactpp_setup import check_surface_arguments, nfact_pp_folder_setup
 from .nfactpp_functions import (
     hcp_get_seeds,
@@ -36,7 +35,6 @@ def surf_volume_main(arg: dict, handler) -> None:
     -------
     None
     """
-    log = NFACT_logs()
 
     surface_processing = check_surface_arguments(arg["seed"], arg["rois"])
     col = colours()
@@ -110,7 +108,7 @@ def surf_volume_main(arg: dict, handler) -> None:
     # This supresses the signit kill message or else it prints it off multiple times for each core
     if arg["n_cores"]:
         handler.set_suppress_messages = True
-    log.log("Logging of Probtrackx2 is handled in")
+
     # Running probtrackx2
     Probtrackx(subjects_commands, arg["cluster"], arg["n_cores"], arg["dont_log"])
     if surface_processing:
