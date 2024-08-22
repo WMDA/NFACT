@@ -30,31 +30,6 @@ def check_complusory_arguments(args: dict) -> None:
         error_and_exit(False, "No output directory provided. Please specifiy --outdir")
 
 
-def check_algo(algo: str) -> str:
-    """
-    Function to check that decomposition
-    is implemented in NFACT.
-
-    Parameters
-    ----------
-    algo: str
-       string of decomp method.
-
-    Returns
-    -------
-    algo: str
-       returns lower case
-       of str
-    """
-    implemented_decomp_methods = ["nmf", "ica"]
-    if algo.lower() not in implemented_decomp_methods:
-        error_and_exit(
-            False,
-            f"{algo} is not implemented in NFACT. NFACT currently implements ICA and NMF (case insensitive). Please specify with --algo",
-        )
-    return algo.lower()
-
-
 def process_command_args(args: dict) -> dict:
     """
     Function to process command line arguments.

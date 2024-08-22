@@ -4,6 +4,7 @@ import re
 from NFACT.NFACT_PP.probtrackx_functions import get_probtrack2_arguments
 from NFACT.NFACT_base.utils import colours, error_and_exit
 from NFACT.NFACT_base.filesystem import make_directory
+from NFACT.NFACT_base.setup import check_study_folder_exists
 
 
 def directory_contains_subjects(study_folder_path: str) -> bool:
@@ -59,30 +60,6 @@ def check_study_folder_is_dir(study_folder_path: str) -> bool:
     return True
 
 
-def check_study_folder_exists(study_folder_path: str) -> bool:
-    """
-    Function to check that study folder exists
-
-    Parameters
-    ----------
-    study_folder_path: str
-        Study folder path
-
-    Returns
-    -------
-    bool: boolean
-       True if does exist
-       else prints error message and
-       returns false
-    """
-    if not os.path.exists(study_folder_path):
-        col = colours()
-        print(f"{col['red']}Study folder provided doesn't exist{col['reset']}")
-        return False
-
-    return True
-
-
 def check_study_folder(study_folder_path: str) -> bool:
     """
     Check that the study directory exists,
@@ -100,7 +77,9 @@ def check_study_folder(study_folder_path: str) -> bool:
        else prints error message and
        returns false
     """
-    if not check_study_folder_exists(study_folder_path):
+    if not check_study_folder_exists(
+        study_folder_path, "Study folder provided doesn't exist"
+    ):
         return False
     if not check_study_folder_is_dir(study_folder_path):
         return False

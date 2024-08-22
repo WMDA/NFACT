@@ -1,5 +1,5 @@
 import signal
-from NFACT.NFACT_base.utils import colours
+from .utils import colours
 
 
 class Signit_handler:
