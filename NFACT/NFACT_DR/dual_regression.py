@@ -1,7 +1,7 @@
 from .nfact_dr_functions import save_dual_regression_images
 from NFACT.NFACT_base.matrix_handling import normalise_components
 from NFACT.NFACT_base.matrix_handling import load_fdt_matrix
-from NFACT.NFACT_base.utils import error_and_exit
+from NFACT.NFACT_base.utils import error_and_exit, nprint
 
 import numpy as np
 from scipy.optimize import nnls
@@ -76,7 +76,7 @@ class Dual_regression:
 
         for idx, subject in enumerate(self.list_of_file):
             self.__get_subject_id(subject, idx)
-            print(f"Dual regressing on {self.subject_id}:")
+            nprint(f"Dual regressing on {self.subject_id}:")
             self.connectivity_matrix = load_fdt_matrix(
                 os.path.join(subject, "fdt_matrix2.dot")
             )

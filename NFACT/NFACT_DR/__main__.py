@@ -1,7 +1,8 @@
-from NFACT.NFACT_base.utils import colours
+from NFACT.NFACT_base.utils import colours, nprint
+from NFACT.NFACT_base.logging import NFACT_logs
 from NFACT.NFACT_base.signithandler import Signit_handler
 from .dual_regression import Dual_regression
-from .nfact_dr_args import nfactdr_args
+from .nfact_dr_args import nfactdr_args, nfact_dr_splash
 from .nfact_dr_set_up import (
     check_nfact_directory,
     check_compulsory_arguments,
@@ -49,11 +50,17 @@ def nfact_dr_main() -> None:
     seeds = process_seeds(args["seeds"])
     img_type = seed_type(seeds)
 
-    print(
+    log = NFACT_logs(args["algo"], "DR", len(args["ptxdir"]))
+    log.set_up_logging(os.path.join(args["nfact_dir"], "nfact_dr", "logs"))
+    log.inital_log(nfact_dr_splash())
+    log.log_break("input")
+    log.log_arguments(args)
+    log.log_break("nfact decomp workflow")
+    nprint(
         f"{col['plum']}Performing dual regression on {len(args['ptxdir'])} subjects{col['reset']}\n"
     )
 
-    print("Obtaining components\n")
+    nprint("Obtaining components\n")
 
     components = get_group_level_components(args["nfact_dir"], args["algo"], seeds)
 
@@ -69,7 +76,7 @@ def nfact_dr_main() -> None:
     )
     dual_reg.run()
 
-    print(f"{col['darker_pink']}NFACT_DR has finished{col['reset']}")
+    nprint(f"{col['darker_pink']}NFACT_DR has finished{col['reset']}")
     exit(0)
 
 

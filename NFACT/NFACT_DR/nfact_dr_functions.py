@@ -3,7 +3,7 @@ from NFACT.NFACT_base.imagehandling import (
     save_grey_matter_components,
     save_white_matter,
 )
-from NFACT.NFACT_base.utils import colours
+from NFACT.NFACT_base.utils import colours, nprint
 import os
 from fsl.data.image import Image
 import nibabel as nb
@@ -78,7 +78,7 @@ def save_dual_regression_images(
     """
 
     col = colours()
-    print(f"{col['purple']}Saving Dual regression components{col['reset']}\n")
+    nprint(f"{col['purple']}Saving Dual regression components{col['reset']}\n")
     for comp, _ in components.items():
         algo_path = algo
         w_file_name = f"W_{sub}_dim{dim}"
