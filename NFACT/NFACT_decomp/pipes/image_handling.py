@@ -6,7 +6,8 @@ from NFACT.NFACT_base.imagehandling import (
     save_white_matter,
     save_grey_matter_components,
 )
-from NFACT.NFACT_base.utils import colours
+from NFACT.NFACT_base.utils import colours, nprint
+import logging
 
 
 def save_images(
@@ -50,7 +51,7 @@ def save_images(
             grey_prefix = "G_norm"
 
         if "grey" in comp:
-            print(f"{col['pink']}Saving {comp}{col['reset']}")
+            nprint(f"{col['pink']}Saving {comp}{col['reset']}")
             save_grey_matter_components(
                 save_type,
                 components[comp],
@@ -62,7 +63,7 @@ def save_images(
                 grey_prefix,
             )
         if "white" in comp:
-            print(f"{col['purple']}Saving {comp}{col['reset']}")
+            nprint(f"{col['purple']}Saving {comp}{col['reset']}")
             save_white_matter(
                 components[comp],
                 os.path.join(

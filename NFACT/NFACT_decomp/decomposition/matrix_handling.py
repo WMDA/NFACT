@@ -2,8 +2,9 @@ import numpy as np
 from tqdm import tqdm
 from scipy.sparse.linalg import eigsh
 import os
-from NFACT.NFACT_base.utils import Timer, error_and_exit, colours
+from NFACT.NFACT_base.utils import Timer, error_and_exit, colours, nprint
 from NFACT.NFACT_base.matrix_handling import load_fdt_matrix
+import logging
 
 
 def process_fdt_matrix2(list_of_ptx_folds: list, group_mode: bool) -> np.ndarray:
@@ -52,7 +53,7 @@ def load_previous_matrix(path: str) -> np.ndarray:
         fdt2 matrix.
     """
     if os.path.exists(path):
-        print("Loading previously saved matrix")
+        nprint("Loading previously saved matrix")
         return np.load(os.path.join(path))
     return None
 
@@ -74,7 +75,7 @@ def save_avg_matrix(matrix: np.array, directory: str) -> None:
     None
     """
     try:
-        print(f'Saving matrix to {os.path.join(directory, "group_averages")}')
+        nprint(f'Saving matrix to {os.path.join(directory, "group_averages")}')
         np.save(os.path.join(directory, "group_averages", "average_matrix2"), matrix)
     except Exception as e:
         error_and_exit(False, f"Unable to save matrix due to {e}")
@@ -150,7 +151,7 @@ def melodic_incremental_group_pca(
     migpa_timer = Timer()
     migpa_timer.tic()
     col = colours()
-    print(f"{col['purple']}\nPerforming PCA (MIGP){col['reset']}")
+    nprint(f"{col['purple']}\nPerforming PCA (MIGP){col['reset']}")
     if keep_mean:
         matrix_mean = np.mean(fdt_matrix, axis=1, keepdims=True)
 
@@ -162,9 +163,9 @@ def melodic_incremental_group_pca(
     if keep_mean:
         pca_matrix = pca_matrix + matrix_mean
 
-    print(f"Old matrix size {fdt_matrix.shape[0]}x{fdt_matrix.shape[1]}")
-    print(f"New matrix size now {pca_matrix.shape[0]}x{pca_matrix.shape[1]}")
-    print(f"MIGP finished in {migpa_timer.toc()} secs.\n")
+    nprint(f"Old matrix size {fdt_matrix.shape[0]}x{fdt_matrix.shape[1]}")
+    nprint(f"New matrix size now {pca_matrix.shape[0]}x{pca_matrix.shape[1]}")
+    nprint(f"MIGP finished in {migpa_timer.toc()} secs.\n")
     return pca_matrix
 
 

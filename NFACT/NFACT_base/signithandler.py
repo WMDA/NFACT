@@ -1,5 +1,5 @@
 import signal
-from .utils import colours
+from .utils import colours, nprint
 
 
 class Signit_handler:
@@ -31,10 +31,10 @@ class Signit_handler:
         """
         if not self.suppress_messages:
             col = colours()
-            print(
+            nprint(
                 f"\n{col['darker_pink']}Recieved kill signal (Ctrl+C). Terminating..."
             )
-            print(f"Exiting...{col['reset']}\n")
+            nprint(f"Exiting...{col['reset']}\n")
         exit(0)
 
     @property

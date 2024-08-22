@@ -2,6 +2,7 @@ from sklearn.decomposition import FastICA, NMF
 
 import numpy as np
 from sklearn.utils._testing import ignore_warnings
+import logging
 from sklearn.exceptions import ConvergenceWarning
 import warnings
 
@@ -155,6 +156,7 @@ def matrix_decomposition(
 
         if signflip:
             print("Sign-flipping components")
+            logging.info("Sign-flipping components")
             components["grey_components"] = sign_flip(components["grey_components"].T).T
             components["white_components"] = sign_flip(components["white_components"])
 
