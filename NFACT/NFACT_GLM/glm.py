@@ -19,8 +19,8 @@ class GLM:
         self.y = None
         self.beta = None
         self.dof = None
-        self.sigma_sq = None
-        # self.XtX_ = None
+        self.sigma_2 = None
+        self.xTx = None
 
     def fit(self, X: np.array, y: np.array):
         self.X = X
@@ -28,13 +28,13 @@ class GLM:
         self.beta = self.__beta()
         res = self.__residuals()
         self.dof = self.__dof()
-        self.sigma_sq_ = self.__sigma_sq(res)
-        self.XtX_ = self.__XtX()
+        self.sigma_sq_ = self.__sigma_2(res)
+        self.xTx = self.__xTx()
 
-    def __XtX(self):
+    def __xTx(self):
         return self.X.T @ self.X
 
-    def __sigma_sq(self, res):
+    def __sigma_2(self, res):
         return np.sum(res**2, axis=0, keepdims=True) / self.dof
 
     def __residuals(self):
@@ -59,7 +59,7 @@ class GLM:
     def __pval(self, tstat):
         return 2 * (t.cdf(np.abs(tstat), self.dof))
 
-    def __zstat(self, tstat, dof):
+    def __zstat(self, tstat):
         beta_func = (
             betainc(self.dof / 2.0, 1 / 2, self.dof / (self.dof + tstat**2)) / 2.0
         )

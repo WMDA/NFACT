@@ -43,7 +43,7 @@ def nfact_glm_args() -> dict:
     )
     option.add_argument(
         "-c",
-        "--contrasts",
+        "--contrast",
         dest="contrast",
         help=f"{col['red']}REQUIRED:{col['reset']} A path to a contrast matrix",
     )
@@ -52,8 +52,7 @@ def nfact_glm_args() -> dict:
         "-a",
         "--analysis_name",
         dest="analysis_name",
-        default="nfact_glm",
-        help="Optional name to give analysis. Default is nfact_glm",
+        help="Optional name to give analysis. Default is type of decomposition",
     )
     return vars(option.parse_args())
 
