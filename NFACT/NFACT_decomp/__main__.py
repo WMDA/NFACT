@@ -1,8 +1,7 @@
 import os
 import shutil
+
 from NFACT.NFACT_base.logging import NFACT_logs
-
-
 from NFACT.NFACT_base.utils import Timer, colours, nprint
 from NFACT.NFACT_base.signithandler import Signit_handler
 from NFACT.NFACT_base.setup import (

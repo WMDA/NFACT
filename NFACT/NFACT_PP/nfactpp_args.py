@@ -27,14 +27,12 @@ def nfact_pp_args() -> dict:
         "-f",
         "--study_folder",
         dest="study_folder",
-        required=True,
         help=f"{col['red']}REQUIRED{col['reset']} Study folder containing sub directories of participants.",
     )
     option.add_argument(
         "-i",
-        "--image_standard_space",
+        "--ref",
         dest="ref",
-        required=True,
         help=f"{col['red']}REQUIRED{col['reset']} Standard space reference image",
     )
     option.add_argument(
