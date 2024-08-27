@@ -24,6 +24,7 @@ def nfact_config_args():
         description=print(nfact_config_spalsh()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+    args.
     args.add_argument(
         "-o",
         "--output_dir",

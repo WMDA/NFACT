@@ -59,14 +59,14 @@ def nfact_pp_args() -> dict:
         "--seed",
         nargs="+",
         dest="seed",
-        help="The suffixes of the paths leading to the left and right hemisphere cortical seeds (white-grey boundary GIFTI)",
+        help="A single or list of seeds",
     )
     option.add_argument(
         "-r",
         "--rois",
         dest="rois",
         nargs="+",
-        help="The suffixes of the paths leading to the left and right hemisphere medial wall masks (GIFTI)",
+        help="A single or list of ROIS",
     )
     option.add_argument(
         "-w",
