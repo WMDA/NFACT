@@ -30,8 +30,9 @@ requires-python = ">=3.8"
 development = ['ruff']
 
 [project.scripts]
-nfact = "NFACT.NFACT_decomp.__main__:nfact_main"
+nfact_decomp = "NFACT.NFACT_decomp.__main__:nfact_main"
 nfact_pp = "NFACT.NFACT_PP.__main__:nfact_pp_main"
 nfact_config = "NFACT.NFACT_config.__main__:nfact_config_main"
 nfact_glm = "NFACT.NFACT_GLM.__main__:nfact_glm_main"
 nfact_dr = "NFACT.NFACT_DR.__main__:nfact_dr_main"
+nfact = "NFACT.NFACT_pipeline.__main__:nfact_pipeline_main"
