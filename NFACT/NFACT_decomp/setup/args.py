@@ -2,7 +2,7 @@ import argparse
 from NFACT.NFACT_base.utils import colours
 
 
-def nfact_args() -> dict:
+def nfact_decomp_args() -> dict:
     """
     Function to define cmd arguments
 
@@ -17,7 +17,7 @@ def nfact_args() -> dict:
     """
     args = argparse.ArgumentParser(
         prog="nfact",
-        description=print(nfact_splash()),
+        description=print(nfact_decomp_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     args.add_argument(
@@ -115,7 +115,7 @@ def nfact_args() -> dict:
     return vars(args.parse_args())
 
 
-def nfact_splash() -> str:
+def nfact_decomp_splash() -> str:
     """
     Function to return NFACT splash
 

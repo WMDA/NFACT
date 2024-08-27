@@ -1,4 +1,28 @@
 from NFACT.NFACT_base.utils import colours
+import argparse
+
+
+def nfact_args():
+    """
+    Function to create nfact args
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    dict: dictionary object
+        dict of args
+    """
+
+    args = argparse.ArgumentParser(
+        prog="nfact",
+        description=print(nfact_splash()),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    col = colours()
+    return None
 
 
 def nfact_splash() -> str:

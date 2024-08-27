@@ -13,7 +13,7 @@ from NFACT.NFACT_base.setup import (
     process_seeds,
 )
 
-from .setup.args import nfact_args, nfact_splash
+from .setup.args import nfact_decomp_args, nfact_decomp_splash
 from .setup.file_setup import (
     create_folder_set_up,
     get_group_average_files,
@@ -50,7 +50,7 @@ def nfact_main() -> None:
     """
     # Setting up nfact
     handler = Signit_handler()
-    args = nfact_args()
+    args = nfact_decomp_args()
     col = colours()
 
     # Do argument checking
@@ -89,7 +89,7 @@ def nfact_main() -> None:
     # Set up log
     log = NFACT_logs(args["algo"], "decomp", len(args["ptxdir"]))
     log.set_up_logging(os.path.join(args["outdir"], "nfact", "logs"))
-    log.inital_log(nfact_splash())
+    log.inital_log(nfact_decomp_splash())
     log.log_break("input")
     log.log_arguments(args)
     log.log_parameters(parameters)
