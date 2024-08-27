@@ -36,7 +36,7 @@ from .setup.arg_check import (
 )
 
 
-def nfact_main() -> None:
+def nfact_decomp_main() -> None:
     """
     Main nfact function
 
@@ -167,4 +167,4 @@ def nfact_main() -> None:
 
 
 if __name__ == "__main__":
-    nfact_main()
+    nfact_decomp_main()
