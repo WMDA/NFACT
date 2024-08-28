@@ -18,19 +18,25 @@ from NFACT.NFACT_base.setup import (
 )
 
 
-def nfact_pp_main():
+def nfact_pp_main(arg: dict = None):
     """
     Main nfact_pp function.
 
     Parameters
     ----------
-    None
+    arg: dict
+        Set of command line arguments
+        from nfact_pipeline
+        Default is None
 
     Returns
     -------
     None
     """
-    arg = nfact_pp_args()
+
+    if not arg:
+        arg = nfact_pp_args()
+
     handler = Signit_handler()
 
     # Check that complusory arguments given

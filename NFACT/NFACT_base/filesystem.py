@@ -67,7 +67,9 @@ def load_json(path: str) -> dict:
         error_and_exit(False, f"Unable to load json due to {e}")
 
 
-def write_to_file(file_path: str, name: str, text: str) -> bool:
+def write_to_file(
+    file_path: str, name: str, text: str, text_is_list: bool = False
+) -> bool:
     """
     Function to write to file.
 
@@ -80,10 +82,22 @@ def write_to_file(file_path: str, name: str, text: str) -> bool:
         name of file
     text: str
         string to add to file
+    text_is_list: bool
+        if text is actually a
+        list then will write to file
+
+    Returns
+    -------
+    bool: boolean
+        True if sucessful else
+        False
     """
     try:
         with open(f"{file_path}/{name}", "w") as file:
-            file.write(text)
+            if text_is_list:
+                file.writelines(text)
+            if not text_is_list:
+                file.write(text)
     except Exception as e:
         print(f"Unable to write to {file_path}/{name} due to :", e)
         return False

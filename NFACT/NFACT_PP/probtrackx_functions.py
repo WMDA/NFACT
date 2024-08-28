@@ -256,7 +256,7 @@ def seeds_to_ascii(surfin: str, roi: str, surfout: str) -> None:
         )
 
 
-def get_probtrack2_arguments() -> None:
+def get_probtrack2_arguments(bin: bool = False) -> None:
     """
     Function to get probtrack2
     arguments to check that user input
@@ -264,7 +264,10 @@ def get_probtrack2_arguments() -> None:
 
     Parameters
     ----------
-    None
+    bin: bool
+        get the arguments for the
+        gpu binary. Needed for NFACT
+        pipeline
 
     Returns
     -------
@@ -272,8 +275,10 @@ def get_probtrack2_arguments() -> None:
         string of help arguments
     """
 
+    binary = "probtrackx2" if not bin else "probtrackx2_gpu"
+
     try:
-        help_arguments = subprocess.run(["probtrackx2", "--help"], capture_output=True)
+        help_arguments = subprocess.run([binary, "--help"], capture_output=True)
     except subprocess.CalledProcessError as error:
         error_and_exit(False, f"Error in calling surf2surf: {error}")
 

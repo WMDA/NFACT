@@ -1,4 +1,6 @@
 from NFACT.NFACT_base.utils import error_and_exit
+from NFACT.NFACT_base.filesystem import read_file_to_list, write_to_file
+import os
 
 
 def pipeline_args_check(args: dict):
@@ -75,3 +77,33 @@ def build_module_arguments(module_dict: dict, args: dict, key: str):
     """
     module_dict = build_args(args["input"], module_dict)
     return build_args(args[key], module_dict)
+
+
+def write_decomp_list(file_path: str, out_dir_name: str) -> None:
+    """
+    Function to write to a file
+    the subjects  omatrix2 location.
+
+    Parameters
+    ----------
+    file_path: str
+        str to sub list file
+    out_dir_name: str
+        str of the name of
+        the
+
+    Returns
+    -------
+    None
+    """
+    files = read_file_to_list(file_path)
+
+    omatrix_2_paths = [os.path.join(file, out_dir_name, "omatrix2\n") for file in files]
+    omatrix_2_paths.sort()
+    print(omatrix_2_paths)
+    write_to_file(
+        os.path.join(os.path.dirname(file_path), ".nfact_tmp"),
+        "nfact_decomp_sub_list",
+        omatrix_2_paths,
+        text_is_list=True,
+    )

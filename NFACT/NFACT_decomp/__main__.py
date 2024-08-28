@@ -35,13 +35,16 @@ from .setup.arg_check import (
 )
 
 
-def nfact_decomp_main() -> None:
+def nfact_decomp_main(args: dict = None) -> None:
     """
     Main nfact function
 
     Parameters
     ----------
-    None
+    arg: dict
+        Set of command line arguments
+        from nfact_pipeline
+        Default is None
 
     Returns
     -------
@@ -49,7 +52,9 @@ def nfact_decomp_main() -> None:
     """
     # Setting up nfact
     handler = Signit_handler()
-    args = nfact_decomp_args()
+
+    if not args:
+        args = nfact_decomp_args()
     col = colours()
 
     # Do argument checking
