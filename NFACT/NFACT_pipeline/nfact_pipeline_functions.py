@@ -1,0 +1,77 @@
+from NFACT.NFACT_base.utils import error_and_exit
+
+
+def pipeline_args_check(args: dict):
+    """
+    Function to check that compulsory
+    args are given.
+
+    Parameters
+    ----------
+    args: dict
+        command line arguments
+
+    Returns
+    -------
+    None
+    """
+    non_complusory = ["target2", "config"]
+    for val in args.keys():
+        [
+            error_and_exit(
+                args[val][arg], f"{arg} is not defined. Please define with --{arg}"
+            )
+            for arg in args[val].keys()
+            if arg not in non_complusory
+        ]
+
+
+def build_args(args_dict: dict, module_dict: dict) -> dict:
+    """
+    Fuction to build out arguments
+    from args dict to module dict
+
+    Parameters
+    ----------
+    args_dict: dict
+        dictionary of command line
+        arguments
+    module_dict: dict
+        dict of module arguments
+
+    Returns
+    -------
+    module_dict: dict
+        dictionary of updated module
+        arguments
+    """
+    for key in module_dict:
+        if key in args_dict:
+            module_dict[key] = args_dict[key]
+    return module_dict
+
+
+def build_module_arguments(module_dict: dict, args: dict, key: str):
+    """
+    Function to build out a module command line
+    arguments.
+
+    Parameters
+    ----------
+    module_dict: dict
+        dict of module arguments
+    args_dict: dict
+        dictionary of command line
+        arguments
+    key: str
+        str of key for argument dict
+        to build out module dictionary
+
+    Returns
+    -------
+    dict: dictionary
+        dictionary of module arguments
+
+    """
+    module_dict = build_args(args["input"], module_dict)
+    return build_args(args[key], module_dict)

@@ -23,13 +23,6 @@ def nfact_pp_args() -> dict:
         epilog=nfact_pp_example_usage(),
     )
     col = colours()
-
-    option.add_argument(
-        "-i",
-        "--ref",
-        dest="ref",
-        help=f"{col['red']}REQUIRED{col['reset']} Standard space reference image",
-    )
     option.add_argument(
         "-l",
         "--list_of_subjects",
@@ -37,6 +30,14 @@ def nfact_pp_args() -> dict:
         help="""A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. 
         All subjects need full file path to subjects directory""",
     )
+
+    option.add_argument(
+        "-i",
+        "--ref",
+        dest="ref",
+        help=f"{col['red']}REQUIRED{col['reset']} Standard space reference image",
+    )
+
     option.add_argument(
         "-f",
         "--study_folder",

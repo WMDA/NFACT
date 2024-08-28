@@ -27,6 +27,7 @@ def nfact_parser() -> dict:
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
+        default=False,
         help=f"{col['red']}REQUIRED{col['reset']} Filepath to a list of subjects.",
     )
     input_args.add_argument(
@@ -34,7 +35,15 @@ def nfact_parser() -> dict:
         "--seed",
         nargs="+",
         dest="seed",
+        default=False,
         help=f"{col['red']}REQUIRED{col['reset']} A single or list of seeds",
+    )
+    input_args.add_argument(
+        "-c",
+        "--config",
+        dest="config",
+        default=False,
+        help=f"An nfact_config file. If this is provided no other arguments are needed.",
     )
 
     nfact_pp_args = args.add_argument_group("PP")
@@ -42,12 +51,14 @@ def nfact_parser() -> dict:
         "-i",
         "--image_standard_space",
         dest="ref",
+        default=False,
         help=f"{col['red']}REQUIRED{col['reset']} Standard space reference image",
     )
     nfact_pp_args.add_argument(
         "-b",
         "--bpx",
         dest="bpx_path",
+        default=False,
         help="Path to Bedpostx folder inside a subjects directory.",
     )
 
@@ -56,6 +67,7 @@ def nfact_parser() -> dict:
         "--warps",
         dest="warps",
         nargs="+",
+        default=False,
         help="Path to warps inside a subjects directory (can accept multiple arguments)",
     )
     nfact_pp_args.add_argument(
@@ -63,17 +75,19 @@ def nfact_parser() -> dict:
         "--rois",
         dest="rois",
         nargs="+",
+        default=False,
         help="A single or list of ROIS",
     )
     nfact_pp_args.add_argument(
         "-t",
         "--target",
         dest="target2",
+        default=False,
         help="Path to target image. If not given will create a whole mask from reference image",
     )
     nfact_decomp_args = args.add_argument_group("decomp")
     nfact_decomp_args.add_argument(
-        "-d", "--dim", dest="dim", help="Number of dimensions/components"
+        "-d", "--dim", default=False, dest="dim", help="Number of dimensions/components"
     )
     nfact_decomp_args.add_argument(
         "-a",
