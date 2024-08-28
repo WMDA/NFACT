@@ -24,6 +24,13 @@ def nfact_config_args():
         description=print(nfact_config_spalsh()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+    args.add_argument(
+        "-H",
+        "--hyperparameters",
+        dest="hyperparameters",
+        action="store_true",
+        help="Get functions hyperparameters instead of command line arguments for NFACT",
+    )
 
     args.add_argument(
         "-o",

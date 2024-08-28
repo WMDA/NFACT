@@ -1,5 +1,5 @@
 from NFACT.NFACT_PP.nfactpp_args import nfact_pp_args
-from NFACT_decomp.setup.args import nfact_decomp_args
+from NFACT.NFACT_decomp.setup.args import nfact_decomp_args
 from NFACT.NFACT_DR.nfact_dr_args import nfactdr_args
 import inspect
 import re
@@ -32,7 +32,9 @@ def get_function_output(function: object) -> dict:
 
     matches = pattern.findall(source_code)
 
-    return {dest: (default if default else False) for dest, default in matches}
+    return {
+        dest: (default.strip('"') if default else False) for dest, default in matches
+    }
 
 
 def get_nfact_arguments() -> dict:

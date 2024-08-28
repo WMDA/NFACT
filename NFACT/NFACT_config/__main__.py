@@ -3,6 +3,7 @@ from .nfact_config_functions import (
     create_combined_algo_dict,
     save_to_json,
 )
+from NFACT.NFACT_base.config import get_nfact_arguments
 
 
 def nfact_config_main() -> None:
@@ -19,7 +20,12 @@ def nfact_config_main() -> None:
     None
     """
     args = nfact_config_args()
-    arguments = create_combined_algo_dict()
+
+    if args["hyperparameters"]:
+        arguments = create_combined_algo_dict()
+    else:
+        arguments = get_nfact_arguments()
+
     print(f'Saving config file to {args["output_dir"]}\n')
     save_to_json(args["output_dir"], arguments)
 
