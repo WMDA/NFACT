@@ -23,12 +23,7 @@ def nfact_pp_args() -> dict:
         epilog=nfact_pp_example_usage(),
     )
     col = colours()
-    option.add_argument(
-        "-f",
-        "--study_folder",
-        dest="study_folder",
-        help=f"{col['red']}REQUIRED{col['reset']} Study folder containing sub directories of participants.",
-    )
+
     option.add_argument(
         "-i",
         "--ref",
@@ -43,10 +38,16 @@ def nfact_pp_args() -> dict:
         All subjects need full file path to subjects directory""",
     )
     option.add_argument(
+        "-f",
+        "--study_folder",
+        dest="study_folder",
+        help=f"In place of a list of subjects a study folder can be given to get subject.",
+    )
+    option.add_argument(
         "-b",
         "--bpx",
         dest="bpx_path",
-        help="Name of Diffusion.bedpostX directory",
+        help="Path to Bedpostx folder inside a subjects directory.",
     )
     option.add_argument(
         "-t",
@@ -73,7 +74,7 @@ def nfact_pp_args() -> dict:
         "--warps",
         dest="warps",
         nargs="+",
-        help="The suffix of the path leading to the transforms between standard space and diffusion space",
+        help="Path to warps inside a subjects directory (can accept multiple arguments)",
     )
     option.add_argument(
         "-o",

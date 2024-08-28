@@ -42,9 +42,6 @@ def nfact_pp_main():
         "FSLDIR not in path. Check FSL is installed or has been loaded correctly",
     )
 
-    # Error handle if study directory not given
-    error_and_exit(check_study_folder(arg["study_folder"]))
-
     # Error handle list of subjects
     if arg["list_of_subjects"]:
         error_and_exit(
@@ -63,6 +60,7 @@ def nfact_pp_main():
         )
 
     if not arg["list_of_subjects"]:
+        error_and_exit(check_study_folder(arg["study_folder"]))
         arg["list_of_subjects"] = list_of_subjects_from_directory(arg["study_folder"])
 
         error_and_exit(

@@ -45,11 +45,18 @@ def nfact_parser() -> dict:
         help=f"{col['red']}REQUIRED{col['reset']} Standard space reference image",
     )
     nfact_pp_args.add_argument(
+        "-b",
+        "--bpx",
+        dest="bpx_path",
+        help="Path to Bedpostx folder inside a subjects directory.",
+    )
+
+    nfact_pp_args.add_argument(
         "-w",
         "--warps",
         dest="warps",
         nargs="+",
-        help="The suffix of the path leading to the transforms between standard space and diffusion space",
+        help="Path to warps inside a subjects directory (can accept multiple arguments)",
     )
     nfact_pp_args.add_argument(
         "-r",
