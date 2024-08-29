@@ -167,8 +167,7 @@ def nfact_decomp_main(args: dict = None) -> None:
         )
     nprint(f"{col['darker_pink']}NFACT has finished{col['reset']}")
 
-    exit(0)
-
 
 if __name__ == "__main__":
     nfact_decomp_main()
+    exit(0)

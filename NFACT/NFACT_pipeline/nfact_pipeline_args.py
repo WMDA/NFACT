@@ -90,6 +90,9 @@ def nfact_parser() -> dict:
         "-d", "--dim", default=False, dest="dim", help="Number of dimensions/components"
     )
     nfact_decomp_args.add_argument(
+        "-o", "--outdir", dest="outdir", help="Path to where to create an output folder"
+    )
+    nfact_decomp_args.add_argument(
         "-a",
         "--algo",
         default="ICA",

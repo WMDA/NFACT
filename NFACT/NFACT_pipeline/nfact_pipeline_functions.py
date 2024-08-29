@@ -79,7 +79,9 @@ def build_module_arguments(module_dict: dict, args: dict, key: str):
     return build_args(args[key], module_dict)
 
 
-def write_decomp_list(file_path: str, out_dir_name: str) -> None:
+def write_decomp_list(
+    file_path: str, out_dir_name: str, nfact_tmp_location: str
+) -> None:
     """
     Function to write to a file
     the subjects  omatrix2 location.
@@ -90,7 +92,9 @@ def write_decomp_list(file_path: str, out_dir_name: str) -> None:
         str to sub list file
     out_dir_name: str
         str of the name of
-        the
+        the output directory of nfact_pp
+    nfact_tmp_location: str
+        path of nfact_tmp location
 
     Returns
     -------
@@ -100,9 +104,9 @@ def write_decomp_list(file_path: str, out_dir_name: str) -> None:
 
     omatrix_2_paths = [os.path.join(file, out_dir_name, "omatrix2\n") for file in files]
     omatrix_2_paths.sort()
-    print(omatrix_2_paths)
+
     write_to_file(
-        os.path.join(os.path.dirname(file_path), ".nfact_tmp"),
+        nfact_tmp_location,
         "nfact_decomp_sub_list",
         omatrix_2_paths,
         text_is_list=True,

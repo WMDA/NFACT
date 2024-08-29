@@ -1,10 +1,11 @@
 import os
 import json
 from datetime import datetime
+import shutil
 from .utils import error_and_exit
 
 
-def make_directory(path: str) -> None:
+def make_directory(path: str, overwrite: bool = False) -> None:
     """
     Function to make a directory.
     If error it will exit
@@ -13,6 +14,8 @@ def make_directory(path: str) -> None:
     ----------
     path: str
         string to directory path
+    overwrite: bool
+        overwrite any previous directories
 
     Returns
     -------
@@ -20,6 +23,8 @@ def make_directory(path: str) -> None:
     """
 
     try:
+        if os.path.exists(path) and overwrite:
+            shutil.rmtree(path, ignore_errors=True)
         os.mkdir(path)
     except Exception as e:
         error_and_exit(False, f"Unable to create directory due to {e}")

@@ -117,9 +117,6 @@ def surf_volume_main(arg: dict, handler) -> None:
             for sub in arg["list_of_subjects"]
         ]
 
-    print("Finished")
-    exit(0)
-
 
 def hcp_stream_main(arg: dict, handler: object) -> None:
     """
@@ -195,5 +192,3 @@ def hcp_stream_main(arg: dict, handler: object) -> None:
         update_seeds_file(os.path.join(sub, arg["out"], "seeds.txt"))
         for sub in arg["list_of_subjects"]
     ]
-    print("\nFinished HCP stream")
-    exit(0)

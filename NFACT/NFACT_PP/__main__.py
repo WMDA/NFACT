@@ -90,3 +90,5 @@ def nfact_pp_main(arg: dict = None):
 
 if __name__ == "__main__":
     nfact_pp_main()
+    exit(0)
+    print("NFACT PP has Finished")
