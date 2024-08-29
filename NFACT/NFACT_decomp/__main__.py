@@ -51,6 +51,7 @@ def nfact_decomp_main(args: dict = None) -> None:
     None
     """
     # Setting up nfact
+
     handler = Signit_handler()
     to_exit = False
     if not args:

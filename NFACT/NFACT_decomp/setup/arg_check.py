@@ -44,6 +44,7 @@ def process_command_args(args: dict) -> dict:
     -------
     args: dict
     """
+    args["dim"] = str(args["dim"])
     if ".0" in args["dim"]:
         args["dim"] = float(args["dim"])
     try:
@@ -62,8 +63,10 @@ def process_command_args(args: dict) -> dict:
                 f"wta_thr must be a float value. {args['wta_zthr']} is not a float",
             )
 
+    args["migp"] = str(args["migp"])
     if ".0" in args["migp"]:
         args["migp"] = float(args["migp"])
+
     if args["algo"] != "nmf":
         if args["migp"]:
             try:
@@ -71,7 +74,7 @@ def process_command_args(args: dict) -> dict:
             except Exception:
                 error_and_exit(
                     False,
-                    f"migp must be a interger value. {args['migp']} is not a interger type",
+                    f"MIGP must be a interger value. {args['migp']} is not a interger type",
                 )
     if args["algo"] == "nmf":
         args["migp"] = None

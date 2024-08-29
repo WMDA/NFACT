@@ -33,6 +33,7 @@ def nfact_pp_main(arg: dict = None):
     -------
     None
     """
+
     to_exit = False
     if not arg:
         arg = nfact_pp_args()

@@ -84,9 +84,13 @@ def nfact_pipeline_main() -> None:
         "nfact_decomp_sub_list",
     )
     nfact_decomp_args["seeds"] = os.path.join(nfact_tmp_location, "seeds.txt")
+
     nfact_dr_args["nfact_dir"] = os.path.join(nfact_decomp_args["outdir"], "nfact")
     nfact_dr_args["seeds"] = os.path.join(
         nfact_dr_args["nfact_dir"], "files", "seeds.txt"
+    )
+    nfact_dr_args["list_of_subjects"] = os.path.join(
+        nfact_dr_args["nfact_dir"], "files", "nfact_decomp_sub_list"
     )
 
     # Clean str instances of bool to actual bool type
@@ -110,8 +114,9 @@ def nfact_pipeline_main() -> None:
     print(nfact_pp_splash())
     nfact_pp_main(nfact_pp_args)
 
-    print(f'{col['pink']}\nFinished running NFACT_PP\n{col['reset']}')
+    print(f'{col["pink"]}\nFinished running NFACT_PP{col["reset"]}')
     print("-" * 70)
+
     # Run NFACT_decomp
     print(f'{col["plum"]}\nSetting up and running NFACT Decomp{col["reset"]}')
 
@@ -124,9 +129,10 @@ def nfact_pipeline_main() -> None:
 
     print(nfact_decomp_splash())
     nfact_decomp_main(nfact_decomp_args)
+    print(f'{col["pink"]}\nFinished running NFACT_decomp{col["reset"]}')
+    print("-" * 70)
 
     # Run NFACT_DR
-
     shutil.move(
         nfact_tmp_location, os.path.join(nfact_decomp_args["outdir"], "nfact", "files")
     )
@@ -140,6 +146,8 @@ def nfact_pipeline_main() -> None:
         print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
         print(nfact_dr_splash())
         nfact_dr_main(nfact_dr_args)
+        print(f'{col["pink"]}\nFinished running NFACT_DR{col["reset"]}')
+        print("-" * 70)
     else:
         print("Only one subject given. Skipping dual regression")
 
