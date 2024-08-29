@@ -3,6 +3,7 @@ from .nfact_pipeline_functions import (
     pipeline_args_check,
     build_module_arguments,
     write_decomp_list,
+    process_dictionary_arguments,
 )
 from NFACT.NFACT_base.config import get_nfact_arguments
 from NFACT.NFACT_base.utils import error_and_exit, colours, Timer
@@ -88,6 +89,11 @@ def nfact_pipeline_main() -> None:
         nfact_dr_args["nfact_dir"], "files", "seeds.txt"
     )
 
+    # Clean str instances of bool to actual bool type
+    nfact_pp_args = process_dictionary_arguments(nfact_pp_args)
+    nfact_decomp_args = process_dictionary_arguments(nfact_decomp_args)
+    nfact_dr_args = process_dictionary_arguments(nfact_dr_args)
+
     # Create tmp directory and decomposition subject list
     make_directory(nfact_tmp_location, overwrite=True)
     error_and_exit(
@@ -126,7 +132,7 @@ def nfact_pipeline_main() -> None:
         pass
 
     print(nfact_dr_splash())
-    nfact_dr_main()
+    nfact_dr_main(nfact_dr_args)
 
     # Exit
     print(f"Decomposition pipeline took {time.toc()}")

@@ -145,10 +145,10 @@ def check_arguments(arg: dict) -> None:
     -------
     None
     """
-    default_args = ["study_folder", "ref", "seed", "warps"]
+    default_args = ["ref", "seed", "warps"]
 
     for key in default_args:
-        if key in default_args[2:] and arg["hcp_stream"]:
+        if key in default_args[1:] and arg["hcp_stream"]:
             continue
         else:
             error_and_exit(
