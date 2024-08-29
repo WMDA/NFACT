@@ -65,6 +65,17 @@ def surf_volume_main(arg: dict, handler) -> None:
                 shutil.rmtree(nfactpp_diretory, ignore_errors=True)
 
         nfact_pp_folder_setup(nfactpp_diretory)
+
+        [
+            shutil.copyfile(
+                seed_location,
+                os.path.join(
+                    nfactpp_diretory, "files", os.path.basename(seed_location)
+                ),
+            )
+            for seed_location in seed
+        ]
+
         if surface_processing:
             roi = get_file(arg["rois"], sub)
             seed_names = [

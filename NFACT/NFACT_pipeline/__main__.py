@@ -100,7 +100,6 @@ def nfact_pipeline_main() -> None:
         does_list_of_subjects_exist(nfact_pp_args["list_of_subjects"]),
         "List of subjects doesn't exist. Used in this mode NFACT PP cannot get subjects from folder.",
     )
-    breakpoint()
 
     write_decomp_list(
         nfact_pp_args["list_of_subjects"], nfact_pp_args["out"], nfact_tmp_location
@@ -111,8 +110,10 @@ def nfact_pipeline_main() -> None:
     print(nfact_pp_splash())
     nfact_pp_main(nfact_pp_args)
 
+    print(f'{col['pink']}\nFinished running NFACT_PP\n{col['reset']}')
+    print("-" * 70)
     # Run NFACT_decomp
-    print(f'{col["plum"]}Setting up and running NFACT Decomp{col["reset"]}')
+    print(f'{col["plum"]}\nSetting up and running NFACT Decomp{col["reset"]}')
 
     shutil.copy(
         os.path.join(
