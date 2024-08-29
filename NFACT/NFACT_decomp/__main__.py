@@ -52,9 +52,10 @@ def nfact_decomp_main(args: dict = None) -> None:
     """
     # Setting up nfact
     handler = Signit_handler()
-
+    to_exit = False
     if not args:
         args = nfact_decomp_args()
+        to_exit = True
     col = colours()
 
     # Do argument checking
@@ -166,6 +167,9 @@ def nfact_decomp_main(args: dict = None) -> None:
             args["dim"],
         )
     nprint(f"{col['darker_pink']}NFACT has finished{col['reset']}")
+
+    if to_exit:
+        exit(0)
 
 
 if __name__ == "__main__":

@@ -33,9 +33,10 @@ def nfact_pp_main(arg: dict = None):
     -------
     None
     """
-
+    to_exit = False
     if not arg:
         arg = nfact_pp_args()
+        to_exit = True
 
     handler = Signit_handler()
 
@@ -87,8 +88,10 @@ def nfact_pp_main(arg: dict = None):
 
     surf_volume_main(arg, handler)
 
+    if to_exit:
+        print("NFACT PP has Finished")
+        exit(0)
+
 
 if __name__ == "__main__":
     nfact_pp_main()
-    exit(0)
-    print("NFACT PP has Finished")

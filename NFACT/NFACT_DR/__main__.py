@@ -40,8 +40,10 @@ def nfact_dr_main(args: dict = None) -> None:
 
     handler = Signit_handler()
     col = colours()
+    to_exit = False
     if not args:
         args = nfactdr_args()
+        to_exit = True
 
     # Do argument checking
 
@@ -83,7 +85,9 @@ def nfact_dr_main(args: dict = None) -> None:
 
     nprint(f"{col['darker_pink']}NFACT_DR has finished{col['reset']}")
 
+    if to_exit:
+        exit(0)
+
 
 if __name__ == "__main__":
     nfact_dr_main()
-    exit(0)

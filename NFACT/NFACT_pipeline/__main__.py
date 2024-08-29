@@ -5,7 +5,7 @@ from .nfact_pipeline_functions import (
     write_decomp_list,
 )
 from NFACT.NFACT_base.config import get_nfact_arguments
-from NFACT.NFACT_base.utils import error_and_exit, colours
+from NFACT.NFACT_base.utils import error_and_exit, colours, Timer
 from NFACT.NFACT_base.filesystem import make_directory, read_file_to_list
 from NFACT.NFACT_base.setup import does_list_of_subjects_exist
 from NFACT.NFACT_PP.__main__ import nfact_pp_main
@@ -19,7 +19,7 @@ import os
 import shutil
 
 
-def nfact_pipeline_main(args: dict) -> None:
+def nfact_pipeline_main() -> None:
     """
     Main function for NFACT pipeline
 
@@ -32,7 +32,10 @@ def nfact_pipeline_main(args: dict) -> None:
     None
     """
 
+    time = Timer()
+    time.tic()
     col = colours()
+    args = nfact_args()
 
     if not args["input"]["config"]:
         pipeline_args_check(args)
@@ -112,9 +115,10 @@ def nfact_pipeline_main(args: dict) -> None:
 
     print(nfact_dr_splash())
     nfact_dr_main()
+    print(f"Decomposition pipeline took {time.toc()}")
+    print("Finished")
     exit(0)
 
 
 if __name__ == "__main__":
-    args = nfact_args()
-    nfact_pipeline_main(args)
+    nfact_pipeline_main()
