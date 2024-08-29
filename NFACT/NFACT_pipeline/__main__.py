@@ -6,7 +6,7 @@ from .nfact_pipeline_functions import (
 )
 from NFACT.NFACT_base.config import get_nfact_arguments
 from NFACT.NFACT_base.utils import error_and_exit, colours, Timer
-from NFACT.NFACT_base.filesystem import make_directory, read_file_to_list
+from NFACT.NFACT_base.filesystem import make_directory, read_file_to_list, load_json
 from NFACT.NFACT_base.setup import does_list_of_subjects_exist
 from NFACT.NFACT_PP.__main__ import nfact_pp_main
 from NFACT.NFACT_PP.nfactpp_args import nfact_pp_splash
@@ -37,34 +37,25 @@ def nfact_pipeline_main() -> None:
     col = colours()
     args = nfact_args()
 
+    # Build out command line argument input
     if not args["input"]["config"]:
-        pipeline_args_check(args)
-        global_arguments = get_nfact_arguments()
-
-    nfact_pp_args = build_module_arguments(
-        global_arguments["nfact_pp"], args, "pre_process"
-    )
-    error_and_exit(
-        does_list_of_subjects_exist(nfact_pp_args["list_of_subjects"]),
-        "List of subjects doesn't exist. Used in this mode NFACT PP cannot get subjects from folder.",
-    )
-
-    nfact_decomp_args = build_module_arguments(
-        global_arguments["nfact_decomp"], args, "decomp"
-    )
-
-    nfact_dr_args = build_module_arguments(global_arguments["nfact_dr"], args, "decomp")
-    nfact_tmp_location = os.path.join(nfact_decomp_args["outdir"], ".nfact_tmp")
-
-    make_directory(nfact_tmp_location, overwrite=True)
-    write_decomp_list(
-        nfact_pp_args["list_of_subjects"], nfact_pp_args["out"], nfact_tmp_location
-    )
-
-    if not args["input"]["config"]:
+        print("Building out NFACT arguments. Check logs for specifics")
         from NFACT.NFACT_PP.nfactpp_setup import check_fsl_is_installed
         from NFACT.NFACT_PP.probtrackx_functions import get_probtrack2_arguments
 
+        pipeline_args_check(args)
+        global_arguments = get_nfact_arguments()
+        nfact_pp_args = build_module_arguments(
+            global_arguments["nfact_pp"], args, "pre_process"
+        )
+        nfact_decomp_args = build_module_arguments(
+            global_arguments["nfact_decomp"], args, "decomp"
+        )
+        nfact_dr_args = build_module_arguments(
+            global_arguments["nfact_dr"], args, "decomp"
+        )
+
+        # Check to use probtrackx GPU or not
         print("Checking GPU status")
         error_and_exit(
             check_fsl_is_installed(),
@@ -75,29 +66,55 @@ def nfact_pipeline_main() -> None:
             "No GPU. USing CPU version\n"
         )
 
-    print(f'{col["plum"]}Running NFACT PP{col["reset"]}')
-    print(nfact_pp_splash())
+    # Build out arguments from config file
+    if args["input"]["config"]:
+        print(
+            "WARNING: No argument checking of config files occurs before module is loaded."
+        )
+        global_arguments = load_json(args["input"]["config"])
+        nfact_pp_args = global_arguments["nfact_pp"]
+        nfact_decomp_args = global_arguments["nfact_decomp"]
+        nfact_dr_args = global_arguments["nfact_dr"]
 
-    nfact_pp_main(nfact_pp_args)
-    print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
-
+    # Build out temporary locations of arguments
+    nfact_tmp_location = os.path.join(nfact_decomp_args["outdir"], ".nfact_tmp")
     nfact_decomp_args["list_of_subjects"] = os.path.join(
-        os.path.dirname(nfact_pp_args["list_of_subjects"]),
-        ".nfact_tmp",
+        nfact_tmp_location,
         "nfact_decomp_sub_list",
     )
+    nfact_decomp_args["seeds"] = os.path.join(nfact_tmp_location, "seeds.txt")
+    nfact_dr_args["nfact_dir"] = os.path.join(nfact_decomp_args["outdir"], "nfact")
+    nfact_dr_args["seeds"] = os.path.join(
+        nfact_dr_args["nfact_dir"], "files", "seeds.txt"
+    )
 
+    # Create tmp directory and decomposition subject list
+    make_directory(nfact_tmp_location, overwrite=True)
+    error_and_exit(
+        does_list_of_subjects_exist(nfact_pp_args["list_of_subjects"]),
+        "List of subjects doesn't exist. Used in this mode NFACT PP cannot get subjects from folder.",
+    )
+
+    write_decomp_list(
+        nfact_pp_args["list_of_subjects"], nfact_pp_args["out"], nfact_tmp_location
+    )
+
+    # Run NFACT_PP
+    print(f'{col["plum"]}Running NFACT PP{col["reset"]}')
+    print(nfact_pp_splash())
+    nfact_pp_main(nfact_pp_args)
+
+    # Run NFACT_decomp
+    print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
     sub_nfactpp_dir = read_file_to_list(nfact_pp_args["list_of_subjects"])[0]
     shutil.copy(
         os.path.join(sub_nfactpp_dir, nfact_pp_args["out"], "seeds.txt"),
         nfact_tmp_location,
     )
-
-    nfact_decomp_args["seeds"] = os.path.join(nfact_tmp_location, "seeds.txt")
-
     print(nfact_decomp_splash())
     nfact_decomp_main(nfact_decomp_args)
 
+    # Run NFACT_DR
     print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
     shutil.move(
         nfact_tmp_location, os.path.join(nfact_decomp_args["outdir"], "nfact", "files")
@@ -108,13 +125,10 @@ def nfact_pipeline_main() -> None:
     except Exception:
         pass
 
-    nfact_dr_args["nfact_dir"] = os.path.join(nfact_decomp_args["outdir"], "nfact")
-    nfact_dr_args["seeds"] = os.path.join(
-        nfact_dr_args["nfact_dir"], "files", "seeds.txt"
-    )
-
     print(nfact_dr_splash())
     nfact_dr_main()
+
+    # Exit
     print(f"Decomposition pipeline took {time.toc()}")
     print("Finished")
     exit(0)
