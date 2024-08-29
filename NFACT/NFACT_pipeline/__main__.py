@@ -7,7 +7,7 @@ from .nfact_pipeline_functions import (
 )
 from NFACT.NFACT_base.config import get_nfact_arguments
 from NFACT.NFACT_base.utils import error_and_exit, colours, Timer
-from NFACT.NFACT_base.filesystem import make_directory, read_file_to_list, load_json
+from NFACT.NFACT_base.filesystem import make_directory, load_json
 from NFACT.NFACT_base.setup import does_list_of_subjects_exist
 from NFACT.NFACT_PP.__main__ import nfact_pp_main
 from NFACT.NFACT_PP.nfactpp_args import nfact_pp_splash
@@ -100,6 +100,7 @@ def nfact_pipeline_main() -> None:
         does_list_of_subjects_exist(nfact_pp_args["list_of_subjects"]),
         "List of subjects doesn't exist. Used in this mode NFACT PP cannot get subjects from folder.",
     )
+    breakpoint()
 
     write_decomp_list(
         nfact_pp_args["list_of_subjects"], nfact_pp_args["out"], nfact_tmp_location
@@ -111,17 +112,20 @@ def nfact_pipeline_main() -> None:
     nfact_pp_main(nfact_pp_args)
 
     # Run NFACT_decomp
-    print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
-    sub_nfactpp_dir = read_file_to_list(nfact_pp_args["list_of_subjects"])[0]
+    print(f'{col["plum"]}Setting up and running NFACT Decomp{col["reset"]}')
+
     shutil.copy(
-        os.path.join(sub_nfactpp_dir, nfact_pp_args["out"], "seeds.txt"),
+        os.path.join(
+            nfact_pp_args["list_of_subjects"][0], nfact_pp_args["out"], "seeds.txt"
+        ),
         nfact_tmp_location,
     )
+
     print(nfact_decomp_splash())
     nfact_decomp_main(nfact_decomp_args)
 
     # Run NFACT_DR
-    print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
+
     shutil.move(
         nfact_tmp_location, os.path.join(nfact_decomp_args["outdir"], "nfact", "files")
     )
@@ -131,8 +135,12 @@ def nfact_pipeline_main() -> None:
     except Exception:
         pass
 
-    print(nfact_dr_splash())
-    nfact_dr_main(nfact_dr_args)
+    if len(nfact_pp_args["list_of_subjects"]) > 1:
+        print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
+        print(nfact_dr_splash())
+        nfact_dr_main(nfact_dr_args)
+    else:
+        print("Only one subject given. Skipping dual regression")
 
     # Exit
     print(f"Decomposition pipeline took {time.toc()}")
