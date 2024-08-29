@@ -125,6 +125,7 @@ def nfact_decomp_main(args: dict = None) -> None:
     # Run the decomposition
     decomposition_timer = Timer()
     decomposition_timer.tic()
+
     print(f"Decomposing fdt matrix using {args['algo'].upper()}")
     log.log("Decomposing matrix")
     components = matrix_decomposition(
@@ -168,6 +169,8 @@ def nfact_decomp_main(args: dict = None) -> None:
             args["dim"],
         )
     nprint(f"{col['darker_pink']}NFACT has finished{col['reset']}")
+
+    log.clear_logging()
 
     if to_exit:
         exit(0)

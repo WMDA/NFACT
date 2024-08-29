@@ -84,7 +84,7 @@ def nfact_dr_main(args: dict = None) -> None:
     dual_reg.run()
 
     nprint(f"{col['darker_pink']}NFACT_DR has finished{col['reset']}")
-
+    log.clear_logging()
     if to_exit:
         exit(0)
 

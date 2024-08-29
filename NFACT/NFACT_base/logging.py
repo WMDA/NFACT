@@ -81,3 +81,6 @@ class NFACT_logs:
 
     def log(self, message):
         logging.info(message)
+
+    def clear_logging(self):
+        logging.getLogger().handlers.clear()
