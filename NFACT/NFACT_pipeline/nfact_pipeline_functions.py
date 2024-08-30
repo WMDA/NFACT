@@ -3,6 +3,65 @@ from NFACT.NFACT_base.filesystem import read_file_to_list, write_to_file
 import os
 
 
+def non_compulsory_arguments(
+    standard: bool = False, skip: bool = False, volume: bool = False
+) -> list:
+    """
+    Function to return what are non
+    complusory arguments.
+
+    Parameters
+    ----------
+    standard: bool
+        returns standard non
+        compulsory arguments
+        Default is False.
+    skip: bool
+        returns skip non
+        compulsory arguments
+        Default is False.
+    volume: bool
+        returns volume non
+        compulsory arguments
+        Default is False.
+
+    Returns
+    -------
+    list: list object
+        List of non
+        compulsory arguments
+    """
+    standard_args = ["target2", "config", "skip"]
+    if standard:
+        return standard_args
+    if skip:
+        return standard_args + ["ref", "bpx_path", "warps", "rois"]
+    if volume:
+        return standard_args + ["rois"]
+
+
+def get_compulsory_arguments(args):
+    """
+    Function to return non compulsory
+    arguments
+
+    Parameters
+    ----------
+    args: dict
+        command line arguments
+
+    Returns
+    -------
+    None
+
+    """
+    if args["input"]["skip"]:
+        return non_compulsory_arguments(skip=True)
+    if [seed for seed in args["input"]["seed"] if "nii" in seed]:
+        return non_compulsory_arguments(volume=True)
+    return non_compulsory_arguments(standard=True)
+
+
 def pipeline_args_check(args: dict):
     """
     Function to check that compulsory
@@ -18,10 +77,7 @@ def pipeline_args_check(args: dict):
     None
     """
 
-    non_complusory = ["target2", "config", "skip"]
-
-    if args["input"]["skip"]:
-        non_complusory = non_complusory + ["ref", "bpx_path", "warps", "rois"]
+    non_complusory = get_compulsory_arguments(args)
     for val in args.keys():
         [
             error_and_exit(
