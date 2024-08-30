@@ -1,10 +1,11 @@
 import os
 import json
 from datetime import datetime
+import shutil
 from .utils import error_and_exit
 
 
-def make_directory(path: str) -> None:
+def make_directory(path: str, overwrite: bool = False) -> None:
     """
     Function to make a directory.
     If error it will exit
@@ -13,6 +14,8 @@ def make_directory(path: str) -> None:
     ----------
     path: str
         string to directory path
+    overwrite: bool
+        overwrite any previous directories
 
     Returns
     -------
@@ -20,6 +23,8 @@ def make_directory(path: str) -> None:
     """
 
     try:
+        if os.path.exists(path) and overwrite:
+            shutil.rmtree(path, ignore_errors=True)
         os.mkdir(path)
     except Exception as e:
         error_and_exit(False, f"Unable to create directory due to {e}")
@@ -67,7 +72,9 @@ def load_json(path: str) -> dict:
         error_and_exit(False, f"Unable to load json due to {e}")
 
 
-def write_to_file(file_path: str, name: str, text: str) -> bool:
+def write_to_file(
+    file_path: str, name: str, text: str, text_is_list: bool = False
+) -> bool:
     """
     Function to write to file.
 
@@ -80,10 +87,22 @@ def write_to_file(file_path: str, name: str, text: str) -> bool:
         name of file
     text: str
         string to add to file
+    text_is_list: bool
+        if text is actually a
+        list then will write to file
+
+    Returns
+    -------
+    bool: boolean
+        True if sucessful else
+        False
     """
     try:
         with open(f"{file_path}/{name}", "w") as file:
-            file.write(text)
+            if text_is_list:
+                file.writelines(text)
+            if not text_is_list:
+                file.write(text)
     except Exception as e:
         print(f"Unable to write to {file_path}/{name} due to :", e)
         return False

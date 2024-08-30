@@ -39,7 +39,7 @@ class NFACT_logs:
 
     def process_datetime(self):
         date_time = self.time.split("_")
-        date = "/".join(date_time[:2])
+        date = "/".join(date_time[:3])
         time = ":".join(date_time[3:])
         return {"date": date, "time": time}
 
@@ -81,3 +81,6 @@ class NFACT_logs:
 
     def log(self, message):
         logging.info(message)
+
+    def clear_logging(self):
+        logging.getLogger().handlers.clear()

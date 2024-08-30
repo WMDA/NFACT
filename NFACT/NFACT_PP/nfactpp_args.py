@@ -24,31 +24,31 @@ def nfact_pp_args() -> dict:
     )
     col = colours()
     option.add_argument(
-        "-f",
-        "--study_folder",
-        dest="study_folder",
-        required=True,
-        help=f"{col['red']}REQUIRED{col['reset']} Study folder containing sub directories of participants.",
-    )
-    option.add_argument(
-        "-i",
-        "--image_standard_space",
-        dest="ref",
-        required=True,
-        help=f"{col['red']}REQUIRED{col['reset']} Standard space reference image",
-    )
-    option.add_argument(
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
         help="""A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. 
         All subjects need full file path to subjects directory""",
     )
+
+    option.add_argument(
+        "-i",
+        "--ref",
+        dest="ref",
+        help=f"{col['red']}REQUIRED{col['reset']} Standard space reference image",
+    )
+
+    option.add_argument(
+        "-f",
+        "--study_folder",
+        dest="study_folder",
+        help=f"In place of a list of subjects a study folder can be given to get subject.",
+    )
     option.add_argument(
         "-b",
         "--bpx",
         dest="bpx_path",
-        help="Name of Diffusion.bedpostX directory",
+        help="Path to Bedpostx folder inside a subjects directory.",
     )
     option.add_argument(
         "-t",
@@ -61,21 +61,21 @@ def nfact_pp_args() -> dict:
         "--seed",
         nargs="+",
         dest="seed",
-        help="The suffixes of the paths leading to the left and right hemisphere cortical seeds (white-grey boundary GIFTI)",
+        help="A single or list of seeds",
     )
     option.add_argument(
         "-r",
         "--rois",
         dest="rois",
         nargs="+",
-        help="The suffixes of the paths leading to the left and right hemisphere medial wall masks (GIFTI)",
+        help="A single or list of ROIS",
     )
     option.add_argument(
         "-w",
         "--warps",
         dest="warps",
         nargs="+",
-        help="The suffix of the path leading to the transforms between standard space and diffusion space",
+        help="Path to warps inside a subjects directory (can accept multiple arguments)",
     )
     option.add_argument(
         "-o",

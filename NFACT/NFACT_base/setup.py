@@ -161,7 +161,8 @@ def return_list_of_subjects_from_file(path_to_list: str) -> list:
     """
     # First check that list of subjects is a txt file.
     try:
-        if path_to_list.split(".")[1] != "txt":
+        file_name = os.path.basename(path_to_list)
+        if file_name.split(".")[1] != "txt":
             error_and_exit(
                 False,
                 "List of subjects is not a text file. Please specify a list of subject.",

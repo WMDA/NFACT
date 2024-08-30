@@ -18,19 +18,27 @@ from NFACT.NFACT_base.setup import (
 )
 
 
-def nfact_pp_main():
+def nfact_pp_main(arg: dict = None):
     """
     Main nfact_pp function.
 
     Parameters
     ----------
-    None
+    arg: dict
+        Set of command line arguments
+        from nfact_pipeline
+        Default is None
 
     Returns
     -------
     None
     """
-    arg = nfact_pp_args()
+
+    to_exit = False
+    if not arg:
+        arg = nfact_pp_args()
+        to_exit = True
+
     handler = Signit_handler()
 
     # Check that complusory arguments given
@@ -41,9 +49,6 @@ def nfact_pp_main():
         check_fsl_is_installed(),
         "FSLDIR not in path. Check FSL is installed or has been loaded correctly",
     )
-
-    # Error handle if study directory not given
-    error_and_exit(check_study_folder(arg["study_folder"]))
 
     # Error handle list of subjects
     if arg["list_of_subjects"]:
@@ -63,6 +68,7 @@ def nfact_pp_main():
         )
 
     if not arg["list_of_subjects"]:
+        error_and_exit(check_study_folder(arg["study_folder"]))
         arg["list_of_subjects"] = list_of_subjects_from_directory(arg["study_folder"])
 
         error_and_exit(
@@ -82,6 +88,10 @@ def nfact_pp_main():
         hcp_stream_main(arg, handler)
 
     surf_volume_main(arg, handler)
+
+    if to_exit:
+        print("NFACT PP has Finished")
+        exit(0)
 
 
 if __name__ == "__main__":

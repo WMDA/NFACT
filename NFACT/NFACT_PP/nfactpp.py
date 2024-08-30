@@ -65,6 +65,17 @@ def surf_volume_main(arg: dict, handler) -> None:
                 shutil.rmtree(nfactpp_diretory, ignore_errors=True)
 
         nfact_pp_folder_setup(nfactpp_diretory)
+
+        [
+            shutil.copyfile(
+                seed_location,
+                os.path.join(
+                    nfactpp_diretory, "files", os.path.basename(seed_location)
+                ),
+            )
+            for seed_location in seed
+        ]
+
         if surface_processing:
             roi = get_file(arg["rois"], sub)
             seed_names = [
@@ -116,9 +127,6 @@ def surf_volume_main(arg: dict, handler) -> None:
             update_seeds_file(os.path.join(sub, arg["out"], "seeds.txt"))
             for sub in arg["list_of_subjects"]
         ]
-
-    print("Finished")
-    exit(0)
 
 
 def hcp_stream_main(arg: dict, handler: object) -> None:
@@ -195,5 +203,3 @@ def hcp_stream_main(arg: dict, handler: object) -> None:
         update_seeds_file(os.path.join(sub, arg["out"], "seeds.txt"))
         for sub in arg["list_of_subjects"]
     ]
-    print("\nFinished HCP stream")
-    exit(0)

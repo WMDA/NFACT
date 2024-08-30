@@ -145,12 +145,14 @@ def check_arguments(arg: dict) -> None:
     -------
     None
     """
-    keys = ["seed", "warps"]
-    default_arguments = {key: arg[key] for key in keys}
-    if not arg["hcp_stream"]:
-        for key, value in default_arguments.items():
+    default_args = ["ref", "seed", "warps"]
+
+    for key in default_args:
+        if key in default_args[1:] and arg["hcp_stream"]:
+            continue
+        else:
             error_and_exit(
-                value, f"Missing {key} argument. Please specify or use --hcp_stream"
+                arg[key], f"Missing {key} argument. Please specify with --{key}."
             )
 
 

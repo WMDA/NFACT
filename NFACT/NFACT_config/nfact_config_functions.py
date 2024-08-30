@@ -25,6 +25,14 @@ def nfact_config_args():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     args.add_argument(
+        "-H",
+        "--hyperparameters",
+        dest="hyperparameters",
+        action="store_true",
+        help="Get functions hyperparameters instead of command line arguments for NFACT",
+    )
+
+    args.add_argument(
         "-o",
         "--output_dir",
         dest="output_dir",

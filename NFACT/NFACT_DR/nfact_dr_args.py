@@ -37,11 +37,13 @@ def nfactdr_args() -> dict:
     args.add_argument(
         "-n",
         "--nfact_dir",
+        dest="nfact_dir",
         help=f"{col['red']}REQUIRED{col['reset']}: Path to NFACT directory",
     )
     args.add_argument(
         "-a",
         "--algo",
+        dest="algo",
         help=f"{col['red']}REQUIRED{col['reset']}: Which NFACT algorithm to perform dual regression on",
     )
     args.add_argument(

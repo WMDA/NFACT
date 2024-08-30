@@ -1,8 +1,7 @@
 import os
 import shutil
+
 from NFACT.NFACT_base.logging import NFACT_logs
-
-
 from NFACT.NFACT_base.utils import Timer, colours, nprint
 from NFACT.NFACT_base.signithandler import Signit_handler
 from NFACT.NFACT_base.setup import (
@@ -13,7 +12,7 @@ from NFACT.NFACT_base.setup import (
     process_seeds,
 )
 
-from .setup.args import nfact_args, nfact_splash
+from .setup.args import nfact_decomp_args, nfact_decomp_splash
 from .setup.file_setup import (
     create_folder_set_up,
     get_group_average_files,
@@ -36,21 +35,28 @@ from .setup.arg_check import (
 )
 
 
-def nfact_main() -> None:
+def nfact_decomp_main(args: dict = None) -> None:
     """
     Main nfact function
 
     Parameters
     ----------
-    None
+    arg: dict
+        Set of command line arguments
+        from nfact_pipeline
+        Default is None
 
     Returns
     -------
     None
     """
     # Setting up nfact
+
     handler = Signit_handler()
-    args = nfact_args()
+    to_exit = False
+    if not args:
+        args = nfact_decomp_args()
+        to_exit = True
     col = colours()
 
     # Do argument checking
@@ -89,7 +95,7 @@ def nfact_main() -> None:
     # Set up log
     log = NFACT_logs(args["algo"], "decomp", len(args["ptxdir"]))
     log.set_up_logging(os.path.join(args["outdir"], "nfact", "logs"))
-    log.inital_log(nfact_splash())
+    log.inital_log(nfact_decomp_splash())
     log.log_break("input")
     log.log_arguments(args)
     log.log_parameters(parameters)
@@ -119,6 +125,7 @@ def nfact_main() -> None:
     # Run the decomposition
     decomposition_timer = Timer()
     decomposition_timer.tic()
+
     print(f"Decomposing fdt matrix using {args['algo'].upper()}")
     log.log("Decomposing matrix")
     components = matrix_decomposition(
@@ -163,8 +170,12 @@ def nfact_main() -> None:
         )
     nprint(f"{col['darker_pink']}NFACT has finished{col['reset']}")
 
-    exit(0)
+    log.clear_logging()
+
+    if to_exit:
+        exit(0)
 
 
 if __name__ == "__main__":
-    nfact_main()
+    nfact_decomp_main()
+    exit(0)
