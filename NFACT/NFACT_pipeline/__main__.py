@@ -7,7 +7,7 @@ from .nfact_pipeline_functions import (
 )
 from NFACT.NFACT_base.config import get_nfact_arguments
 from NFACT.NFACT_base.utils import error_and_exit, colours, Timer
-from NFACT.NFACT_base.filesystem import make_directory, load_json
+from NFACT.NFACT_base.filesystem import make_directory, load_json, read_file_to_list
 from NFACT.NFACT_base.setup import does_list_of_subjects_exist
 from NFACT.NFACT_PP.__main__ import nfact_pp_main
 from NFACT.NFACT_PP.nfactpp_args import nfact_pp_splash
@@ -57,15 +57,16 @@ def nfact_pipeline_main() -> None:
         )
 
         # Check to use probtrackx GPU or not
-        print("Checking GPU status")
-        error_and_exit(
-            check_fsl_is_installed(),
-            "FSLDIR not in path. Check FSL is installed or has been loaded correctly",
-        )
-        nfact_pp_args["gpu"] = True if get_probtrack2_arguments(bin=True) else False
-        print("GPU found, Using GPU\n") if nfact_pp_args["gpu"] else print(
-            "No GPU. USing CPU version\n"
-        )
+        if not args["input"]["skip"]:
+            print("Checking GPU status")
+            error_and_exit(
+                check_fsl_is_installed(),
+                "FSLDIR not in path. Check FSL is installed or has been loaded correctly",
+            )
+            nfact_pp_args["gpu"] = True if get_probtrack2_arguments(bin=True) else False
+            print("GPU found, Using GPU\n") if nfact_pp_args["gpu"] else print(
+                "No GPU. USing CPU version\n"
+            )
 
     # Build out arguments from config file
     if args["input"]["config"]:
@@ -110,12 +111,18 @@ def nfact_pipeline_main() -> None:
     )
 
     # Run NFACT_PP
-    print(f'{col["plum"]}Running NFACT PP{col["reset"]}')
-    print(nfact_pp_splash())
-    nfact_pp_main(nfact_pp_args)
+    if not args["input"]["skip"]:
+        print(f'{col["plum"]}Running NFACT PP{col["reset"]}')
+        print(nfact_pp_splash())
+        nfact_pp_main(nfact_pp_args)
 
-    print(f'{col["pink"]}\nFinished running NFACT_PP{col["reset"]}')
-    print("-" * 70)
+        print(f'{col["pink"]}\nFinished running NFACT_PP{col["reset"]}')
+        print("-" * 70)
+    else:
+        print("Skipping NFACT_PP")
+        nfact_pp_args["list_of_subjects"] = read_file_to_list(
+            nfact_pp_args["list_of_subjects"]
+        )
 
     # Run NFACT_decomp
     print(f'{col["plum"]}\nSetting up and running NFACT Decomp{col["reset"]}')

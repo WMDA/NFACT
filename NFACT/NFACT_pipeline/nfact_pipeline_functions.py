@@ -17,7 +17,11 @@ def pipeline_args_check(args: dict):
     -------
     None
     """
-    non_complusory = ["target2", "config"]
+
+    non_complusory = ["target2", "config", "skip"]
+
+    if args["input"]["skip"]:
+        non_complusory = non_complusory + ["ref", "bpx_path", "warps", "rois"]
     for val in args.keys():
         [
             error_and_exit(
