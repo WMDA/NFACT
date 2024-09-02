@@ -136,8 +136,38 @@ def white_component(nfact_dir: str, algo: str) -> np.ndarray:
     )
     return vol2mat(white_matter.get_fdata(), lookup_vol)
 
+def load_grey_matter_volume(nifti_file: str, 
+                            x_y_z_coordinates: np.array) -> np.array:
+    """
+    Function to load a grey matter NIfTI file and convert it
+    back into a grey matter component matrix.
 
-def load_grey_matter_component(file_name: str) -> np.array:
+    Parameters
+    ----------
+    nifti_file: str
+        Path to the grey matter NIfTI file
+    x_y_z_coordinates: np.array
+        Array of x, y, z coordinates
+
+    Returns
+    -------
+    np.array
+        Grey matter component matrix
+    """
+
+
+    img = nb.load(nifti_file)
+    data = img.get_fdata()
+    # Convert the x, y, z coordinates into flat indices
+    vol_shape = data.shape[:3]  # The shape of the 3D volume (ignoring any additional dimensions)
+    xyz_idx = np.ravel_multi_index(x_y_z_coordinates.T, vol_shape)
+
+    # Flatten the data to 2D (number of voxels x number of components)
+    ncols = data.shape[3] if len(data.shape) > 3 else 1
+    flattened_data = data.reshape(-1, ncols)
+    return flattened_data[xyz_idx, :]
+
+def load_grey_matter_gifti_seed(file_name: str) -> np.array:
     """
     Load grey matter component from a GIFTI file.
 
@@ -155,28 +185,31 @@ def load_grey_matter_component(file_name: str) -> np.array:
     gifti_img = nb.load(file_name)
     return np.column_stack([darray.data for darray in gifti_img.darrays])
 
-
-def grey_components(seeds: list, nfact_dir, algo):
+def grey_components_gifti(seeds: list) -> np.darray:
     """
     Function to get grey components from seeds.
 
     Parameters
     ----------
-    nfact_dir: str
-        path to the nfact directory
-    algo: str
-        The algorithm for dual regression
     seeds: list
-        A list of seeds
+        list of seed filepath
+    
+    Returns
+    -------
+    np.darray: np.array
+        array of grey matter component
     """
+
+    return np.vstack([load_grey_matter_gifti_seed(seed) for seed in seeds])
+
+def grey_components(seeds: list, nfact_dir: str, algo: str):
     grey_matter = glob(
         os.path.join(nfact_dir, "components", algo.upper(), "decomp", "G_dim*")
     )
     sorted_components = [
         seed for _, seed in sorted(zip(seeds, grey_matter), key=lambda pair: pair[0])
     ]
-    return np.vstack([load_grey_matter_component(seed) for seed in sorted_components])
-
+    return None
 
 def get_group_level_components(nfact_dir: str, algo: str, seeds: list):
     """
