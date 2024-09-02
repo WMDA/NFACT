@@ -53,7 +53,6 @@ def nfact_decomp_args() -> dict:
         "-a",
         "--algo",
         dest="algo",
-        required=False,
         default="ICA",
         help="What algorithm to run. Options are: ICA (default), or NMF.",
     )

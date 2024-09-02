@@ -158,9 +158,7 @@ def load_grey_matter_volume(nifti_file: str, x_y_z_coordinates: np.array) -> np.
     img = nb.load(nifti_file)
     data = img.get_fdata()
     # Convert the x, y, z coordinates into flat indices
-    vol_shape = data.shape[
-        :3
-    ]  # The shape of the 3D volume (ignoring any additional dimensions)
+    vol_shape = data.shape[:3]
     xyz_idx = np.ravel_multi_index(x_y_z_coordinates.T, vol_shape)
 
     # Flatten the data to 2D (number of voxels x number of components)
@@ -188,31 +186,49 @@ def load_grey_matter_gifti_seed(file_name: str) -> np.array:
     return np.column_stack([darray.data for darray in gifti_img.darrays])
 
 
-def grey_components_gifti(seeds: list) -> np.darray:
+def grey_components(seeds: list, nfact_dir: str, algo: str) -> np.ndarray:
     """
-    Function to get grey components from seeds.
+    Function to get grey components.
 
     Parameters
     ----------
     seeds: list
-        list of seed filepath
+        list of seeds paths
+    nfact_dir: str
+        str of absolute path to nfact directory
+    algo: str
+        algo string
 
     Returns
     -------
-    np.darray: np.array
-        array of grey matter component
+    np.ndarray: np.array
+        grey matter components array
     """
-    return np.vstack([load_grey_matter_gifti_seed(seed) for seed in seeds])
-
-
-def grey_components(seeds: list, nfact_dir: str, algo: str):
     grey_matter = glob(
         os.path.join(nfact_dir, "components", algo.upper(), "decomp", "G_dim*")
     )
     sorted_components = [
         seed for _, seed in sorted(zip(seeds, grey_matter), key=lambda pair: pair[0])
     ]
-    return None
+    save_type = "gii" if "gii" in sorted_components[0] else "nii"
+
+    if save_type == "nii":
+        coord_file = np.loadtxt(
+            os.path.join(nfact_dir, "group_averages", "coords_for_fdt_matrix2"),
+            dtype=int,
+        )
+        return np.vstack(
+            [
+                load_grey_matter_volume(
+                    seed, coord_file[coord_file[:, 3] == idx][:, :3]
+                )
+                for idx, seed in enumerate(sorted_components)
+            ]
+        )
+    if save_type == "gii":
+        return np.vstack(
+            [load_grey_matter_gifti_seed(seed) for seed in sorted_components]
+        )
 
 
 def get_group_level_components(nfact_dir: str, algo: str, seeds: list):

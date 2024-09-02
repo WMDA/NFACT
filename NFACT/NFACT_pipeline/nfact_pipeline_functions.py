@@ -139,53 +139,6 @@ def build_module_arguments(module_dict: dict, args: dict, key: str):
     return build_args(args[key], module_dict)
 
 
-def convert_str_to_bool(val) -> any:
-    """
-    Converts string instances of 'True' and 'False'
-
-    Parameters
-    ----------
-    val: str
-       string value
-
-    Returns
-    -------
-    any: mixed
-       either True, False
-       or the original string
-       type.
-
-    """
-    if val.lower() == "true":
-        return True
-    if val.lower() == "false":
-        return False
-    return val
-
-
-def process_dictionary_arguments(dictionary_to_process: dict) -> dict:
-    """
-    Clean str instances of bool to
-    actual bool type
-
-    Parameters
-    ----------
-    dictionary_to_process : dict
-        The dictionary to process.
-
-    Returns
-    -------
-    dict
-        The dictionary with strings
-        'True' and 'False' converted to bool
-        type.
-    """
-    return {
-        key: convert_str_to_bool(value) if type(value) == str else value
-        for key, value in dictionary_to_process.items()
-    }
-
-
 def write_decomp_list(
     file_path: str, out_dir_name: str, nfact_tmp_location: str
 ) -> None:

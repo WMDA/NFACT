@@ -138,6 +138,6 @@ def save_to_json(path: str, dictionary_to_save: dict):
     None
     """
 
-    config_file = json.dumps(dictionary_to_save)
+    config_file = json.dumps(dictionary_to_save, indent=4)
     with open(os.path.join(path, "nfact_config.config"), "w") as json_file:
         json_file.write(config_file)
