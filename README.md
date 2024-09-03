@@ -9,9 +9,16 @@
 ```
 
 # NFACT
-Non-negative matrix Factorisation of Tractography data
 
-This is a work in progress repo merging NFacT (Shaun Warrington, Ellie Thompson, and Stamatios Sotiropoulos) and ptx_decomp (Saad Jbabdi and Rogier Mars).
+*This is a work in progress repo merging NFacT (Shaun Warrington, Ellie Thompson, and Stamatios Sotiropoulos) and ptx_decomp (Saad Jbabdi and Rogier Mars).*
+
+## What is NFACT
+NFACT (Non-negative matrix Factorisation of Tractography data) is a set of modules (as well as end to end pipeline) that decomposes tractography data using NMF/ICA.
+
+It consists of three "main" modules:
+    - nfact_pp (Pre-process data for decomposition)
+    - nfact_decomp (Decomposes a single or average group matrix using NMF or ICA)
+    - nfact_
 
 Consists of NFACT and NFACT pre-processing (NFACT_PP).  
 

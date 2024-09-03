@@ -193,6 +193,9 @@ def check_algo(algo: str) -> str:
        returns lower case
        of str
     """
+    error_and_exit(
+        algo, "--algo not given. Please specify either ICA and NMF (case insensitive)"
+    )
     implemented_decomp_methods = ["nmf", "ica"]
     if algo.lower() not in implemented_decomp_methods:
         error_and_exit(
