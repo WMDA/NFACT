@@ -56,3 +56,57 @@ def get_nfact_arguments() -> dict:
         "nfact_decomp": get_function_output(nfact_decomp_args),
         "nfact_dr": get_function_output(nfactdr_args),
     }
+
+
+def convert_str_to_bool(val) -> any:
+    """
+    Converts string instances of 'True' and 'False'
+
+    Parameters
+    ----------
+    val: str
+       string value
+
+    Returns
+    -------
+    any: mixed
+       either True, False
+       or the original string
+       type.
+
+    """
+    try:
+        if val.lower() == "true":
+            return True
+        if val.lower() == "false":
+            return False
+    except AttributeError:
+        return val
+    return val
+
+
+def process_dictionary_arguments(dictionary_to_process: dict) -> dict:
+    """
+    Clean str instances of bool to
+    actual bool type
+
+    Parameters
+    ----------
+    dictionary_to_process : dict
+        The dictionary to process.
+
+    Returns
+    -------
+    dict
+        The dictionary with strings
+        'True' and 'False' converted to bool
+        type.
+    """
+    return {
+        key: (
+            process_dictionary_arguments(value)
+            if isinstance(value, dict)
+            else convert_str_to_bool(value)
+        )
+        for key, value in dictionary_to_process.items()
+    }
