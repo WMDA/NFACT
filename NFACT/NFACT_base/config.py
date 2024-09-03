@@ -110,8 +110,3 @@ def process_dictionary_arguments(dictionary_to_process: dict) -> dict:
         )
         for key, value in dictionary_to_process.items()
     }
-
-    # return {
-    #    key: convert_str_to_bool(value) if type(value) == str else value
-    #    for key, value in dictionary_to_process.items()
-    # }

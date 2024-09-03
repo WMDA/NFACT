@@ -9,7 +9,7 @@ import re
 import os
 
 
-# TODO: Add in parallelization.
+# TODO: THis Class needs refactoring. It's horrible
 class Dual_regression:
     """
     Dual regression Class.
