@@ -1,3 +1,22 @@
+# NFACT
+
+*This is a work in progress repo merging NFacT (Shaun Warrington, Ellie Thompson, and Stamatios Sotiropoulos) and ptx_decomp (Saad Jbabdi and Rogier Mars).*
+
+## What is NFACT
+NFACT (Non-negative matrix Factorisation of Tractography data) is a set of modules (as well as end to end pipeline) that decomposes 
+tractography data using NMF/ICA.
+
+It consists of three "main" decomposition modules:
+    - nfact_pp (Pre-process data for decomposition)
+    - nfact_decomp (Decomposes a single or average group matrix using NMF or ICA)
+    - nfact_dr (Dual regression on group matrix)
+as well as two axillary "modules":
+    - nfact_config (creates config files for the pipeline and changing any hyperparameters)
+    - nfact_glm (To run hypothesis testing)
+and a pipeline wrapper
+    - nfact (runs either all three pre-processing modules or just nfact_decomp and nfact_dr)
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ``` 
  _   _ ______   ___   _____  _____    
@@ -8,14 +27,66 @@
 \_| \_/\_|    \_| |_/ \____/  \_/ 
 ```
 
-# NFACT
-Non-negative matrix Factorisation of Tractography data
+## NFACT pipeline
 
-This is a work in progress repo merging NFacT (Shaun Warrington, Ellie Thompson, and Stamatios Sotiropoulos) and ptx_decomp (Saad Jbabdi and Rogier Mars).
+This pipeline runs nfact_pp, nfact_decomp and nfact_dr on tractography data that has been processed by bedpostx. 
 
-Consists of NFACT and NFACT pre-processing (NFACT_PP).  
 
-------------------------------------------------------------------------------------------------------------------------------------------
+### Usage:
+
+```
+usage: nfact [-h] [-l LIST_OF_SUBJECTS] [-s SEED [SEED ...]] [-c CONFIG] [-S] [-i REF] [-b BPX_PATH] [-w WARPS [WARPS ...]] [-r ROIS [ROIS ...]] [-t TARGET2] [-d DIM] [-o OUTDIR] [-a ALGO]
+
+options:
+  -h, --help            show this help message and exit
+
+Inputs:
+  -l LIST_OF_SUBJECTS, --list_of_subjects LIST_OF_SUBJECTS
+                        Filepath to a list of subjects.
+  -s SEED [SEED ...], --seed SEED [SEED ...]
+                        A single or list of seeds
+  -c CONFIG, --config CONFIG
+                        An nfact_config file. If this is provided no other arguments are needed.
+  -S, --skip            Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.
+
+PP:
+  -i REF, --image_standard_space REF
+                        Standard space reference image
+  -b BPX_PATH, --bpx BPX_PATH
+                        Path to Bedpostx folder inside a subjects directory.
+  -w WARPS [WARPS ...], --warps WARPS [WARPS ...]
+                        Path to warps inside a subjects directory (can accept multiple arguments)
+  -r ROIS [ROIS ...], --rois ROIS [ROIS ...]
+                        A single or list of ROIS
+  -t TARGET2, --target TARGET2
+                        Path to target image. If not given will create a whole mask from reference image
+
+decomp:
+  -d DIM, --dim DIM     Number of dimensions/components
+  -o OUTDIR, --outdir OUTDIR
+                        Path to where to create an output folder
+  -a ALGO, --algo ALGO  What algorithm to run. Options are: ICA (default), or NMF.
+
+```
+
+example call:
+
+```
+nfact --list_of_subject /absolute path/sub_list \
+--seed thalamus.nii.gz \
+--algo NMF \
+--dim 100 \
+--outdir /absolute path /save directory \
+--warps standard2acpc_dc.nii.gz acpc_dc2standard.nii.gz \
+--ref $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz \
+--bpx Diffusion.bedpostX 
+```
+
+With a config file:
+```
+nfact –config /absolute path/nfact_config.config  
+```
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ```
  _   _ ______   ___   _____  _____     ______ ______
