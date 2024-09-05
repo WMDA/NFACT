@@ -6,8 +6,7 @@ from NFACT.NFACT_base.imagehandling import (
     save_white_matter,
     save_grey_matter_components,
 )
-from NFACT.NFACT_base.utils import colours, nprint
-import logging
+from NFACT.NFACT_base.utils import colours, nprint, error_and_exit
 
 
 def save_images(
@@ -49,28 +48,38 @@ def save_images(
             algo_path = os.path.join("components", algo, "normalised")
             w_file_name = f"W_norm_dim{dim}"
             grey_prefix = "G_norm"
-
-        if "grey" in comp:
-            nprint(f"{col['pink']}Saving {comp}{col['reset']}")
-            save_grey_matter_components(
-                save_type,
-                components[comp],
-                nfact_path,
-                seeds,
-                algo_path,
-                dim,
-                os.path.join(nfact_path, "group_averages", "coords_for_fdt_matrix2"),
-                grey_prefix,
-            )
-        if "white" in comp:
-            nprint(f"{col['purple']}Saving {comp}{col['reset']}")
-            save_white_matter(
-                components[comp],
-                os.path.join(
-                    nfact_path, "group_averages", "lookup_tractspace_fdt_matrix2.nii.gz"
-                ),
-                os.path.join(nfact_path, algo_path, w_file_name),
-            )
+        try:
+            if "grey" in comp:
+                nprint(f"{col['pink']}Saving {comp}{col['reset']}")
+                save_grey_matter_components(
+                    save_type,
+                    components[comp],
+                    nfact_path,
+                    seeds,
+                    algo_path,
+                    dim,
+                    os.path.join(
+                        nfact_path, "group_averages", "coords_for_fdt_matrix2"
+                    ),
+                    grey_prefix,
+                )
+        except Exception as e:
+            nprint(f"{col['red']}Unable to save grey matter due to: {e}")
+            nprint("Continuing however dual regression not possbile.{col['reset']}")
+        try:
+            if "white" in comp:
+                nprint(f"{col['purple']}Saving {comp}{col['reset']}")
+                save_white_matter(
+                    components[comp],
+                    os.path.join(
+                        nfact_path,
+                        "group_averages",
+                        "lookup_tractspace_fdt_matrix2.nii.gz",
+                    ),
+                    os.path.join(nfact_path, algo_path, w_file_name),
+                )
+        except Exception as e:
+            error_and_exit(f"Unable to save white matter components due to {e}")
 
 
 def winner_takes_all(

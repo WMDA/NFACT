@@ -13,7 +13,7 @@ If you have a new idea for NFACT please open a new issue to discuss the idea the
 If you want to contribute code, do it on your own fork then put in a merge request. Please in your merge request detail exactly what changes you have made to NFACT. Please also keep merges as short and as focused as possible.
 
 ### Style
-Code is read more than ran so NFACT is very strict regarding style. This makes it easier for everyone to understand what the code is doing and makes NFACT better.
+Code is read more than ran, so NFACT is very strict regarding style. This makes it easier for everyone to understand what the code is doing and makes NFACT better.
 
 As such all contributions must:
 
@@ -93,17 +93,13 @@ for sub in subject:
 
 ### Layout
 
-All functions that are shared across multiple "modules" should got into NFACT_base. If a function is specific to a "module" put it in the 
+All functions that are shared across multiple "modules" should got into NFACT_base. If a function is specific to a "module" put it in the module. 
 
-### How to report a bug
 
+## How to report a bug
 
 What version of NFACT are you using?
 What operating system and processor architecture are you using?
 What did you do?
 What did you expect to see?
 What did you see instead? 
-
-
-## Code review process
-

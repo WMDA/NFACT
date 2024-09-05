@@ -9,7 +9,7 @@ import re
 import os
 
 
-# TODO: Add in parallelization.
+# TODO: THis Class needs refactoring. It's horrible
 class Dual_regression:
     """
     Dual regression Class.
@@ -80,6 +80,7 @@ class Dual_regression:
             self.connectivity_matrix = load_fdt_matrix(
                 os.path.join(subject, "fdt_matrix2.dot")
             )
+
             try:
                 components = decomp()
             except ValueError as e:

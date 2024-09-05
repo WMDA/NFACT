@@ -2,7 +2,7 @@ import argparse
 from NFACT.NFACT_base.utils import colours
 
 
-def nfact_args() -> dict:
+def nfact_decomp_args() -> dict:
     """
     Function to define cmd arguments
 
@@ -17,7 +17,7 @@ def nfact_args() -> dict:
     """
     args = argparse.ArgumentParser(
         prog="nfact",
-        description=print(nfact_splash()),
+        description=print(nfact_decomp_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     args.add_argument(
@@ -52,7 +52,7 @@ def nfact_args() -> dict:
     args.add_argument(
         "-a",
         "--algo",
-        required=False,
+        dest="algo",
         default="ICA",
         help="What algorithm to run. Options are: ICA (default), or NMF.",
     )
@@ -115,7 +115,7 @@ def nfact_args() -> dict:
     return vars(args.parse_args())
 
 
-def nfact_splash() -> str:
+def nfact_decomp_splash() -> str:
     """
     Function to return NFACT splash
 
@@ -130,11 +130,11 @@ def nfact_splash() -> str:
     col = colours()
     return f"""
 {col['pink']} 
- _   _ ______   ___   _____  _____    
-| \ | ||  ___| /   \ /  __ \|_   _|    
-|  \| || |_   / /_\ \| /  \/  | |      
-|     ||  _|  |  _  || |      | |    
-| |\  || |    | | | || \__/\  | |    
-\_| \_/\_|    \_| |_/ \____/  \_/ 
+ _   _ ______   ___   _____  _____  ______  _____  _____  _____ ___  ___ _____ 
+| \ | ||  ___| / _ \ /  __ \|_   _| |  _  \|  ___|/  __ \|  _  ||  \/  || ___ \\
+|  \| || |_   / /_\ \| /  \/  | |   | | | || |__  | /  \/| | | || .  . || |_/ /
+| . ` ||  _|  |  _  || |      | |   | | | ||  __| | |    | | | || |\/| ||  __/ 
+| |\  || |    | | | || \__/\  | |   | |/ / | |___ | \__/\\\ \_/ /| |  | || |    
+\_| \_/\_|    \_| |_/ \____/  \_/   |___/  \____/  \____/ \___/ \_|  |_/\_| 
 {col['reset']} 
 """

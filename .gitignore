@@ -164,3 +164,4 @@ cython_debug/
 # user
 *test
 test*
+nfact_config.config

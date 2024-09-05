@@ -21,13 +21,17 @@ from NFACT.NFACT_base.setup import (
 import os
 
 
-def nfact_dr_main() -> None:
+def nfact_dr_main(args: dict = None) -> None:
     """
     Main function for NFACT DR.
 
     Parameters
     ----------
-    None
+    arg: dict
+        Set of command line arguments
+        from nfact_pipeline
+        Default is None
+
 
     Returns
     -------
@@ -36,7 +40,10 @@ def nfact_dr_main() -> None:
 
     handler = Signit_handler()
     col = colours()
-    args = nfactdr_args()
+    to_exit = False
+    if not args:
+        args = nfactdr_args()
+        to_exit = True
 
     # Do argument checking
 
@@ -77,7 +84,9 @@ def nfact_dr_main() -> None:
     dual_reg.run()
 
     nprint(f"{col['darker_pink']}NFACT_DR has finished{col['reset']}")
-    exit(0)
+    log.clear_logging()
+    if to_exit:
+        exit(0)
 
 
 if __name__ == "__main__":
