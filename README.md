@@ -354,13 +354,13 @@ and NFM (https://scikit-learn.org/stable/modules/generated/sklearn.decomposition
 ## Usage:
 ```
 
-usage: nfact_config [-h] [-o OUTPUT_DIR]
+usage: nfact_config [-h] [-D] [-o OUTPUT_DIR]
 
 options:
   -h, --help            show this help message and exit
+  -D, --decomp_only     Creates a config file for sckitlearn function hyperparameters
   -o OUTPUT_DIR, --output_dir OUTPUT_DIR
                         Where to save config file
-
 ```
 ------------------------------------------------------------------------------------------------------------------------------------------
 ```

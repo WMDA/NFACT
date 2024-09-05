@@ -21,7 +21,7 @@ def nfact_config_main() -> None:
     """
     args = nfact_config_args()
 
-    if args["hyperparameters"]:
+    if args["decomp_only"]:
         arguments = create_combined_algo_dict()
     else:
         arguments = get_nfact_arguments()
