@@ -38,6 +38,7 @@ and a pipeline wrapper
 
 This pipeline runs nfact_pp, nfact_decomp and nfact_dr on tractography data that has been processed by bedpostx. 
 
+
 The pipeline first creates the omatrix2 
 
 
