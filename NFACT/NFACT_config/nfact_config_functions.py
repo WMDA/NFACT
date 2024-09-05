@@ -25,11 +25,11 @@ def nfact_config_args():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     args.add_argument(
-        "-H",
-        "--hyperparameters",
-        dest="hyperparameters",
+        "-D",
+        "--decomp_only",
+        dest="decomp_only",
         action="store_true",
-        help="Get functions hyperparameters instead of command line arguments for NFACT",
+        help="Creates a config file for sckitlearn function hyperparameters",
     )
 
     args.add_argument(
