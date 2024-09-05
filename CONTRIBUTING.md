@@ -95,8 +95,8 @@ for sub in subject:
 
 All functions that are shared across multiple "modules" should got into NFACT_base. If a function is specific to a "module" put it in the module. 
 
-### How to report a bug
 
+## How to report a bug
 
 What version of NFACT are you using?
 What operating system and processor architecture are you using?
