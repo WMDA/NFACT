@@ -7,13 +7,20 @@ NFACT (Non-negative matrix Factorisation of Tractography data) is a set of modul
 tractography data using NMF/ICA.
 
 It consists of three "main" decomposition modules:
+    
     - nfact_pp (Pre-process data for decomposition)
+    
     - nfact_decomp (Decomposes a single or average group matrix using NMF or ICA)
+    
     - nfact_dr (Dual regression on group matrix)
+
 as well as two axillary "modules":
+    
     - nfact_config (creates config files for the pipeline and changing any hyperparameters)
+    
     - nfact_glm (To run hypothesis testing)
 and a pipeline wrapper
+    
     - nfact (runs either all three pre-processing modules or just nfact_decomp and nfact_dr)
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
