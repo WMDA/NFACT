@@ -9,8 +9,8 @@ on:
       - main
       - dev/cicd
   
-  jobs:
-    test:
+jobs:
+  test:
       runs-on: ubuntu-latest
 
       steps:
