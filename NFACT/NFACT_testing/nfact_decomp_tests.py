@@ -9,14 +9,16 @@ from NFACT.NFACT_decomp.decomposition.decomp import (
 from NFACT.NFACT_decomp.pipes.image_handling import create_wta_map
 from NFACT.NFACT_base.matrix_handling import normalise_components
 import pytest
+import os
 
 
 @pytest.fixture
 def test_matrix():
+    current_working_dir = os.getcwd()
     list_of_mat = [
-        "test_data/sub-0_fdt_matrix2.dot",
-        "test_data/sub-1_fdt_matrix2.dot",
-        "test_data/sub-2_fdt_matrix2.dot",
+        f"{current_working_dir}/test_data/sub-0_fdt_matrix2.dot",
+        f"{current_working_dir}/test_data/sub-1_fdt_matrix2.dot",
+        f"{current_working_dir}/test_data/sub-2_fdt_matrix2.dot",
     ]
     return avg_fdt(list_of_mat)
 
