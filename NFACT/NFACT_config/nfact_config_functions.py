@@ -6,7 +6,7 @@ import argparse
 from NFACT.NFACT_base.utils import colours
 
 
-def nfact_config_args():
+def nfact_config_args() -> dict:
     """
     Function to define cmd arguments
 
@@ -99,7 +99,7 @@ def get_arguments(function: object) -> dict:
     )
 
 
-def create_combined_algo_dict():
+def create_combined_algo_dict() -> dict:
     """
     Function to create a combined dictionary
     for nmf and ICA function arguments.
@@ -120,7 +120,7 @@ def create_combined_algo_dict():
     return dictionary_to_save
 
 
-def save_to_json(path: str, dictionary_to_save: dict):
+def save_to_json(path: str, dictionary_to_save: dict) -> None:
     """
     Function to save nfact config file
     to disk as a json.

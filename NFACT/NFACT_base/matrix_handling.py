@@ -1,6 +1,6 @@
+from NFACT.NFACT_base.utils import colours, nprint
 from sklearn.preprocessing import StandardScaler
 import scipy.sparse as sps
-from NFACT.NFACT_base.utils import colours, nprint
 import numpy as np
 
 
@@ -19,7 +19,6 @@ def normalise_components(
         white matter component
     demean: bool
         Demean matrix. default is True
-
 
     Returns
     -------
