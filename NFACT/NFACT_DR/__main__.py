@@ -38,9 +38,10 @@ def nfact_dr_main(args: dict = None) -> None:
     None
     """
 
-    handler = Signit_handler()
+    Signit_handler()
     col = colours()
     to_exit = False
+
     if not args:
         args = nfactdr_args()
         to_exit = True

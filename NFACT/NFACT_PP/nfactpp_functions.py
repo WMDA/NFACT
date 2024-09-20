@@ -18,7 +18,7 @@ def hcp_get_seeds(sub: str) -> list:
        list of seeds
     """
     seeds = glob.glob(
-        os.path.join(sub, f"MNINonLinear/fsaverage_LR32k/*.white.32k_fs_LR.surf.gii")
+        os.path.join(sub, "MNINonLinear/fsaverage_LR32k/*.white.32k_fs_LR.surf.gii")
     )
     subject = os.path.basename(sub)
     error_and_exit(seeds, f"Cannot find seed files for {subject}")
@@ -40,9 +40,7 @@ def hcp_get_rois(sub: str) -> list:
        list of rois
     """
     rois = glob.glob(
-        os.path.join(
-            sub, f"MNINonLinear/fsaverage_LR32k/*.atlasroi.32k_fs_LR.shape.gii"
-        )
+        os.path.join(sub, "MNINonLinear/fsaverage_LR32k/*.atlasroi.32k_fs_LR.shape.gii")
     )
     subject = os.path.basename(sub)
     error_and_exit(rois, f"Cannot find seed files for {subject}")

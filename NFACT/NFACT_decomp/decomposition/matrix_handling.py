@@ -4,7 +4,6 @@ from scipy.sparse.linalg import eigsh
 import os
 from NFACT.NFACT_base.utils import Timer, error_and_exit, colours, nprint
 from NFACT.NFACT_base.matrix_handling import load_fdt_matrix
-import logging
 
 
 def process_fdt_matrix2(list_of_ptx_folds: list, group_mode: bool) -> np.ndarray:

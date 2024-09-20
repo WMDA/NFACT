@@ -43,14 +43,14 @@ def nfact_parser() -> dict:
         "--config",
         dest="config",
         default=False,
-        help=f"An nfact_config file. If this is provided no other arguments are needed.",
+        help="An nfact_config file. If this is provided no other arguments are needed.",
     )
     input_args.add_argument(
         "-S",
         "--skip",
         dest="skip",
         action="store_true",
-        help=f"Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.",
+        help="Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.",
     )
 
     nfact_pp_args = args.add_argument_group("PP")

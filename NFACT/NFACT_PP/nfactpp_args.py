@@ -42,7 +42,7 @@ def nfact_pp_args() -> dict:
         "-f",
         "--study_folder",
         dest="study_folder",
-        help=f"In place of a list of subjects a study folder can be given to get subject.",
+        help="In place of a list of subjects a study folder can be given to get subject.",
     )
     option.add_argument(
         "-b",
