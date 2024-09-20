@@ -28,4 +28,4 @@ jobs:
           python -m pip install --upgrade pip
           pip install .[dev]
       - name:
-        run: ruff check .
+        run: ruff check --config ruff.toml 
