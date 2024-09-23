@@ -1,5 +1,11 @@
-from sklearn.decomposition import FastICA, NMF
+from ..decomposition.matrix_handling import (
+    melodic_incremental_group_pca,
+)
+from NFACT.NFACT_base.utils import error_and_exit
+from NFACT.NFACT_base.matrix_handling import normalise_components
+from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
 
+from sklearn.decomposition import FastICA, NMF
 import numpy as np
 from sklearn.utils._testing import ignore_warnings
 import logging
@@ -7,13 +13,6 @@ from sklearn.exceptions import ConvergenceWarning
 import warnings
 
 warnings.filterwarnings("ignore")
-
-from ..decomposition.matrix_handling import (
-    melodic_incremental_group_pca,
-)
-from NFACT.NFACT_base.utils import error_and_exit
-from NFACT.NFACT_base.matrix_handling import normalise_components
-from NFACT.NFACT_config.nfact_config_functions import create_combined_algo_dict
 
 
 @ignore_warnings(category=ConvergenceWarning)

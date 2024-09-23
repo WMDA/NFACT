@@ -162,6 +162,7 @@ cython_debug/
 #.idea/
 
 # user
-*test
-test*
+dev
+dev/*
 nfact_config.config
+.ruff_cache

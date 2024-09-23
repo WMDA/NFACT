@@ -1,6 +1,5 @@
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-import numpy as np
 import os
 from NFACT.NFACT_base.imagehandling import (
     save_white_matter,

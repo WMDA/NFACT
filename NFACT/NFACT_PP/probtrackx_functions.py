@@ -201,7 +201,7 @@ def get_target2(
         )
     except FileNotFoundError:
         error_and_exit(
-            False, f"Unable to load FSL flirt. Check FSL is properly installed"
+            False, "Unable to load FSL flirt. Check FSL is properly installed"
         )
     except subprocess.CalledProcessError as error:
         error_and_exit(False, f"Error in calling FSL flirt: {error}")
@@ -331,7 +331,7 @@ class Probtrackx:
         """
         nfactpp_diretory = os.path.dirname(command[2])
         print(
-            f"Running",
+            "Running",
             command[0],
             f"on subject {os.path.basename(os.path.dirname(os.path.dirname(command[2])))}",
         )

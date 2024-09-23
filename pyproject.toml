@@ -25,9 +25,12 @@ dependencies = [
     'fslpy',
     'tqdm'
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 [project.optional-dependencies]
-development = ['ruff']
+dev = [
+    'ruff',
+    'pytest'
+    ]
 
 [project.scripts]
 nfact_decomp = "NFACT.NFACT_decomp.__main__:nfact_decomp_main"
