@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Get changed Python files
+changed_files=$(git diff --cached --name-only --diff-filter=d | grep '\.py$')
+
+# Run linter only on changed Python files
+for file in $changed_files; 
+do
+  echo $file
+  ruff format --config ruff.toml $file
+  ruff check --fix --config ruff.toml $file
+  git add $file
+done
