@@ -8,8 +8,7 @@ on:
   pull_request:
     branches:
       - main
-      - dev/cicd
-  
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
@@ -25,7 +24,7 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }} # Make to test on a bunch of different python versions
+          python-version: ${{ matrix.python-version }} 
         
       - name: Install dependencies
         run: |
