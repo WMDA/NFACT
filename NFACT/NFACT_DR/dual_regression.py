@@ -56,33 +56,43 @@ class Dual_regression:
 
     def run(self) -> None:
         """
-        Main method to run dual regression
+        Main method to run dual regression.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
         if self.parallel:
-            print("Not implemented yet")
-            return None
+            print("Not implemented yet. Running single subject regression")
+            self.__run_dual_regress_single()
         if not self.parallel:
             self.__run_dual_regress_single()
 
     def __run_dual_regress_single(self) -> None:
         """
-        Runs non parallel regression
+        Runs non parallel regression.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
-        decomp = (
-            self.__ICA_dual_regression
-            if self.algo == "ica"
-            else self.__nfm_dual_regression
-        )
+        decomp = self.__decomp_method()
 
         for idx, subject in enumerate(self.list_of_file):
-            self.__get_subject_id(subject, idx)
-            nprint(f"Dual regressing on {self.subject_id}:")
-            self.connectivity_matrix = load_fdt_matrix(
-                os.path.join(subject, "fdt_matrix2.dot")
-            )
+            subject_id = self.__get_subject_id(subject, idx)
+            nprint(f"Dual regressing on {subject_id}:")
+            connectivity_matrix = self.__connecitivity_matrix(subject)
 
             try:
-                components = decomp()
+                components = decomp(connectivity_matrix)
             except ValueError as e:
                 error_and_exit(
                     False,
@@ -96,29 +106,96 @@ class Dual_regression:
                 )
                 components["normalised_white"] = normalised["white_matter"]
                 components["normalised_grey"] = normalised["grey_matter"]
-            save_dual_regression_images(
-                self.save_type,
-                components,
-                self.nfact_directory,
-                self.seeds,
-                self.algo.upper(),
-                self.component["white_components"].shape[0],
-                self.subject_id,
-                subject,
-            )
+            self.__save_image(components, subject, subject_id)
 
-    def __get_subject_id(self, path: str, number: int):
+    def __decomp_method(self) -> object:
+        """
+        Method to decide on method type.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        --------
+        object: regression function
+           either self.__ica_dual_regression
+           or self.__nmf_dual_regression
+        """
+        return (
+            self.__ica_dual_regression
+            if self.algo == "ica"
+            else self.__nmf_dual_regression
+        )
+
+    def __connecitivity_matrix(self, subject: str) -> np.ndarray:
+        """
+        Method to load_fdt_matrix.
+
+        Parameteres
+        -----------
+        subject: str
+            path to subjects fdt_matrix2
+
+        Returns
+        -------
+        np.ndarray: array
+            loaded fdt matrix
+        """
+        return load_fdt_matrix(os.path.join(subject, "fdt_matrix2.dot"))
+
+    def __save_image(self, components: dict, subject: str, subject_id) -> None:
+        """
+        Method to save regression images
+
+        Parameteres
+        -----------
+        components: dict
+            dictionary of components
+        subject: str
+            path to subjects fdt_matrix2
+        subject_id: str
+            string of subjects id
+
+        Returns
+        -------
+        None
+
+        """
+        save_dual_regression_images(
+            self.save_type,
+            components,
+            self.nfact_directory,
+            self.seeds,
+            self.algo.upper(),
+            self.component["white_components"].shape[0],
+            subject_id,
+            subject,
+        )
+
+    def __get_subject_id(self, path: str, number: int) -> str:
         """
         Method to assign a subjects Id
+
+        Parameters
+        ----------
+        path: str
+            string of path to subjects
+        number: int
+            subject number
+
+        Returns
+        ------
+        str: string
+            subject id either taken from file path
+            or assigned number in the list
         """
         try:
-            self.subject_id = re.findall(r"sub[a-zA-Z0-9]*", path)[0]
+            return re.findall(r"sub[a-zA-Z0-9]*", path)[0]
         except Exception:
-            self.subject_id = f"sub-{number}"
+            return f"sub-{number}"
 
-    def __ICA_dual_regression(
-        self,
-    ) -> dict:
+    def __ica_dual_regression(self, connectivity_matrix: np.ndarray) -> dict:
         """
         Dual regression method for ICA.
         Regresses the invidiual connectivity matrix
@@ -129,7 +206,8 @@ class Dual_regression:
 
         Parameters
         ----------
-        None
+        connectivity_matrix: np.ndarray
+            subjects loaded connectivity matrix
 
         Returns
         -------
@@ -138,18 +216,17 @@ class Dual_regression:
         """
 
         wm_component_grey_map = (
-            np.linalg.pinv(self.component["white_components"].T)
-            @ self.connectivity_matrix.T
+            np.linalg.pinv(self.component["white_components"].T) @ connectivity_matrix.T
         ).T
         wm_component_white_map = (
-            np.linalg.pinv(wm_component_grey_map) @ self.connectivity_matrix
+            np.linalg.pinv(wm_component_grey_map) @ connectivity_matrix
         )
 
         gm_component_grey = (
-            np.linalg.pinv(self.component["grey_components"]) @ self.connectivity_matrix
+            np.linalg.pinv(self.component["grey_components"]) @ connectivity_matrix
         )
         gm_component_grey_map = (
-            np.linalg.pinv(gm_component_grey.T) @ self.connectivity_matrix.T
+            np.linalg.pinv(gm_component_grey.T) @ connectivity_matrix.T
         ).T
 
         return {
@@ -157,22 +234,30 @@ class Dual_regression:
             "white_components": wm_component_white_map,
         }
 
-    def __nfm_dual_regression(self) -> None:
+    def __nmf_dual_regression(self, connectivity_matrix: np.ndarray) -> dict:
         """
-        Dual regression method for NFM.
+        Dual regression method for NMF.
+
+        Parameters
+        ----------
+        connectivity_matrix: np.ndarray
+            subjects loaded connectivity matrix
+
+        Returns
+        -------
+        dict: dictionary
+            dictionary of components
         """
         wm_component_white_map = np.array(
             [
-                nnls(
-                    self.component["grey_components"], self.connectivity_matrix[:, col]
-                )[0]
-                for col in range(self.connectivity_matrix.shape[1])
+                nnls(self.component["grey_components"], connectivity_matrix[:, col])[0]
+                for col in range(connectivity_matrix.shape[1])
             ]
         ).T
         gm_component_grey_map = np.array(
             [
-                nnls(wm_component_white_map.T, self.connectivity_matrix.T[:, col])[0]
-                for col in range(self.connectivity_matrix.shape[0])
+                nnls(wm_component_white_map.T, connectivity_matrix.T[:, col])[0]
+                for col in range(connectivity_matrix.shape[0])
             ]
         )
 

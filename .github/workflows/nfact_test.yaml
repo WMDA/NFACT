@@ -32,4 +32,4 @@ jobs:
         run: ruff check --config ruff.toml 
       
       - name: Pytest nfact_decomp
-        run: pytest -v NFACT/NFACT_testing/nfact_decomp_tests.py
+        run: pytest -v NFACT/NFACT_testing/nfact_pipeline_test.py
