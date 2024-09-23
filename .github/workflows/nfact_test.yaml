@@ -31,5 +31,6 @@ jobs:
       - name: Ruff linting
         run: ruff check --config ruff.toml 
       
-      - name: Pytest nfact_decomp
+      - name: Pytest nfact_decomp |
+        run: python3 NFACT/NFACT_testing/generate_connectivity_matrix.py
         run: pytest -v NFACT/NFACT_testing/nfact_pipeline_test.py

@@ -1,4 +1,5 @@
 import numpy as np
+from pathlib import Path
 
 
 def generate_fdt_matrix2(
@@ -88,10 +89,14 @@ def fdt_matrix2(
 
 
 if __name__ == "__main__":
+    print("Building random connectivity matricies")
     seeds = np.array(range(1, 100))
     targets = np.array(range(101, 200))
-    for sub in range(0, 3):
+    for sub in range(1, 4):
         mat = fdt_matrix2(seeds, targets, num_connections=20000)
         if int(mat[-1, 1]) != targets[-2]:
             np.append(mat, [1, targets[-2], 50])
-        np.savetxt(f"test_data/sub-{sub}_fdt_matrix2.dot", mat, fmt="%i")
+        current_working_dir = Path(__file__).parent
+        np.savetxt(
+            f"{current_working_dir}/test_data/sub-{sub}/fdt_matrix2.dot", mat, fmt="%i"
+        )
