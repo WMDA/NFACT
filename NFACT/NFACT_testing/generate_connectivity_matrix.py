@@ -94,8 +94,8 @@ if __name__ == "__main__":
     targets = np.array(range(101, 200))
     for sub in range(1, 4):
         mat = fdt_matrix2(seeds, targets, num_connections=20000)
-        if int(mat[-1, 1]) != targets[-2]:
-            np.append(mat, [1, targets[-2], 50])
+        new_row = np.array((seeds[-1], targets[-1], np.random.randint(50, 500)))
+        mat = np.vstack([mat, new_row])
         current_working_dir = Path(__file__).parent
         np.savetxt(
             f"{current_working_dir}/test_data/sub-{sub}/fdt_matrix2.dot", mat, fmt="%i"
