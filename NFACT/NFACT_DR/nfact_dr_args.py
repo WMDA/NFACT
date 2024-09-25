@@ -35,10 +35,10 @@ def nfactdr_args() -> dict:
         help="Filepath to a list of subjects. If not given then --ptxdir must be directories.",
     )
     args.add_argument(
-        "-n",
-        "--nfact_dir",
-        dest="nfact_dir",
-        help=f"{col['red']}REQUIRED{col['reset']}: Path to NFACT directory",
+        "-o",
+        "--output_dir",
+        dest="output_dir",
+        help=f"{col['red']}REQUIRED{col['reset']}: Path to output directory",
     )
     args.add_argument(
         "-a",

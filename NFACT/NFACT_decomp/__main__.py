@@ -81,11 +81,13 @@ def nfact_decomp_main(args: dict = None) -> None:
 
     # Build out folder structure
     if args["overwrite"]:
-        if os.path.exists(os.path.join(args["outdir"], "nfact")):
+        if os.path.exists(os.path.join(args["outdir"], "nfact_decomp")):
             print(
                 f'{col["red"]}Overwrite flag given. {args["outdir"]} directory being overwritten{col["reset"]}\n'
             )
-            shutil.rmtree(os.path.join(args["outdir"], "nfact"), ignore_errors=True)
+            shutil.rmtree(
+                os.path.join(args["outdir"], "nfact_decomp"), ignore_errors=True
+            )
 
     create_folder_set_up(args["outdir"])
 
@@ -94,16 +96,19 @@ def nfact_decomp_main(args: dict = None) -> None:
 
     # Set up log
     log = NFACT_logs(args["algo"], "decomp", len(args["ptxdir"]))
-    log.set_up_logging(os.path.join(args["outdir"], "nfact", "logs"))
+    log.set_up_logging(os.path.join(args["outdir"], "nfact_decomp", "logs"))
     log.inital_log(nfact_decomp_splash())
     log.log_break("input")
     log.log_arguments(args)
     log.log_parameters(parameters)
     log.log_break("nfact decomp workflow")
-    print(f'Log file is located at {os.path.join(args["outdir"], "nfact", "logs")}')
+    print(
+        f'Log file is located at {os.path.join(args["outdir"], "nfact_decomp", "logs")}'
+    )
 
     get_group_average_files(
-        args["ptxdir"][0], os.path.join(args["outdir"], "nfact", "group_averages")
+        args["ptxdir"][0],
+        os.path.join(args["outdir"], "nfact_decomp", "group_averages"),
     )
 
     # load matrix
@@ -112,12 +117,14 @@ def nfact_decomp_main(args: dict = None) -> None:
     matrix_time.tic()
 
     fdt_2_conn = load_previous_matrix(
-        os.path.join(args["outdir"], "nfact", "group_averages", "average_matrix2.npy")
+        os.path.join(
+            args["outdir"], "nfact_decomp", "group_averages", "average_matrix2.npy"
+        )
     )
 
     if fdt_2_conn is None:
         fdt_2_conn = process_fdt_matrix2(args["ptxdir"], group_mode)
-        save_avg_matrix(fdt_2_conn, os.path.join(args["outdir"], "nfact"))
+        save_avg_matrix(fdt_2_conn, os.path.join(args["outdir"], "nfact_decomp"))
     nprint(
         f"{col['darker_pink']}loaded matrix in {matrix_time.toc()} secs.{col['reset']}\n"
     )
@@ -146,7 +153,7 @@ def nfact_decomp_main(args: dict = None) -> None:
         components,
         os.path.join(
             args["outdir"],
-            "nfact",
+            "nfact_decomp",
         ),
         seeds,
         args["algo"].upper(),
@@ -162,7 +169,7 @@ def nfact_decomp_main(args: dict = None) -> None:
             args["algo"].upper(),
             os.path.join(
                 args["outdir"],
-                "nfact",
+                "nfact_decomp",
             ),
             img_type,
             seeds,

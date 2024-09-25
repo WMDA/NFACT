@@ -10,12 +10,14 @@ from .nfactpp_setup import (
 
 from NFACT.NFACT_base.utils import error_and_exit
 from NFACT.NFACT_base.signithandler import Signit_handler
-from NFACT.NFACT_base.filesystem import read_file_to_list
+from NFACT.NFACT_base.filesystem import read_file_to_list, make_directory
 from NFACT.NFACT_base.setup import (
     check_subject_exist,
     return_list_of_subjects_from_file,
     does_list_of_subjects_exist,
 )
+
+import os
 
 
 def nfact_pp_main(arg: dict = None):
@@ -83,6 +85,8 @@ def nfact_pp_main(arg: dict = None):
         except Exception as e:
             error_and_exit(False, f"Unable to read ptx_options text file due to {e}")
         check_ptx_options_are_valid(arg["ptx_options"])
+
+    make_directory(os.path.join(arg["out"], "nfact_pp"))
 
     if arg["hcp_stream"]:
         hcp_stream_main(arg, handler)

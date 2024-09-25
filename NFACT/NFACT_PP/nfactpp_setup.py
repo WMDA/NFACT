@@ -145,7 +145,7 @@ def check_arguments(arg: dict) -> None:
     -------
     None
     """
-    default_args = ["ref", "seed", "warps"]
+    default_args = ["ref", "seed", "warps", "out"]
 
     for key in default_args:
         if key in default_args[1:] and arg["hcp_stream"]:
@@ -227,6 +227,7 @@ def nfact_pp_folder_setup(nfactpp_diretory: str) -> None:
     print(
         f"{col['pink']}nfact pre-processing folder is in {nfactpp_diretory}{col['reset']}"
     )
+
     make_directory(nfactpp_diretory)
     sub_folders = ["logs", "files"]
     [make_directory(os.path.join(nfactpp_diretory, sub)) for sub in sub_folders]

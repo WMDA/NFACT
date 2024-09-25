@@ -55,7 +55,7 @@ def surf_volume_main(arg: dict, handler) -> None:
         # using this function not to return a file but check it is an imaging file
         get_file(arg["warps"], sub)
 
-        nfactpp_diretory = os.path.join(sub, arg["out"])
+        nfactpp_diretory = os.path.join(arg["out"], "nfact_pp", os.path.basename(sub))
 
         if arg["overwrite"]:
             if os.path.exists(nfactpp_diretory):

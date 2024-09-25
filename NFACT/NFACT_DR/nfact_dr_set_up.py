@@ -27,7 +27,7 @@ def check_compulsory_arguments(args: dict) -> None:
     )
 
 
-def check_nfact_directory(nfact_directory: str, algo: str) -> None:
+def check_nfact_decomp_directory(nfact_directory: str, algo: str) -> None:
     """
     Function to check the NFACT directory has the
     components and group averages needed.
@@ -46,7 +46,7 @@ def check_nfact_directory(nfact_directory: str, algo: str) -> None:
     error_and_exit(
         check_study_folder_exists(
             nfact_directory,
-            "NFACT directory does not exist. Check the given path and that group level decompoisition has been ran.",
+            "NFACT decomposition directory does not exist. Check the given path and that group level decompoisition has been ran.",
         )
     )
 
