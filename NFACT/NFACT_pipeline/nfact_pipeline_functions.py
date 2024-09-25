@@ -161,7 +161,10 @@ def write_decomp_list(
     None
     """
     files = read_file_to_list(file_path)
-    omatrix_2_paths = [os.path.join(file, out_dir_name, "omatrix2\n") for file in files]
+    omatrix_2_paths = [
+        os.path.join(out_dir_name, "nfact_pp", os.path.basename(file), "omatrix2\n")
+        for file in files
+    ]
     omatrix_2_paths.sort()
 
     write_to_file(

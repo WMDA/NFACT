@@ -71,12 +71,19 @@ def nfact_pipeline_main() -> None:
     # Build out arguments from config file
     if args["input"]["config"]:
         print(
-            "WARNING: No argument checking of config files occurs before module is loaded."
+            "WARNING: No argument checking of config files occurs before modules are loaded."
         )
         global_arguments = load_json(args["input"]["config"])
         nfact_pp_args = global_arguments["nfact_pp"]
         nfact_decomp_args = global_arguments["nfact_decomp"]
         nfact_dr_args = global_arguments["nfact_dr"]
+
+    nfact_pp_args["outdir"] = os.path.join(nfact_pp_args["outdir"], "nfact")
+    nfact_decomp_args["outdir"] = os.path.join(nfact_decomp_args["outdir"], "nfact")
+    nfact_dr_args["outdir"] = os.path.join(nfact_dr_args["outdir"], "nfact")
+
+    print(f'NFACT directory is at {nfact_pp_args["outdir"]}')
+    make_directory(nfact_pp_args["outdir"])
 
     # Build out temporary locations of arguments
     nfact_tmp_location = os.path.join(nfact_decomp_args["outdir"], ".nfact_tmp")
@@ -86,7 +93,9 @@ def nfact_pipeline_main() -> None:
     )
     nfact_decomp_args["seeds"] = os.path.join(nfact_tmp_location, "seeds.txt")
 
-    nfact_dr_args["nfact_dir"] = os.path.join(nfact_decomp_args["outdir"], "nfact")
+    nfact_dr_args["nfact_dir"] = os.path.join(
+        nfact_decomp_args["outdir"], "nfact_decomp"
+    )
     nfact_dr_args["seeds"] = os.path.join(
         nfact_dr_args["nfact_dir"], "files", "seeds.txt"
     )
@@ -108,7 +117,7 @@ def nfact_pipeline_main() -> None:
     )
 
     write_decomp_list(
-        nfact_pp_args["list_of_subjects"], nfact_pp_args["out"], nfact_tmp_location
+        nfact_pp_args["list_of_subjects"], nfact_pp_args["outdir"], nfact_tmp_location
     )
 
     # Run NFACT_PP
@@ -130,7 +139,7 @@ def nfact_pipeline_main() -> None:
 
     shutil.copy(
         os.path.join(
-            nfact_pp_args["list_of_subjects"][0], nfact_pp_args["out"], "seeds.txt"
+            nfact_pp_args["list_of_subjects"][0], nfact_pp_args["outdir"], "seeds.txt"
         ),
         nfact_tmp_location,
     )
@@ -142,7 +151,8 @@ def nfact_pipeline_main() -> None:
 
     # Run NFACT_DR
     shutil.move(
-        nfact_tmp_location, os.path.join(nfact_decomp_args["outdir"], "nfact", "files")
+        nfact_tmp_location,
+        os.path.join(nfact_decomp_args["outdir"], "nfact_decomp", "files"),
     )
 
     try:

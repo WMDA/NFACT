@@ -36,8 +36,8 @@ def nfactdr_args() -> dict:
     )
     args.add_argument(
         "-o",
-        "--output_dir",
-        dest="output_dir",
+        "--outdir",
+        dest="outdir",
         help=f"{col['red']}REQUIRED{col['reset']}: Path to output directory",
     )
     args.add_argument(

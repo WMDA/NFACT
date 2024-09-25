@@ -52,10 +52,10 @@ def nfact_dr_main(args: dict = None) -> None:
     # check subjects exist
     args = get_subjects(args)
     check_subject_exist(args["ptxdir"])
-    check_nfact_decomp_directory(args["output_dir"], args["algo"])
+    check_nfact_decomp_directory(args["outdir"], args["algo"])
 
     # Set up directory
-    create_nfact_dr_folder_set_up(args["output_dir"])
+    create_nfact_dr_folder_set_up(args["outdir"])
 
     # Process seeds
     seeds = process_seeds(args["seeds"])
@@ -63,7 +63,7 @@ def nfact_dr_main(args: dict = None) -> None:
 
     # logging
     log = NFACT_logs(args["algo"], "DR", len(args["ptxdir"]))
-    log.set_up_logging(os.path.join(args["output_dir"], "nfact_dr", "logs"))
+    log.set_up_logging(os.path.join(args["outdir"], "nfact_dr", "logs"))
     log.inital_log(nfact_dr_splash())
     log.log_break("input")
     log.log_arguments(args)
@@ -74,7 +74,7 @@ def nfact_dr_main(args: dict = None) -> None:
 
     nprint("Obtaining components\n")
 
-    components = get_group_level_components(args["output_dir"], args["algo"], seeds)
+    components = get_group_level_components(args["outdir"], args["algo"], seeds)
 
     dual_reg = Dual_regression(
         algo=args["algo"],
@@ -84,7 +84,7 @@ def nfact_dr_main(args: dict = None) -> None:
         component=components,
         save_type=img_type,
         seeds=seeds,
-        nfact_directory=os.path.join(args["output_dir"], "nfact_dr"),
+        nfact_directory=os.path.join(args["outdir"], "nfact_dr"),
     )
     dual_reg.run()
 
