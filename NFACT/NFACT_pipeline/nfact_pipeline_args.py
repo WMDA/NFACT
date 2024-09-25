@@ -52,6 +52,9 @@ def nfact_parser() -> dict:
         action="store_true",
         help="Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.",
     )
+    input_args.add_argument(
+        "-o", "--outdir", dest="outdir", help="Path to where to create an output folder"
+    )
 
     nfact_pp_args = args.add_argument_group("PP")
     nfact_pp_args.add_argument(
@@ -95,9 +98,6 @@ def nfact_parser() -> dict:
     nfact_decomp_args = args.add_argument_group("decomp")
     nfact_decomp_args.add_argument(
         "-d", "--dim", default=False, dest="dim", help="Number of dimensions/components"
-    )
-    nfact_decomp_args.add_argument(
-        "-o", "--outdir", dest="outdir", help="Path to where to create an output folder"
     )
     nfact_decomp_args.add_argument(
         "-a",

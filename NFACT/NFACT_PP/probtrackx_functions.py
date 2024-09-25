@@ -63,7 +63,7 @@ def process_command_arguments(arg: dict, sub: str):
     return {
         "warps": [os.path.join(sub, warp) for warp in arg["warps"]],
         "seed": os.path.join(
-            arg["out"], "nfact_pp", os.path.basename(sub), "seeds.txt"
+            arg["outdir"], "nfact_pp", os.path.basename(sub), "seeds.txt"
         ),
         "bpx_path": os.path.join(sub, arg["bpx_path"]),
     }
@@ -92,7 +92,7 @@ def build_probtrackx2_arguments(
     """
     if hcp_stream:
         print("HCP arguments")
-        command_arguments = hcp_files(sub, arg["out"])
+        command_arguments = hcp_files(sub, arg["outdir"])
     if not hcp_stream:
         command_arguments = process_command_arguments(arg, sub)
 
@@ -104,12 +104,14 @@ def build_probtrackx2_arguments(
         os.path.join(sub, arg["target2"])
         if arg["target2"]
         else os.path.join(
-            arg["out"], "nfact_pp", os.path.basename(sub), "files", "target2.nii.gz"
+            arg["outdir"], "nfact_pp", os.path.basename(sub), "files", "target2.nii.gz"
         )
     )
 
     bpx = os.path.join(command_arguments["bpx_path"], "merged")
-    output_dir = os.path.join(arg["out"], "nfact_pp", os.path.basename(sub), "omatrix2")
+    output_dir = os.path.join(
+        arg["outdir"], "nfact_pp", os.path.basename(sub), "omatrix2"
+    )
 
     command = [
         binary,

@@ -8,7 +8,7 @@ from .nfactpp_setup import (
     check_ptx_options_are_valid,
 )
 
-from NFACT.NFACT_base.utils import error_and_exit
+from NFACT.NFACT_base.utils import error_and_exit, colours
 from NFACT.NFACT_base.signithandler import Signit_handler
 from NFACT.NFACT_base.filesystem import read_file_to_list, make_directory
 from NFACT.NFACT_base.setup import (
@@ -18,6 +18,7 @@ from NFACT.NFACT_base.setup import (
 )
 
 import os
+import shutil
 
 
 def nfact_pp_main(arg: dict = None):
@@ -42,7 +43,7 @@ def nfact_pp_main(arg: dict = None):
         to_exit = True
 
     handler = Signit_handler()
-
+    col = colours()
     # Check that complusory arguments given
     check_arguments(arg)
 
@@ -86,7 +87,14 @@ def nfact_pp_main(arg: dict = None):
             error_and_exit(False, f"Unable to read ptx_options text file due to {e}")
         check_ptx_options_are_valid(arg["ptx_options"])
 
-    make_directory(os.path.join(arg["out"], "nfact_pp"))
+    nfact_pp_directory = os.path.join(arg["outdir"], "nfact_pp")
+    if arg["overwrite"]:
+        if os.path.exists(nfact_pp_directory):
+            print(
+                f'{col["red"]}{nfact_pp_directory} directory already exists. Overwriting{col["reset"]}'
+            )
+            shutil.rmtree(nfact_pp_directory, ignore_errors=True)
+    make_directory(nfact_pp_directory)
 
     if arg["hcp_stream"]:
         hcp_stream_main(arg, handler)

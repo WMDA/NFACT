@@ -1,5 +1,6 @@
 import argparse
 from NFACT.NFACT_base.utils import colours
+import sys
 
 
 def nfact_pp_args() -> dict:
@@ -37,7 +38,12 @@ def nfact_pp_args() -> dict:
         dest="ref",
         help=f"{col['red']}REQUIRED{col['reset']} Standard space reference image",
     )
-
+    option.add_argument(
+        "-o",
+        "--outdir",
+        dest="outdir",
+        help="Directory to save results in",
+    )
     option.add_argument(
         "-f",
         "--study_folder",
@@ -76,12 +82,6 @@ def nfact_pp_args() -> dict:
         dest="warps",
         nargs="+",
         help="Path to warps inside a subjects directory (can accept multiple arguments)",
-    )
-    option.add_argument(
-        "-o",
-        "--out",
-        dest="out",
-        help="Directory to save results in",
     )
     option.add_argument(
         "-H",
@@ -149,6 +149,10 @@ def nfact_pp_args() -> dict:
         default=False,
         help="Overwrite previous file structure",
     )
+
+    if len(sys.argv) == 1:
+        option.print_help(sys.stderr)
+        sys.exit(1)
     return vars(option.parse_args())
 
 
