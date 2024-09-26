@@ -68,6 +68,9 @@ def nfact_dr_main(args: dict = None) -> None:
     log = NFACT_logs(args["algo"], "DR", len(args["ptxdir"]))
     log.set_up_logging(os.path.join(args["outdir"], "nfact_dr", "logs"))
     log.inital_log(nfact_dr_splash())
+    log.log(
+        f"{col['plum']}Regresion Type{col['reset']}: {'Non-Negative' if args['algo'] == 'nmf' else 'Linear'}"
+    )
     log.log_break("input")
     log.log_arguments(args)
     log.log_break("nfact decomp workflow")

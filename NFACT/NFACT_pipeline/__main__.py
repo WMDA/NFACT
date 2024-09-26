@@ -136,15 +136,21 @@ def nfact_pipeline_main() -> None:
 
     # Run NFACT_decomp
     print(f'{col["plum"]}\nSetting up and running NFACT Decomp{col["reset"]}')
-    shutil.copy(
-        os.path.join(
-            nfact_pp_args["outdir"],
-            "nfact_pp",
-            os.path.basename(nfact_pp_args["list_of_subjects"][0]),
-            "seeds.txt",
-        ),
-        nfact_tmp_location,
-    )
+    try:
+        shutil.copy(
+            os.path.join(
+                nfact_pp_args["outdir"],
+                "nfact_pp",
+                os.path.basename(nfact_pp_args["list_of_subjects"][0]),
+                "seeds.txt",
+            ),
+            nfact_tmp_location,
+        )
+    except FileNotFoundError:
+        error_and_exit(
+            False,
+            "NFACT PP has not been ran which NFACT needs. If pre-processing is seperate from decomposition please run the modules individually",
+        )
 
     print(nfact_decomp_splash())
     nfact_decomp_main(nfact_decomp_args)
@@ -176,7 +182,7 @@ def nfact_pipeline_main() -> None:
         print("Only one subject given. Skipping dual regression")
 
     # Exit
-    print(f"Decomposition pipeline took {time.toc()}")
+    print(f"Decomposition pipeline took {time.toc()} seconds")
     print("Finished")
     exit(0)
 
