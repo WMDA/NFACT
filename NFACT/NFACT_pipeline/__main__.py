@@ -81,6 +81,9 @@ def nfact_pipeline_main() -> None:
     nfact_pp_args["outdir"] = os.path.join(nfact_pp_args["outdir"], "nfact")
     nfact_decomp_args["outdir"] = os.path.join(nfact_decomp_args["outdir"], "nfact")
     nfact_dr_args["outdir"] = os.path.join(nfact_dr_args["outdir"], "nfact")
+    nfact_dr_args["nfact_decomp_dir"] = os.path.join(
+        nfact_dr_args["outdir"], "nfact_decomp"
+    )
 
     print(f'NFACT directory is at {nfact_pp_args["outdir"]}')
     make_directory(nfact_pp_args["outdir"], ignore_errors=True)
