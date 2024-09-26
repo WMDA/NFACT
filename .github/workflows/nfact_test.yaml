@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  test:
+  nfact_test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
