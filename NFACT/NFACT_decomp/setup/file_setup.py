@@ -24,7 +24,7 @@ def create_folder_set_up(directory: str) -> None:
     )
     col = colours()
     print(f"{col['purple']}nfact folder is in {directory}{col['reset']}\n")
-    nfact_directory = os.path.join(directory, "nfact")
+    nfact_directory = os.path.join(directory, "nfact_decomp")
 
     sub_folders = [
         "group_averages",

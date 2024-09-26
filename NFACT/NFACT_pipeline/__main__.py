@@ -71,12 +71,22 @@ def nfact_pipeline_main() -> None:
     # Build out arguments from config file
     if args["input"]["config"]:
         print(
-            "WARNING: No argument checking of config files occurs before module is loaded."
+            "WARNING: No argument checking of config files occurs before modules are loaded."
         )
         global_arguments = load_json(args["input"]["config"])
         nfact_pp_args = global_arguments["nfact_pp"]
         nfact_decomp_args = global_arguments["nfact_decomp"]
         nfact_dr_args = global_arguments["nfact_dr"]
+
+    nfact_pp_args["outdir"] = os.path.join(nfact_pp_args["outdir"], "nfact")
+    nfact_decomp_args["outdir"] = os.path.join(nfact_decomp_args["outdir"], "nfact")
+    nfact_dr_args["outdir"] = os.path.join(nfact_dr_args["outdir"], "nfact")
+    nfact_dr_args["nfact_decomp_dir"] = os.path.join(
+        nfact_dr_args["outdir"], "nfact_decomp"
+    )
+
+    print(f'NFACT directory is at {nfact_pp_args["outdir"]}')
+    make_directory(nfact_pp_args["outdir"], ignore_errors=True)
 
     # Build out temporary locations of arguments
     nfact_tmp_location = os.path.join(nfact_decomp_args["outdir"], ".nfact_tmp")
@@ -86,12 +96,11 @@ def nfact_pipeline_main() -> None:
     )
     nfact_decomp_args["seeds"] = os.path.join(nfact_tmp_location, "seeds.txt")
 
-    nfact_dr_args["nfact_dir"] = os.path.join(nfact_decomp_args["outdir"], "nfact")
     nfact_dr_args["seeds"] = os.path.join(
-        nfact_dr_args["nfact_dir"], "files", "seeds.txt"
+        nfact_dr_args["outdir"], "nfact_decomp", "files", "seeds.txt"
     )
     nfact_dr_args["list_of_subjects"] = os.path.join(
-        nfact_dr_args["nfact_dir"], "files", "nfact_decomp_sub_list"
+        nfact_dr_args["outdir"], "nfact_decomp", "files", "nfact_decomp_sub_list"
     )
 
     # Clean str instances of bool to actual bool type
@@ -108,7 +117,7 @@ def nfact_pipeline_main() -> None:
     )
 
     write_decomp_list(
-        nfact_pp_args["list_of_subjects"], nfact_pp_args["out"], nfact_tmp_location
+        nfact_pp_args["list_of_subjects"], nfact_pp_args["outdir"], nfact_tmp_location
     )
 
     # Run NFACT_PP
@@ -127,29 +136,42 @@ def nfact_pipeline_main() -> None:
 
     # Run NFACT_decomp
     print(f'{col["plum"]}\nSetting up and running NFACT Decomp{col["reset"]}')
-
-    shutil.copy(
-        os.path.join(
-            nfact_pp_args["list_of_subjects"][0], nfact_pp_args["out"], "seeds.txt"
-        ),
-        nfact_tmp_location,
-    )
+    try:
+        shutil.copy(
+            os.path.join(
+                nfact_pp_args["outdir"],
+                "nfact_pp",
+                os.path.basename(nfact_pp_args["list_of_subjects"][0]),
+                "seeds.txt",
+            ),
+            nfact_tmp_location,
+        )
+    except FileNotFoundError:
+        error_and_exit(
+            False,
+            "NFACT PP has not been ran which NFACT needs. If pre-processing is seperate from decomposition please run the modules individually",
+        )
 
     print(nfact_decomp_splash())
     nfact_decomp_main(nfact_decomp_args)
     print(f'{col["pink"]}\nFinished running NFACT_decomp{col["reset"]}')
     print("-" * 70)
 
-    # Run NFACT_DR
-    shutil.move(
-        nfact_tmp_location, os.path.join(nfact_decomp_args["outdir"], "nfact", "files")
-    )
+    # Clean up
+    try:
+        shutil.move(
+            nfact_tmp_location,
+            os.path.join(nfact_decomp_args["outdir"], "nfact_decomp", "files"),
+        )
+    except shutil.Error:
+        pass
 
     try:
         shutil.rmtree(nfact_tmp_location)
     except Exception:
         pass
 
+    # Run NFACT_DR
     if len(nfact_pp_args["list_of_subjects"]) > 1:
         print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
         print(nfact_dr_splash())
@@ -160,7 +182,7 @@ def nfact_pipeline_main() -> None:
         print("Only one subject given. Skipping dual regression")
 
     # Exit
-    print(f"Decomposition pipeline took {time.toc()}")
+    print(f"Decomposition pipeline took {time.toc()} seconds")
     print("Finished")
     exit(0)
 

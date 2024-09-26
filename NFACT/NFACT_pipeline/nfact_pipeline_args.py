@@ -1,4 +1,4 @@
-from NFACT.NFACT_base.utils import colours
+from NFACT.NFACT_base.utils import colours, no_args
 import argparse
 
 
@@ -52,6 +52,9 @@ def nfact_parser() -> dict:
         action="store_true",
         help="Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.",
     )
+    input_args.add_argument(
+        "-o", "--outdir", dest="outdir", help="Path to where to create an output folder"
+    )
 
     nfact_pp_args = args.add_argument_group("PP")
     nfact_pp_args.add_argument(
@@ -97,15 +100,12 @@ def nfact_parser() -> dict:
         "-d", "--dim", default=False, dest="dim", help="Number of dimensions/components"
     )
     nfact_decomp_args.add_argument(
-        "-o", "--outdir", dest="outdir", help="Path to where to create an output folder"
-    )
-    nfact_decomp_args.add_argument(
         "-a",
         "--algo",
         default="ICA",
         help="What algorithm to run. Options are: ICA (default), or NMF.",
     )
-
+    no_args(args)
     return {
         "args": vars(args.parse_args()),
         "input": input_args._group_actions,

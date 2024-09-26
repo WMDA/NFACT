@@ -62,7 +62,9 @@ def process_command_arguments(arg: dict, sub: str):
     """
     return {
         "warps": [os.path.join(sub, warp) for warp in arg["warps"]],
-        "seed": os.path.join(sub, arg["out"], "seeds.txt"),
+        "seed": os.path.join(
+            arg["outdir"], "nfact_pp", os.path.basename(sub), "seeds.txt"
+        ),
         "bpx_path": os.path.join(sub, arg["bpx_path"]),
     }
 
@@ -90,7 +92,7 @@ def build_probtrackx2_arguments(
     """
     if hcp_stream:
         print("HCP arguments")
-        command_arguments = hcp_files(sub, arg["out"])
+        command_arguments = hcp_files(sub, arg["outdir"])
     if not hcp_stream:
         command_arguments = process_command_arguments(arg, sub)
 
@@ -101,10 +103,15 @@ def build_probtrackx2_arguments(
     target_mask = (
         os.path.join(sub, arg["target2"])
         if arg["target2"]
-        else os.path.join(sub, arg["out"], "files", "target2.nii.gz")
+        else os.path.join(
+            arg["outdir"], "nfact_pp", os.path.basename(sub), "files", "target2.nii.gz"
+        )
     )
+
     bpx = os.path.join(command_arguments["bpx_path"], "merged")
-    output_dir = os.path.join(sub, arg["out"], "omatrix2")
+    output_dir = os.path.join(
+        arg["outdir"], "nfact_pp", os.path.basename(sub), "omatrix2"
+    )
 
     command = [
         binary,
@@ -125,6 +132,7 @@ def build_probtrackx2_arguments(
         f"--nsamples={arg['nsamples']}",
         f"--dir={output_dir}",
     ]
+
     if ptx_options:
         command = command + ptx_options
     return command
@@ -330,11 +338,13 @@ class Probtrackx:
         None
         """
         nfactpp_diretory = os.path.dirname(command[2])
+
         print(
             "Running",
             command[0],
-            f"on subject {os.path.basename(os.path.dirname(os.path.dirname(command[2])))}",
+            f"on subject {os.path.basename(os.path.dirname(command[2]))}",
         )
+
         try:
             if not self.dont_log:
                 log_name = "PP_log_" + get_current_date()

@@ -57,7 +57,7 @@ class NFACT_logs:
             f"{self.cols['plum']}Number of Subjects{self.cols['reset']}: {self.no_subject}"
         )
         logging.info(
-            f"{self.cols['plum']}Decomposition algo{self.cols['reset']}: {self.algo}"
+            f"{self.cols['plum']}Decomposition Method{self.cols['reset']}: {self.algo}"
         )
 
     def log_break(self, message):

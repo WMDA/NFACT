@@ -55,12 +55,14 @@ def surf_volume_main(arg: dict, handler) -> None:
         # using this function not to return a file but check it is an imaging file
         get_file(arg["warps"], sub)
 
-        nfactpp_diretory = os.path.join(sub, arg["out"])
+        nfactpp_diretory = os.path.join(
+            arg["outdir"], "nfact_pp", os.path.basename(sub)
+        )
 
         if arg["overwrite"]:
             if os.path.exists(nfactpp_diretory):
                 print(
-                    f'{col["red"]}{arg["out"]} directory already exists. Overwriting{col["reset"]}'
+                    f'{col["red"]}{arg["outdir"]} directory already exists. Overwriting{col["reset"]}'
                 )
                 shutil.rmtree(nfactpp_diretory, ignore_errors=True)
 
@@ -124,7 +126,7 @@ def surf_volume_main(arg: dict, handler) -> None:
     Probtrackx(subjects_commands, arg["cluster"], arg["n_cores"], arg["dont_log"])
     if surface_processing:
         [
-            update_seeds_file(os.path.join(sub, arg["out"], "seeds.txt"))
+            update_seeds_file(os.path.join(sub, arg["outdir"], "seeds.txt"))
             for sub in arg["list_of_subjects"]
         ]
 
@@ -153,12 +155,12 @@ def hcp_stream_main(arg: dict, handler: object) -> None:
         print(f"\n{col['pink']}Setting up:{col['reset']} {os.path.basename(sub)}")
         seeds = hcp_get_seeds(sub)
         arg["rois"] = hcp_get_rois(sub)
-        nfactpp_diretory = os.path.join(sub, arg["out"])
+        nfactpp_diretory = os.path.join(sub, arg["outdir"])
 
         if arg["overwrite"]:
             if os.path.exists(nfactpp_diretory):
                 print(
-                    f'{col["red"]}{arg["out"]} directory already exists. Overwriting{col["reset"]}'
+                    f'{col["red"]}{arg["outdir"]} directory already exists. Overwriting{col["reset"]}'
                 )
                 shutil.rmtree(nfactpp_diretory, ignore_errors=True)
 
@@ -200,6 +202,6 @@ def hcp_stream_main(arg: dict, handler: object) -> None:
 
     Probtrackx(subjects_commands, arg["cluster"], arg["n_cores"])
     [
-        update_seeds_file(os.path.join(sub, arg["out"], "seeds.txt"))
+        update_seeds_file(os.path.join(sub, arg["outdir"], "seeds.txt"))
         for sub in arg["list_of_subjects"]
     ]

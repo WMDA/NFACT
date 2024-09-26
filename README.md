@@ -315,7 +315,8 @@ then it will be standard regression.
 
 ### Usage
 ```
-usage: nfact_dr [-h] [-p PTXDIR [PTXDIR ...]] [-l LIST_OF_SUBJECTS] [-n NFACT_DIR] [-a ALGO] [--seeds SEEDS] [-N]
+usage: nfact_dr [-h] [-p PTXDIR [PTXDIR ...]] [-l LIST_OF_SUBJECTS] [-n NFACT_DECOMP_DIR] [-d DECOMP_DIR] [-o OUTDIR] [-a ALGO]
+                [--seeds SEEDS] [-N]
 
 options:
   -h, --help            show this help message and exit
@@ -323,14 +324,21 @@ options:
                         List of file paths to probtrackx directories. If not provided will then --list_ofsubjects must be provided
   -l LIST_OF_SUBJECTS, --list_of_subjects LIST_OF_SUBJECTS
                         Filepath to a list of subjects. If not given then --ptxdir must be directories.
-  -n NFACT_DIR, --nfact_dir NFACT_DIR
-                        REQUIRED: Path to NFACT directory
-  -a ALGO, --algo ALGO  REQUIRED: Which NFACT algorithm to perform dual regression on
+  -n NFACT_DECOMP_DIR, --nfact_decomp_dir NFACT_DECOMP_DIR
+                        Filepath to the NFACT_decomp directory. Use this if you have ran NFACT decomp
+  -d DECOMP_DIR, --decomp_dir DECOMP_DIR
+                        Filepath to decomposition components. WARNING NFACT decomp expects components to be named in a set way. See
+                        documentation for further info.
+  -o OUTDIR, --outdir OUTDIR
+                        Path to output directory
+  -a ALGO, --algo ALGO  Which NFACT algorithm to perform dual regression on
   --seeds SEEDS, -s SEEDS
-                        REQUIRED: File of seeds used in NFACT_PP/probtrackx
+                        File of seeds used in NFACT_PP/probtrackx
   -N, --normalise       normalise components by scaling
 
 ```
+
+nfact_dr is independent from nfact_decomp however, nfact_decomp expects a strict naming convention of files. If nfact_decomp has not been ran then group average files and components must all be in the same file. Components must named W_dim* and G_dim.
 ------------------------------------------------------------------------------------------------------------------------------------------
 ```
  _   _______ ___  _____ _____                    __ _
