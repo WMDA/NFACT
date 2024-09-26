@@ -83,7 +83,7 @@ def nfact_pipeline_main() -> None:
     nfact_dr_args["outdir"] = os.path.join(nfact_dr_args["outdir"], "nfact")
 
     print(f'NFACT directory is at {nfact_pp_args["outdir"]}')
-    make_directory(nfact_pp_args["outdir"])
+    make_directory(nfact_pp_args["outdir"], ignore_errors=True)
 
     # Build out temporary locations of arguments
     nfact_tmp_location = os.path.join(nfact_decomp_args["outdir"], ".nfact_tmp")
@@ -93,14 +93,11 @@ def nfact_pipeline_main() -> None:
     )
     nfact_decomp_args["seeds"] = os.path.join(nfact_tmp_location, "seeds.txt")
 
-    nfact_dr_args["nfact_dir"] = os.path.join(
-        nfact_decomp_args["outdir"], "nfact_decomp"
-    )
     nfact_dr_args["seeds"] = os.path.join(
-        nfact_dr_args["nfact_dir"], "files", "seeds.txt"
+        nfact_dr_args["outdir"], "nfact_decomp", "files", "seeds.txt"
     )
     nfact_dr_args["list_of_subjects"] = os.path.join(
-        nfact_dr_args["nfact_dir"], "files", "nfact_decomp_sub_list"
+        nfact_dr_args["outdir"], "nfact_decomp", "files", "nfact_decomp_sub_list"
     )
 
     # Clean str instances of bool to actual bool type
@@ -136,10 +133,12 @@ def nfact_pipeline_main() -> None:
 
     # Run NFACT_decomp
     print(f'{col["plum"]}\nSetting up and running NFACT Decomp{col["reset"]}')
-
     shutil.copy(
         os.path.join(
-            nfact_pp_args["list_of_subjects"][0], nfact_pp_args["outdir"], "seeds.txt"
+            nfact_pp_args["outdir"],
+            "nfact_pp",
+            os.path.basename(nfact_pp_args["list_of_subjects"][0]),
+            "seeds.txt",
         ),
         nfact_tmp_location,
     )
@@ -161,6 +160,7 @@ def nfact_pipeline_main() -> None:
         pass
 
     if len(nfact_pp_args["list_of_subjects"]) > 1:
+        breakpoint()
         print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
         print(nfact_dr_splash())
         nfact_dr_main(nfact_dr_args)

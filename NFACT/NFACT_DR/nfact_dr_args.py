@@ -1,5 +1,5 @@
 import argparse
-from NFACT.NFACT_base.utils import colours
+from NFACT.NFACT_base.utils import colours, no_args
 
 
 def nfactdr_args() -> dict:
@@ -35,6 +35,18 @@ def nfactdr_args() -> dict:
         help="Filepath to a list of subjects. If not given then --ptxdir must be directories.",
     )
     args.add_argument(
+        "-n",
+        "--nfact_decomp_dir",
+        dest="nfact_decomp_dir",
+        help="Filepath to the NFACT_decomp directory. Use this if you have ran NFACT decomp",
+    )
+    args.add_argument(
+        "-d",
+        "--decomp_dir",
+        dest="decomp_dir",
+        help="Filepath to decomposition components. WARNING NFACT decomp expects components to be named in a set way. See documentation for further info.",
+    )
+    args.add_argument(
         "-o",
         "--outdir",
         dest="outdir",
@@ -60,7 +72,7 @@ def nfactdr_args() -> dict:
         default=False,
         help="normalise components by scaling",
     )
-
+    no_args(args)
     return vars(args.parse_args())
 
 

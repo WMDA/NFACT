@@ -1,5 +1,6 @@
 import time
 import logging
+import sys
 
 
 class Timer:
@@ -88,3 +89,22 @@ def nprint(message: str) -> None:
         logging.info(message)
     except Exception:
         return None
+
+
+def no_args(args: object) -> None:
+    """
+    Function to print help
+    message if no arguments are given.
+
+    Parameters
+    ----------
+    args: argparse object
+        argparse object
+
+    Returns
+    -------
+    None
+    """
+    if len(sys.argv) == 1:
+        args.print_help(sys.stderr)
+        sys.exit(1)

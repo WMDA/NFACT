@@ -5,7 +5,9 @@ import shutil
 from .utils import error_and_exit
 
 
-def make_directory(path: str, overwrite: bool = False) -> None:
+def make_directory(
+    path: str, overwrite: bool = False, ignore_errors: bool = False
+) -> None:
     """
     Function to make a directory.
     If error it will exit
@@ -27,6 +29,8 @@ def make_directory(path: str, overwrite: bool = False) -> None:
             shutil.rmtree(path, ignore_errors=True)
         os.mkdir(path)
     except Exception as e:
+        if ignore_errors:
+            return None
         error_and_exit(False, f"Unable to create directory due to {e}")
 
 

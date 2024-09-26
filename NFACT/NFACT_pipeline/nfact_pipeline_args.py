@@ -1,4 +1,4 @@
-from NFACT.NFACT_base.utils import colours
+from NFACT.NFACT_base.utils import colours, no_args
 import argparse
 
 
@@ -105,7 +105,7 @@ def nfact_parser() -> dict:
         default="ICA",
         help="What algorithm to run. Options are: ICA (default), or NMF.",
     )
-
+    no_args(args)
     return {
         "args": vars(args.parse_args()),
         "input": input_args._group_actions,

@@ -1,10 +1,10 @@
-import os
 from .utils import error_and_exit, colours
 from .filesystem import read_file_to_list, make_directory
 from .imagehandling import (
     check_files_are_imaging_files,
     get_imaging_details_from_path,
 )
+import os
 
 
 def process_seeds(seeds: str) -> list:

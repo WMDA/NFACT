@@ -111,7 +111,7 @@ def nfact_decomp_args() -> dict:
         default=False,
         help="Instead of saving grey matter components as gifti save them in cifit form. Must provide a list of ROIS ",
     )
-
+    no_args(args)
     return vars(args.parse_args())
 
 

@@ -3,7 +3,7 @@ from NFACT.NFACT_base.imagehandling import (
     save_grey_matter_components,
     save_white_matter,
 )
-from NFACT.NFACT_base.utils import colours, nprint
+from NFACT.NFACT_base.utils import colours, nprint, error_and_exit
 import os
 from fsl.data.image import Image
 import nibabel as nb
@@ -108,15 +108,15 @@ def save_dual_regression_images(
             )
 
 
-def white_component(nfact_dir: str, algo: str) -> np.ndarray:
+def white_component(component_dir: str, group_averages_dir: str) -> np.ndarray:
     """
     Function to get the group level
     white matter component for dual regression.
 
     Parameters
     ----------
-    nfact_dir: str
-        path to the nfact directory
+    component_dir: str
+        path to the saved components
     algo: str
         The algorithm for dual regression
 
@@ -127,13 +127,9 @@ def white_component(nfact_dir: str, algo: str) -> np.ndarray:
         from the volume
     """
     lookup_vol = Image(
-        os.path.join(
-            nfact_dir, "group_averages", "lookup_tractspace_fdt_matrix2.nii.gz"
-        )
+        os.path.join(group_averages_dir, "lookup_tractspace_fdt_matrix2.nii.gz")
     )
-    white_matter = nb.load(
-        glob(os.path.join(nfact_dir, "components", algo.upper(), "decomp", "W_dim*"))[0]
-    )
+    white_matter = nb.load(glob(os.path.join(component_dir, "W_dim*"))[0])
     return vol2mat(white_matter.get_fdata(), lookup_vol)
 
 
@@ -186,7 +182,7 @@ def load_grey_matter_gifti_seed(file_name: str) -> np.array:
     return np.column_stack([darray.data for darray in gifti_img.darrays])
 
 
-def grey_components(seeds: list, nfact_dir: str, algo: str) -> np.ndarray:
+def grey_components(seeds: list, decomp_dir: str, group_averages: str) -> np.ndarray:
     """
     Function to get grey components.
 
@@ -194,19 +190,17 @@ def grey_components(seeds: list, nfact_dir: str, algo: str) -> np.ndarray:
     ----------
     seeds: list
         list of seeds paths
-    nfact_dir: str
+    decomp_dir: str
         str of absolute path to nfact directory
-    algo: str
-        algo string
+    group_averages_dir: str
+        str to group averages directory
 
     Returns
     -------
     np.ndarray: np.array
         grey matter components array
     """
-    grey_matter = glob(
-        os.path.join(nfact_dir, "components", algo.upper(), "decomp", "G_dim*")
-    )
+    grey_matter = glob(os.path.join(decomp_dir, "G_dim*"))
     sorted_components = [
         seed for _, seed in sorted(zip(seeds, grey_matter), key=lambda pair: pair[0])
     ]
@@ -214,7 +208,7 @@ def grey_components(seeds: list, nfact_dir: str, algo: str) -> np.ndarray:
 
     if save_type == "nii":
         coord_file = np.loadtxt(
-            os.path.join(nfact_dir, "group_averages", "coords_for_fdt_matrix2"),
+            os.path.join(group_averages, "coords_for_fdt_matrix2"),
             dtype=int,
         )
         return np.vstack(
@@ -231,16 +225,18 @@ def grey_components(seeds: list, nfact_dir: str, algo: str) -> np.ndarray:
         )
 
 
-def get_group_level_components(nfact_dir: str, algo: str, seeds: list):
+def get_group_level_components(
+    component_dir: str, group_averages_dir: str, seeds: list
+):
     """
     Function to get group level components
 
     Parameters
     ----------
-    nfact_dir: str
-        path to the nfact directory
-    algo: str
-        The algorithm for dual regression
+    component_dir: str
+        path to the component_dir
+    group_averages_dir: str
+        path to group averages directory
     seeds: list
         A list of seeds
 
@@ -251,6 +247,42 @@ def get_group_level_components(nfact_dir: str, algo: str, seeds: list):
     """
 
     return {
-        "white_components": white_component(nfact_dir, algo),
-        "grey_components": grey_components(seeds, nfact_dir, algo),
+        "white_components": white_component(component_dir, group_averages_dir),
+        "grey_components": grey_components(seeds, component_dir, group_averages_dir),
     }
+
+
+def get_paths(args: dict) -> dict:
+    """
+    Function to return components
+    path.
+
+    Parameters
+    ----------
+    args: dict
+        dictionary of command line
+        arguments
+
+    Returns
+    -------
+    str: string of component path.
+    """
+    if args["nfact_decomp_dir"]:
+        return {
+            "component_path": os.path.join(
+                args["nfact_decomp_dir"], "components", args["algo"].upper(), "decomp"
+            ),
+            "group_average_path": os.path.join(
+                args["nfact_decomp_dir"], "group_averages"
+            ),
+        }
+    if args["decomp_dir"]:
+        return {
+            "component_path": args["decomp_dir"],
+            "group_average_path": args["decomp_dir"],
+        }
+
+    error_and_exit(
+        False,
+        "Directory to components not given. Please specify with --nfact_decomp_dir or --decomp_dir",
+    )

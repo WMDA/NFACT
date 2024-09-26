@@ -1,6 +1,5 @@
 import argparse
-from NFACT.NFACT_base.utils import colours
-import sys
+from NFACT.NFACT_base.utils import colours, no_args
 
 
 def nfact_pp_args() -> dict:
@@ -149,10 +148,8 @@ def nfact_pp_args() -> dict:
         default=False,
         help="Overwrite previous file structure",
     )
+    no_args(option)
 
-    if len(sys.argv) == 1:
-        option.print_help(sys.stderr)
-        sys.exit(1)
     return vars(option.parse_args())
 
 

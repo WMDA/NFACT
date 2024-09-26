@@ -5,7 +5,7 @@ from .nfact_dr_set_up import (
     check_compulsory_arguments,
     create_nfact_dr_folder_set_up,
 )
-from .nfact_dr_functions import get_group_level_components
+from .nfact_dr_functions import get_group_level_components, get_paths
 
 from NFACT.NFACT_base.setup import (
     check_algo,
@@ -49,10 +49,13 @@ def nfact_dr_main(args: dict = None) -> None:
     args["algo"] = check_algo(args["algo"])
     check_compulsory_arguments(args)
 
+    # Get component paths
+    paths = get_paths(args)
+
     # check subjects exist
     args = get_subjects(args)
     check_subject_exist(args["ptxdir"])
-    check_nfact_decomp_directory(args["outdir"], args["algo"])
+    check_nfact_decomp_directory(paths["component_path"], paths["group_average_path"])
 
     # Set up directory
     create_nfact_dr_folder_set_up(args["outdir"])
@@ -73,8 +76,9 @@ def nfact_dr_main(args: dict = None) -> None:
     )
 
     nprint("Obtaining components\n")
-
-    components = get_group_level_components(args["outdir"], args["algo"], seeds)
+    components = get_group_level_components(
+        paths["component_path"], paths["group_average_path"], seeds
+    )
 
     dual_reg = Dual_regression(
         algo=args["algo"],
@@ -90,6 +94,7 @@ def nfact_dr_main(args: dict = None) -> None:
 
     nprint(f"{col['darker_pink']}NFACT_DR has finished{col['reset']}")
     log.clear_logging()
+
     if to_exit:
         exit(0)
 
