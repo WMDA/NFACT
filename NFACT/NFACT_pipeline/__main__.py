@@ -151,19 +151,22 @@ def nfact_pipeline_main() -> None:
     print(f'{col["pink"]}\nFinished running NFACT_decomp{col["reset"]}')
     print("-" * 70)
 
-    # Run NFACT_DR
-    shutil.move(
-        nfact_tmp_location,
-        os.path.join(nfact_decomp_args["outdir"], "nfact_decomp", "files"),
-    )
+    # Clean up
+    try:
+        shutil.move(
+            nfact_tmp_location,
+            os.path.join(nfact_decomp_args["outdir"], "nfact_decomp", "files"),
+        )
+    except shutil.Error:
+        pass
 
     try:
         shutil.rmtree(nfact_tmp_location)
     except Exception:
         pass
 
+    # Run NFACT_DR
     if len(nfact_pp_args["list_of_subjects"]) > 1:
-        breakpoint()
         print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
         print(nfact_dr_splash())
         nfact_dr_main(nfact_dr_args)
