@@ -1,5 +1,5 @@
 import argparse
-from NFACT.NFACT_base.utils import colours
+from NFACT.NFACT_base.utils import colours, no_args
 
 
 def nfact_decomp_args() -> dict:
