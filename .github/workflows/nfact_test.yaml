@@ -1,9 +1,6 @@
 name: nfact_test
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main

@@ -214,8 +214,10 @@ def matrix_migp(
         else:
             intermediary_matrix = demean(pca_matrix)
 
-        k = min(d_pca, n_dim)
-        _, k_eignvectors = eigsh(intermediary_matrix @ intermediary_matrix.T, k)
+        k_to_compute = min(d_pca, n_dim)
+        _, k_eignvectors = eigsh(
+            intermediary_matrix @ intermediary_matrix.T, k_to_compute
+        )
 
         intermediary_matrix = k_eignvectors.T @ intermediary_matrix
 
