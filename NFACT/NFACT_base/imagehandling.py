@@ -98,19 +98,17 @@ def check_files_are_imaging_files(path: str) -> bool:
 
     Parameters
     ----------
+    path: str
+        file path
 
     Returns
     -------
     None
     """
-    accepted_extenions = [".gii", ".nii"]
     file_details = get_imaging_details_from_path(path)
-    file_extensions = file_details["file_extensions"]
-    file = file_details["file"]
-    sub = file_details["subject"]
     error_and_exit(
-        [file for file in file_extensions if file in accepted_extenions],
-        f"{file} for {sub} is an incorrect file type (not gii or nii)",
+        [file for file in file_details["file_extensions"] if file in [".gii", ".nii"]],
+        f'{file_details["file"]} for {file_details["subject"]} is an incorrect file type (not gii or nii)',
     )
 
 
