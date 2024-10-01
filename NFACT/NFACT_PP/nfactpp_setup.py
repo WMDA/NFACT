@@ -6,6 +6,7 @@ import os
 import glob
 import re
 
+
 def directory_contains_subjects(study_folder_path: str) -> bool:
     """
     Function to check that study directory contains
@@ -144,7 +145,7 @@ def check_arguments(arg: dict) -> None:
     -------
     None
     """
-    default_args = ["ref", "seed", "warps", "outdir"]
+    default_args = ["ref", "seed", "warps", "outdir", "list_of_subjects"]
 
     for key in default_args:
         if key in default_args[1:] and arg["hcp_stream"]:
@@ -153,6 +154,7 @@ def check_arguments(arg: dict) -> None:
             error_and_exit(
                 arg[key], f"Missing {key} argument. Please specify with --{key}."
             )
+
 
 def check_surface_arguments(seed: list, roi: list) -> bool:
     """
@@ -170,11 +172,11 @@ def check_surface_arguments(seed: list, roi: list) -> bool:
     -------
     None
     """
-    
     surface = [file for file in seed if ".gii" in file]
     if surface:
         return True
     return False
+
 
 def check_roi_seed_len(seed: list, roi: list):
     """
@@ -195,6 +197,7 @@ def check_roi_seed_len(seed: list, roi: list):
     error_and_exit(
         len(seed) == len(roi), "Number of seeds and number of ROIS must match"
     )
+
 
 def check_ptx_options_are_valid(ptx_options: list):
     """
