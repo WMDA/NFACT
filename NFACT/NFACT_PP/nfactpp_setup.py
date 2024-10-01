@@ -145,7 +145,7 @@ def check_arguments(arg: dict) -> None:
     -------
     None
     """
-    default_args = ["ref", "seed", "warps", "outdir", "list_of_subjects"]
+    default_args = ["outdir", "list_of_subjects", "seed", "warps"]
 
     for key in default_args:
         if key in default_args[1:] and arg["hcp_stream"]:

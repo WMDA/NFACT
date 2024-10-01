@@ -56,7 +56,7 @@ def nfact_pp_main(arg: dict = None):
         does_list_of_subjects_exist(arg["list_of_subjects"]),
         "List of subjects doesn't exist.",
     )
-    arg["list_of_subjects"] = return_list_of_subjects_from_file(arg["study_folder"])
+    arg["list_of_subjects"] = return_list_of_subjects_from_file(arg["list_of_subjects"])
     check_subject_exist(arg["list_of_subjects"])
 
     print("Checking GPU status")
