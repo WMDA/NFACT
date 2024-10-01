@@ -27,27 +27,34 @@ def nfact_pp_args() -> dict:
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
-        help="""A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. 
+        help=f"""{col['red']}REQUIRED{col['reset']} A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. 
         All subjects need full file path to subjects directory""",
-    )
-
-    option.add_argument(
-        "-i",
-        "--ref",
-        dest="ref",
-        help=f"{col['red']}REQUIRED{col['reset']} Standard space reference image",
     )
     option.add_argument(
         "-o",
         "--outdir",
         dest="outdir",
-        help="Directory to save results in",
+        help=f"{col['red']}REQUIRED{col['reset']} Directory to save results in",
     )
     option.add_argument(
-        "-f",
-        "--study_folder",
-        dest="study_folder",
-        help="In place of a list of subjects a study folder can be given to get subject.",
+        "-s",
+        "--seed",
+        nargs="+",
+        dest="seed",
+        help=f"{col['red']}REQUIRED{col['reset']} A single or list of seeds",
+    )
+    option.add_argument(
+        "-w",
+        "--warps",
+        dest="warps",
+        nargs="+",
+        help=f"{col['red']}REQUIRED{col['reset']} Path to warps inside a subjects directory (can accept multiple arguments)",
+    )
+    option.add_argument(
+        "-i",
+        "--ref",
+        dest="ref",
+        help="Standard space reference image. Default is $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz",
     )
     option.add_argument(
         "-b",
@@ -59,28 +66,16 @@ def nfact_pp_args() -> dict:
         "-t",
         "--target",
         dest="target2",
-        help="Path to target image. If not given will create a whole mask from reference image",
+        default=None,
+        help="Name of target. If not given will create a whole mask from reference image",
     )
-    option.add_argument(
-        "-s",
-        "--seed",
-        nargs="+",
-        dest="seed",
-        help="A single or list of seeds",
-    )
+
     option.add_argument(
         "-r",
         "--rois",
         dest="rois",
         nargs="+",
         help="A single or list of ROIS",
-    )
-    option.add_argument(
-        "-w",
-        "--warps",
-        dest="warps",
-        nargs="+",
-        help="Path to warps inside a subjects directory (can accept multiple arguments)",
     )
     option.add_argument(
         "-H",
@@ -90,13 +85,6 @@ def nfact_pp_args() -> dict:
         help="HCP stream option. Will search through HCP folder structure for L/R white.32k_fs_LR.surf.gii and ROIs. Then performs suface seed stream",
     )
     option.add_argument(
-        "-g",
-        "--gpu",
-        dest="gpu",
-        action="store_true",
-        help="Use GPU version",
-    )
-    option.add_argument(
         "-N",
         "--nsamples",
         dest="nsamples",
@@ -104,14 +92,14 @@ def nfact_pp_args() -> dict:
         help="Number of samples per seed used in tractography (default = 1000)",
     )
     option.add_argument(
-        "-R",
-        "--res",
-        dest="res",
+        "-m",
+        "--mm_res",
+        dest="mm_res",
         default=2,
-        help="Resolution of NMF volume components (Default = 2 mm)",
+        help="Resolution of target image (Default = 2 mm)",
     )
     option.add_argument(
-        "-P",
+        "-p",
         "--ptx_options",
         dest="ptx_options",
         help="Path to ptx_options file for additional options",
@@ -130,15 +118,7 @@ def nfact_pp_args() -> dict:
         dest="cluster",
         action="store_true",
         default=False,
-        help="Run on cluster",
-    )
-    option.add_argument(
-        "-D",
-        "--dont_log",
-        dest="dont_log",
-        action="store_true",
-        default=False,
-        help="Run on cluster",
+        help=f"Run on cluster. {col['red']}Currently not implemented{col['reset']} ",
     )
     option.add_argument(
         "-O",
@@ -192,33 +172,26 @@ def nfact_pp_example_usage() -> str:
     """
     col = colours()
     return f"""
-
 Example Usage:
     {col['purple']}Seed surface mode:{col['reset']}
-           nfact_pp --study_folder /home/mr_robot/subjects 
-               --list /home/mr_robot/sub_list  
+           nfact_pp --list_of_subjects /home/mr_robot/sub_list  
                --bpx_path Diffusion.bedpostX 
                --seeds L.white.32k_fs_LR.surf.gii R.white.32k_fs_LR.surf.gii 
                --rois L.atlasroi.32k_fs_LR.shape.gii  R.atlasroi.32k_fs_LR.shape.gii 
                --warps standard2acpc_dc.nii.gz acpc_dc2standard.nii.gz 
-               --image_standard_space $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz 
-               --gpu --n_cores 3 
-           \n
+               --n_cores 3 
+
     {col['pink']}Volume surface mode:{col['reset']}
-            nfact_pp --study_folder /home/mr_robot/subjects 
-                --list /home/mr_robot/sub_list  
+            nfact_pp --list_of_subjects /home/mr_robot/sub_list  
                 --bpx_path Diffusion.bedpostX 
                 --seeds L.white.nii.gz R.white.nii.gz 
                 --warps standard2acpc_dc.nii.gz acpc_dc2standard.nii.gz 
-                --image_standard_space $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz 
+                --ref MNI152_T1_1mm_brain.nii.gz 
                 --target dlpfc.nii.gz
-                --gpu --n_cores 3 
-        \n
+
     {col['darker_pink']}HCP mode:{col['reset']}
         nfact_pp --hcp_stream
-            --study_folder /home/mr_robot/subjects  
-            --list /home/mr_robot/for_axon/nfact_dev/sub_list  
-            --image_standard_space $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz 
-            --gpu --n_cores 3 
+            --list_of_subjects /home/mr_robot/for_axon/nfact_dev/sub_list  
+            --n_cores 3 
             \n
 """
