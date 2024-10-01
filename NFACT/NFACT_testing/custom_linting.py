@@ -28,21 +28,25 @@ def check_script_for_bad_variable_names(script_path):
     checker = VariableNameChecker()
     checker.visit(tree)
 
+    error_code = False
     if checker.bad_variable_names:
         col = colours()
         accepted_shorted_variables = ["_"]
         for var_name, lineno in checker.bad_variable_names:
             if var_name in accepted_shorted_variables:
                 continue
+            error_code = True
             print(
                 f"{col['red']}Bad variable names found in {script_path}:{col['reset']}"
             )
             print(
                 f"{col['pink']}\t-> Line {lineno}: '{var_name}' is too short{col['reset']}"
             )
+    return error_code
 
 
 def check_directory_for_bad_variable_names(directory_path, ignore_dirs):
+    to_error = []
     for root, dirs, files in os.walk(directory_path):
         dirs[:] = [
             directory
@@ -53,7 +57,11 @@ def check_directory_for_bad_variable_names(directory_path, ignore_dirs):
         for file in files:
             if file.endswith(".py"):
                 script_path = os.path.join(root, file)
-                check_script_for_bad_variable_names(script_path)
+                error_code = check_script_for_bad_variable_names(script_path)
+
+                if error_code:
+                    to_error.append(error_code)
+    return to_error
 
 
 def args():
@@ -67,10 +75,13 @@ def args():
 if __name__ == "__main__":
     arg = args()
     directories_to_ignore = ["dev", "NFACT_GLM"]
-    check_directory_for_bad_variable_names(
+    linting = check_directory_for_bad_variable_names(
         arg["directory"],
         [
             os.path.join(arg["directory"], directory)
             for directory in directories_to_ignore
         ],
     )
+    if linting:
+        exit(1)
+    exit(0)
