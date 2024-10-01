@@ -1,13 +1,11 @@
 from .nfactpp import surf_volume_main, hcp_stream_main
+from .probtrackx_functions import to_use_gpu
 from .nfactpp_args import nfact_pp_args
 from .nfactpp_setup import (
     check_fsl_is_installed,
-    check_study_folder,
-    list_of_subjects_from_directory,
     check_arguments,
     check_ptx_options_are_valid,
 )
-
 from NFACT.NFACT_base.utils import error_and_exit, colours
 from NFACT.NFACT_base.signithandler import Signit_handler
 from NFACT.NFACT_base.filesystem import read_file_to_list, make_directory
@@ -54,30 +52,23 @@ def nfact_pp_main(arg: dict = None):
     )
 
     # Error handle list of subjects
-    if arg["list_of_subjects"]:
-        error_and_exit(
-            does_list_of_subjects_exist(arg["list_of_subjects"]),
-            "List of subjects doesn't exist.",
-        )
-
-        arg["list_of_subjects"] = return_list_of_subjects_from_file(
-            arg["list_of_subjects"]
-        )
-
-        # Error handles if not subjects can be found.
-        error_and_exit(
-            arg["list_of_subjects"],
-            "Unable to locate subjects. Please check data structure",
-        )
-
-    if not arg["list_of_subjects"]:
-        error_and_exit(check_study_folder(arg["study_folder"]))
-        arg["list_of_subjects"] = list_of_subjects_from_directory(arg["study_folder"])
-
-        error_and_exit(
-            arg["list_of_subjects"], "Unable to find list of subjects from directory"
-        )
+    error_and_exit(
+        does_list_of_subjects_exist(arg["list_of_subjects"]),
+        "List of subjects doesn't exist.",
+    )
+    arg["list_of_subjects"] = return_list_of_subjects_from_file(arg["list_of_subjects"])
     check_subject_exist(arg["list_of_subjects"])
+
+    print("Checking GPU status")
+    arg["gpu"] = to_use_gpu()
+    print("GPU found, Using GPU\n") if arg["gpu"] else print(
+        "No GPU. USing CPU version\n"
+    )
+    if not arg["ref"]:
+        arg["ref"] = os.path.join(
+            os.getenv("FSLDIR"), "data", "standard", "MNI152_T1_2mm_brain.nii.gz"
+        )
+
     if arg["ptx_options"]:
         try:
             arg["ptx_options"] = read_file_to_list(arg["ptx_options"])

@@ -5,7 +5,11 @@ import shutil
 # NFACT functions
 from NFACT.NFACT_base.imagehandling import get_file
 from NFACT.NFACT_base.utils import colours, error_and_exit
-from .nfactpp_setup import check_surface_arguments, nfact_pp_folder_setup
+from .nfactpp_setup import (
+    check_surface_arguments,
+    nfact_pp_folder_setup,
+    check_roi_seed_len,
+)
 from .nfactpp_functions import (
     hcp_get_seeds,
     hcp_get_rois,
@@ -36,11 +40,12 @@ def surf_volume_main(arg: dict, handler) -> None:
     None
     """
 
-    surface_processing = check_surface_arguments(arg["seed"], arg["rois"])
+    arg["surface"] = check_surface_arguments(arg["seed"], arg["rois"])
     col = colours()
 
-    if surface_processing:
+    if arg["surface"]:
         print(f'{col["darker_pink"]}Surface seeds mode{col["reset"]}')
+        check_roi_seed_len(arg["seed"], arg["rois"])
     else:
         print(f'{col["darker_pink"]}Volume seed mode{col["reset"]}')
 
@@ -78,7 +83,7 @@ def surf_volume_main(arg: dict, handler) -> None:
             for seed_location in seed
         ]
 
-        if surface_processing:
+        if arg["surface"]:
             roi = get_file(arg["rois"], sub)
             seed_names = [
                 re.sub(r"..ii", "", os.path.basename(seeds)) for seeds in seed
@@ -104,7 +109,7 @@ def surf_volume_main(arg: dict, handler) -> None:
             get_target2(
                 arg["ref"],
                 os.path.join(nfactpp_diretory, "files", "target2"),
-                arg["res"],
+                arg["mm_res"],
                 arg["ref"],
                 "nearestneighbour",
             )
@@ -123,8 +128,8 @@ def surf_volume_main(arg: dict, handler) -> None:
         handler.set_suppress_messages = True
 
     # Running probtrackx2
-    Probtrackx(subjects_commands, arg["cluster"], arg["n_cores"], arg["dont_log"])
-    if surface_processing:
+    Probtrackx(subjects_commands, arg["cluster"], arg["n_cores"])
+    if arg["surface"]:
         [
             update_seeds_file(os.path.join(sub, arg["outdir"], "seeds.txt"))
             for sub in arg["list_of_subjects"]

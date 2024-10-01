@@ -40,8 +40,6 @@ def nfact_pipeline_main() -> None:
     # Build out command line argument input
     if not args["input"]["config"]:
         print("Building out NFACT arguments. Check logs for specifics")
-        from NFACT.NFACT_PP.nfactpp_setup import check_fsl_is_installed
-        from NFACT.NFACT_PP.probtrackx_functions import get_probtrack2_arguments
 
         pipeline_args_check(args)
 
@@ -55,18 +53,6 @@ def nfact_pipeline_main() -> None:
         nfact_dr_args = build_module_arguments(
             global_arguments["nfact_dr"], args, "decomp"
         )
-
-        # Check to use probtrackx GPU or not
-        if not args["input"]["skip"]:
-            print("Checking GPU status")
-            error_and_exit(
-                check_fsl_is_installed(),
-                "FSLDIR not in path. Check FSL is installed or has been loaded correctly",
-            )
-            nfact_pp_args["gpu"] = True if get_probtrack2_arguments(bin=True) else False
-            print("GPU found, Using GPU\n") if nfact_pp_args["gpu"] else print(
-                "No GPU. USing CPU version\n"
-            )
 
     # Build out arguments from config file
     if args["input"]["config"]:
