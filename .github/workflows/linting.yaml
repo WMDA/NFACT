@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - main
-
 jobs:
   nfact_test:
     runs-on: ubuntu-latest
@@ -26,6 +25,6 @@ jobs:
       - name: Ruff linting
         run: ruff check --config ruff.toml
     
-      - name: Run variable checker
+      - name: Run liniting
         run: |
-        python NFACT/NFACT/NFACT_testing/custom_linting.py -d /NFACT/NFACT
+          python NFACT/NFACT/NFACT_testing/custom_linting.py -d /NFACT/NFACT
