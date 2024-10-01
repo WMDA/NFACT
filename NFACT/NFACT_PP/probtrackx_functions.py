@@ -5,6 +5,19 @@ import signal
 from NFACT.NFACT_base.filesystem import write_to_file, get_current_date
 from NFACT.NFACT_base.utils import colours, error_and_exit
 
+def to_use_gpu():
+    """
+    Function to check if to use GPU
+    or CPU
+    Parameters
+    ----------
+    None
+    Returns
+    -------
+    bool: boolen
+        True if probtrack
+    """
+    return True if get_probtrack2_arguments(bin=True) else False
 
 def hcp_files(sub: str, out_dir: str) -> dict:
     """
@@ -41,7 +54,7 @@ def hcp_files(sub: str, out_dir: str) -> dict:
     }
 
 
-def process_command_arguments(arg: dict, sub: str):
+def process_command_arguments(arg: dict, sub: str) -> dict:
     """
     Function to process command line
     arguments
@@ -208,9 +221,7 @@ def get_target2(
             capture_output=True,
         )
     except FileNotFoundError:
-        error_and_exit(
-            False, "Unable to load FSL flirt. Check FSL is properly installed"
-        )
+        error_and_exit(False, "Unable to find reference image. Please check it exists")
     except subprocess.CalledProcessError as error:
         error_and_exit(False, f"Error in calling FSL flirt: {error}")
     except KeyboardInterrupt:
@@ -288,7 +299,7 @@ def get_probtrack2_arguments(bin: bool = False) -> None:
     try:
         help_arguments = subprocess.run([binary, "--help"], capture_output=True)
     except subprocess.CalledProcessError as error:
-        error_and_exit(False, f"Error in calling surf2surf: {error}")
+        error_and_exit(False, f"Error in calling probtrackx2: {error}")
 
     return help_arguments.stderr.decode("utf-8")
 
@@ -307,12 +318,10 @@ class Probtrackx:
         command: list,
         cluster: bool = False,
         parallel: bool = False,
-        dont_log: bool = False,
     ) -> None:
         self.command = command
         self.cluster = cluster
         self.parallel = parallel
-        self.dont_log = dont_log
         self.col = colours()
         if self.parallel:
             self.parallel_mode()
@@ -346,17 +355,16 @@ class Probtrackx:
         )
 
         try:
-            if not self.dont_log:
-                log_name = "PP_log_" + get_current_date()
-                with open(
-                    os.path.join(nfactpp_diretory, "logs", log_name), "w"
-                ) as log_file:
-                    run = subprocess.run(
-                        command,
-                        stdout=log_file,
-                        stderr=log_file,
-                        universal_newlines=True,
-                    )
+            log_name = "PP_log_" + get_current_date()
+            with open(
+                os.path.join(nfactpp_diretory, "logs", log_name), "w"
+            ) as log_file:
+                run = subprocess.run(
+                    command,
+                    stdout=log_file,
+                    stderr=log_file,
+                    universal_newlines=True,
+                )
             if self.dont_log:
                 run = subprocess.run(command)
         except subprocess.CalledProcessError as error:

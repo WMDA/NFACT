@@ -1,11 +1,10 @@
-import os
-import glob
-import re
 from NFACT.NFACT_PP.probtrackx_functions import get_probtrack2_arguments
 from NFACT.NFACT_base.utils import colours, error_and_exit
 from NFACT.NFACT_base.filesystem import make_directory
 from NFACT.NFACT_base.setup import check_study_folder_exists
-
+import os
+import glob
+import re
 
 def directory_contains_subjects(study_folder_path: str) -> bool:
     """
@@ -155,8 +154,7 @@ def check_arguments(arg: dict) -> None:
                 arg[key], f"Missing {key} argument. Please specify with --{key}."
             )
 
-
-def check_surface_arguments(seed: list, roi: list) -> None:
+def check_surface_arguments(seed: list, roi: list) -> bool:
     """
     Function to check that is seeds
     are surfaces then ROIS are provided.
@@ -172,16 +170,31 @@ def check_surface_arguments(seed: list, roi: list) -> None:
     -------
     None
     """
-    extension = [file.split(".")[-1] for file in seed]
-    surface = [file for file in extension if file == "gii"]
+    
+    surface = [file for file in seed if ".gii" in file]
     if surface:
-        error_and_exit(roi, "Surfaces given as seeds but no ROI. Please provide ROI")
-        error_and_exit(
-            len(seed) == len(roi), "Number of seeds and number of ROIS must match"
-        )
         return True
     return False
 
+def check_roi_seed_len(seed: list, roi: list):
+    """
+    Function to check that the same
+    amount of seed(s) and roi(s)
+    are given.
+    Parameters
+    ----------
+    seed: list
+        list of seeds
+    roi: list
+        list of ROIS
+    Returns
+    -------
+    None
+    """
+    error_and_exit(roi, "Surfaces given as seeds but no ROI. Please provide ROI")
+    error_and_exit(
+        len(seed) == len(roi), "Number of seeds and number of ROIS must match"
+    )
 
 def check_ptx_options_are_valid(ptx_options: list):
     """
