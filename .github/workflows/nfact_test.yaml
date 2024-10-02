@@ -32,5 +32,5 @@ jobs:
       
       - name: Pytest nfact_decomp 
         run: | 
-          python3 NFACT/NFACT_testing/generate_connectivity_matrix.py
-          pytest -v NFACT/NFACT_testing/nfact_pipeline_test.py
+          python3 NFACT/testing/generate_connectivity_matrix.py
+          pytest -v NFACT/testing/nfact_pipeline_test.py

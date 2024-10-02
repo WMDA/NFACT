@@ -27,4 +27,4 @@ jobs:
     
       - name: Run liniting
         run: |
-          python NFACT/NFACT_testing/custom_linting.py -d /NFACT/NFACT
+          python NFACT/testing/custom_linting.py -d /NFACT/NFACT
