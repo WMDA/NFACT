@@ -20,6 +20,7 @@ def nfact_decomp_args() -> dict:
         description=print(nfact_decomp_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+    col = colours()
     args.add_argument(
         "-l",
         "--list_of_subjects",

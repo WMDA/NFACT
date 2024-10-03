@@ -170,9 +170,6 @@ def check_algo(algo: str) -> str:
        returns lower case
        of str
     """
-    error_and_exit(
-        algo, "--algo not given. Please specify either ICA and NMF (case insensitive)"
-    )
     implemented_decomp_methods = ["nmf", "ica"]
     if algo.lower() not in implemented_decomp_methods:
         error_and_exit(
@@ -265,3 +262,26 @@ def creat_subfolder_setup(directory: str, sub_folders: list) -> None:
         make_directory(directory)
 
     [make_directory(os.path.join(directory, sub)) for sub in sub_folders]
+
+
+def check_arguments(arg: dict, comp_args: list) -> None:
+    """
+    Function to check complusory arguments
+    and exits if not given
+
+    Parameters
+    ----------
+    arg: dict
+        Command line dictionary
+    comp_args: list
+         list of complusory arguments
+
+    Returns
+    -------
+    None
+    """
+
+    for key in comp_args:
+        error_and_exit(
+            arg[key], f"Missing {key} argument. Please specify with --{key}."
+        )

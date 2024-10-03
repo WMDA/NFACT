@@ -1,35 +1,6 @@
 from NFACT.base.utils import error_and_exit
 
 
-def check_complusory_arguments(args: dict) -> None:
-    """
-    Function to check that ptx folder
-    given
-
-    Parameters
-    ----------
-    args: dict
-        dictionary of command line
-        arguments
-
-    Returns
-    -------
-    None
-    """
-
-    if not args["ptxdir"] and not args["list_of_subjects"]:
-        error_and_exit(
-            False,
-            "No subjects given. Please provide either --ptx_folder or --list_of_subjects",
-        )
-    if not args["dim"]:
-        error_and_exit(False, "No dimensions given. Please provide either --dim")
-    if not args["seeds"]:
-        error_and_exit(False, "No seeds provided. Please provide --seeds")
-    if not args["outdir"]:
-        error_and_exit(False, "No output directory provided. Please specifiy --outdir")
-
-
 def process_command_args(args: dict) -> dict:
     """
     Function to process command line arguments.
