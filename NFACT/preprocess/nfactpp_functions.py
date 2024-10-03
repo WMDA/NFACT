@@ -48,7 +48,7 @@ def get_file(img_file: list, sub: str) -> list:
         list of imging files
 
     """
-    img_files = [os.path.join(sub, file) for file in img_file]
+    img_files = [os.path.join(sub, file.lstrip("/")) for file in img_file]
     [
         error_and_exit(
             os.path.exists(path), f"Unable to find {path}. Please check it exists"
