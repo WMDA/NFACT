@@ -57,3 +57,61 @@ def get_file(img_file: list, sub: str) -> list:
     ]
     [check_files_are_imaging_files(path) for path in img_files]
     return img_files
+
+
+def filetree_get_files(filetree: object, sub: str, hemi: str, file: str) -> str:
+    """
+    Function to get files from filetree.
+
+    Parameters
+    ----------
+    filetree: FileTree object
+        loaded tree
+    sub: str
+        subject string
+    hemi: str
+        string of hemishpere
+    file: str
+        name of file
+
+    Returns
+    -------
+    file_path:str
+    """
+    return filetree.update(sub=sub, hemi=hemi).get(file)
+
+
+def process_filetree_args(arg: dict, sub: str) -> dict:
+    """
+    Function to process filetree arguments
+
+    Parameteres
+    -----------
+    arg: dict
+        dictionary of command
+        line arguments
+    sub: str
+        string of subject id
+
+    Returns
+    -------
+    arg: dict
+        dictionary of processed
+        arguments
+    """
+    del arg["seed"]
+    del arg["rois"]
+    arg["seed"] = [
+        filetree_get_files(arg["file_tree"], sub, hemi, "seed") for hemi in ["L", "R"]
+    ]
+    arg["warps"] = [
+        filetree_get_files(arg["file_tree"], sub, "L", f"warp_{warp}")
+        for warp in range(1, 3)
+    ]
+    arg["bpx_path"] = filetree_get_files(arg["file_tree"], sub, "L", "bedpostX")
+    if arg["surface"]:
+        arg["rois"] = [
+            filetree_get_files(arg["file_tree"], sub, hemi, "roi")
+            for hemi in ["L", "R"]
+        ]
+    return arg

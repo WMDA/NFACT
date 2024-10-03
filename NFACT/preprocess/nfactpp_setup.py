@@ -3,6 +3,7 @@ from NFACT.base.utils import colours, error_and_exit
 from NFACT.base.filesystem import make_directory
 import os
 import re
+from file_tree import FileTree
 
 
 def check_fsl_is_installed():
@@ -142,3 +143,15 @@ def nfact_pp_folder_setup(nfactpp_diretory: str) -> None:
     make_directory(nfactpp_diretory)
     sub_folders = ["logs", "files"]
     [make_directory(os.path.join(nfactpp_diretory, sub)) for sub in sub_folders]
+
+
+def load_file_tree(tree_name):
+    try:
+        tree = FileTree.read(
+            os.path.join(
+                os.path.dirname(os.path.dirname(__file__)), "filetrees", tree_name
+            )
+        )
+        return tree
+    except Exception as e:
+        error_and_exit(False, f"Unable to load tree file, due to {e}")

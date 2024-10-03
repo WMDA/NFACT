@@ -152,6 +152,11 @@ nfact_pp --file_tree hcp --list_of_subjects /home/study/list_of_subjects
 
 Filetrees are saved in filetrees folder in nfact, so custom filetrees can be put there and called similar to the command above. NFACT_PP currently has a built in a filetree for HCP (from qunex output) to perform full brain tractography. 
 
+Use of custom filetree
+-----------------------
+seed files are aliased as (seed), medial wall as (roi), warps as (warp_1)/(warp_2) and bedpostX as (bedpostX). Two seeds are supported if the seeds are bilateral indicated
+with {hemi}.seed, with the actual seed names being L.seed.nii.gz/R.seed.nii.gz. A singe seed can be given as well.
+
 ### Usage:
 
 ```

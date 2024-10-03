@@ -61,6 +61,7 @@ def nfact_pp_main(arg: dict = None):
     arg["list_of_subjects"] = return_list_of_subjects_from_file(arg["list_of_subjects"])
     check_subject_exist(arg["list_of_subjects"])
 
+    # TODO: uncomment this hen going into production
     print("Checking GPU status")
     arg["gpu"] = to_use_gpu()
     print("GPU found, Using GPU\n") if arg["gpu"] else print(

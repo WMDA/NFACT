@@ -3,8 +3,14 @@ from .nfactpp_setup import (
     check_seeds_surfaces,
     nfact_pp_folder_setup,
     check_roi_seed_len,
+    load_file_tree,
 )
-from .nfactpp_functions import update_seeds_file, get_file
+from .nfactpp_functions import (
+    update_seeds_file,
+    get_file,
+    filetree_get_files,
+    process_filetree_args,
+)
 from .probtrackx_functions import (
     build_probtrackx2_arguments,
     write_options_to_file,
@@ -33,9 +39,19 @@ def pre_processing(arg: dict, handler) -> None:
     -------
     None
     """
-
-    arg["surface"] = check_seeds_surfaces(arg["seed"], arg["rois"])
     col = colours()
+
+    if arg["file_tree"]:
+        print(f'{col["plum"]}Filetree {arg["file_tree"].lower()} given {col["reset"]}')
+        arg["file_tree"] = load_file_tree(f"{arg['file_tree'].lower()}.tree")
+
+        # load a random subjects seed and ROI to check its type
+        arg["seed"] = [filetree_get_files(arg["file_tree"], "sub1", "L", "seed")]
+
+        # Needed for checking if seed is surface
+        arg["rois"] = ["filestree"]
+
+    arg["surface"] = check_seeds_surfaces(arg["seed"])
 
     if arg["surface"]:
         print(f'{col["darker_pink"]}Surface seeds mode{col["reset"]}')
@@ -47,23 +63,16 @@ def pre_processing(arg: dict, handler) -> None:
     subjects_commands = []
 
     for sub in arg["list_of_subjects"]:
-        # looping over subjects and building out directories
-        print(f"\n{col['pink']}Setting up:{col['reset']} {os.path.basename(sub)}")
+        sub_id = os.path.basename(sub)
+        print(f"\n{col['pink']}Setting up:{col['reset']} {sub_id}")
+        if arg["file_tree"]:
+            arg = process_filetree_args(arg, sub_id)
         seed = get_file(arg["seed"], sub)
         seed_text = "\n".join(seed)
         # using this function not to return a file but check it is an imaging file
         get_file(arg["warps"], sub)
 
-        nfactpp_diretory = os.path.join(
-            arg["outdir"], "nfact_pp", os.path.basename(sub)
-        )
-
-        if arg["overwrite"]:
-            if os.path.exists(nfactpp_diretory):
-                print(
-                    f'{col["red"]}{arg["outdir"]} directory already exists. Overwriting{col["reset"]}'
-                )
-                shutil.rmtree(nfactpp_diretory, ignore_errors=True)
+        nfactpp_diretory = os.path.join(arg["outdir"], "nfact_pp", sub_id)
 
         nfact_pp_folder_setup(nfactpp_diretory)
 
@@ -112,7 +121,6 @@ def pre_processing(arg: dict, handler) -> None:
             build_probtrackx2_arguments(
                 arg,
                 sub,
-                hcp_stream=False,
                 ptx_options=arg["ptx_options"],
             )
         )
