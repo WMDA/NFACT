@@ -101,9 +101,14 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
     """
     del arg["seed"]
     del arg["rois"]
-    arg["seed"] = [
-        filetree_get_files(arg["file_tree"], sub, hemi, "seed") for hemi in ["L", "R"]
-    ]
+    arg["seed"] = list(
+        set(
+            [
+                filetree_get_files(arg["file_tree"], sub, hemi, "seed")
+                for hemi in ["L", "R"]
+            ]
+        )
+    )
     arg["warps"] = [
         filetree_get_files(arg["file_tree"], sub, "L", f"warp_{warp}")
         for warp in range(1, 3)

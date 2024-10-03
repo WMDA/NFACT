@@ -61,7 +61,6 @@ def pre_processing(arg: dict, handler) -> None:
 
     print("Number of subjects: ", len(arg["list_of_subjects"]))
     subjects_commands = []
-
     for sub in arg["list_of_subjects"]:
         sub_id = os.path.basename(sub)
         print(f"\n{col['pink']}Setting up:{col['reset']} {sub_id}")
