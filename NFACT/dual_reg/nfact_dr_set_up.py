@@ -4,29 +4,6 @@ from NFACT.base.utils import error_and_exit
 import os
 
 
-def check_compulsory_arguments(args: dict) -> None:
-    """
-    Function to check that complusory arguments
-    are provided.
-
-    Parameters
-    ----------
-    args: dict
-        A dictionary of args
-
-    Returns
-    -------
-    None
-    """
-    error_and_exit(
-        (False if not args["ptxdir"] and not args["list_of_subjects"] else True),
-        "No subjects provided. Please provide a list of subjects with either --ptxdir or --list_of_subjects",
-    )
-    error_and_exit(
-        args["seeds"], "No seeds provided. Please use --seeds to provide seeds"
-    )
-
-
 def check_nfact_decomp_directory(comp_directory: str, group_average_dir: str) -> None:
     """
     Function to check the NFACT directory has the
