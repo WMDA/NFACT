@@ -28,7 +28,6 @@ def update_seeds_file(file_path: str) -> None:
         error_and_exit(False, f"Unable to change seeds file due to {e}")
 
 
-# TODO: seperate this function out
 def get_file(img_file: list, sub: str) -> list:
     """
     Function to get an imaging file
