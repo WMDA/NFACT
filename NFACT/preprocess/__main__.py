@@ -1,4 +1,4 @@
-from .nfactpp import surf_volume_main, hcp_stream_main
+from .nfactpp import pre_processing
 from .probtrackx_functions import to_use_gpu
 from .nfactpp_args import nfact_pp_args
 from .nfactpp_setup import (
@@ -43,7 +43,9 @@ def nfact_pp_main(arg: dict = None):
     handler = Signit_handler()
     col = colours()
     # Check that complusory arguments given
-    check_arguments(arg)
+
+    if not arg["file_tree"]:
+        check_arguments(arg)
 
     # Error handle if FSL not installed or loaded
     error_and_exit(
@@ -85,12 +87,9 @@ def nfact_pp_main(arg: dict = None):
                 f'{col["red"]}{nfact_pp_directory} directory already exists. Overwriting{col["reset"]}'
             )
             shutil.rmtree(nfact_pp_directory, ignore_errors=True)
+
     make_directory(nfact_pp_directory)
-
-    if arg["hcp_stream"]:
-        hcp_stream_main(arg, handler)
-
-    surf_volume_main(arg, handler)
+    pre_processing(arg, handler)
 
     if to_exit:
         print("NFACT PP has Finished")

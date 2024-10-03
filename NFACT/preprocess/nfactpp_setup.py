@@ -1,9 +1,7 @@
 from .probtrackx_functions import get_probtrack2_arguments
 from NFACT.base.utils import colours, error_and_exit
 from NFACT.base.filesystem import make_directory
-from NFACT.base.setup import check_study_folder_exists
 import os
-import glob
 import re
 
 
@@ -60,54 +58,6 @@ def check_study_folder_is_dir(study_folder_path: str) -> bool:
     return True
 
 
-def check_study_folder(study_folder_path: str) -> bool:
-    """
-    Check that the study directory exists,
-    is a directory and contains subjects
-
-    Parameters
-    ----------
-    study_folder_path: str
-        path to study directory
-
-    Returns
-    -------
-    bool: boolean
-       True if study folder passes
-       else prints error message and
-       returns false
-    """
-    if not check_study_folder_exists(
-        study_folder_path, "Study folder provided doesn't exist"
-    ):
-        return False
-    if not check_study_folder_is_dir(study_folder_path):
-        return False
-    if not directory_contains_subjects(study_folder_path):
-        return False
-    return True
-
-
-def list_of_subjects_from_directory(study_folder: str) -> list:
-    """
-    Function to get list of subjects from a directory
-    if a list of subjects is not given
-
-    Parameters
-    ---------
-    study_folder: str
-       path to study folder
-
-    Returns
-    -------
-    list: list object
-        list of subjects
-    """
-    print("Getting list of subjects from directory")
-    list_of_subject = glob.glob(os.path.join(study_folder, "*"))
-    return [direct for direct in list_of_subject if os.path.isdir(direct)]
-
-
 def check_fsl_is_installed():
     """
     Function to check that FSL is
@@ -148,7 +98,7 @@ def check_arguments(arg: dict) -> None:
     default_args = ["outdir", "list_of_subjects", "seed", "warps"]
 
     for key in default_args:
-        if key in default_args[1:] and arg["hcp_stream"]:
+        if key in default_args:
             continue
         else:
             error_and_exit(

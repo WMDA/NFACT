@@ -25,7 +25,7 @@ from .probtrackx_functions import (
 )
 
 
-def surf_volume_main(arg: dict, handler) -> None:
+def pre_processing(arg: dict, handler) -> None:
     """
     Main function for nfact PP
 
