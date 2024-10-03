@@ -5,59 +5,6 @@ import os
 import re
 
 
-def directory_contains_subjects(study_folder_path: str) -> bool:
-    """
-    Function to check that study directory contains
-    subjects
-
-    Parameters
-    ---------
-    study_folder_path: str
-        study folder path
-
-    Returns
-    -------
-    bool: boolean
-       True if it does else
-       False and error messages
-    """
-    content = [
-        direct
-        for direct in os.listdir(study_folder_path)
-        if os.path.isdir(os.path.join(study_folder_path, direct))
-    ]
-    if not content:
-        col = colours()
-        print(f"{col['red']}Study folder is empty{col['reset']}")
-        return False
-    return True
-
-
-def check_study_folder_is_dir(study_folder_path: str) -> bool:
-    """
-    Function to check that study folder is a
-    direcotry
-
-    Parameters
-    ----------
-    study_folder_path: str
-        Study folder path
-
-    Returns
-    -------
-    bool: boolean
-       True if is
-       else prints error message and
-       returns false
-    """
-    if not os.path.isdir(study_folder_path):
-        col = colours()
-        print(f"{col['red']}Study folder provided is not a directory{col['reset']}")
-        return False
-
-    return True
-
-
 def check_fsl_is_installed():
     """
     Function to check that FSL is
@@ -106,7 +53,7 @@ def check_arguments(arg: dict) -> None:
             )
 
 
-def check_surface_arguments(seed: list, roi: list) -> bool:
+def check_seeds_surfaces(seed: list) -> bool:
     """
     Function to check that is seeds
     are surfaces then ROIS are provided.
@@ -115,8 +62,6 @@ def check_surface_arguments(seed: list, roi: list) -> bool:
     ----------
     seed: list
         list of seeds
-    roi: list
-        list of ROIS
 
     Returns
     -------
