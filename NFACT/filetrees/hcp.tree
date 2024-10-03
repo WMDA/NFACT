@@ -5,10 +5,10 @@
                 {sub}
                     MNINonLinear
                         fsaverage_LR32k
-                            {sub}.{hemi}.atlasroi.32k_fs_LR.shape.gii
-                            {sub}.{hemi}.white.32k_fs_LR.surf.gii
+                            {sub}.{hemi}.atlasroi.32k_fs_LR.shape.gii (roi)
+                            {sub}.{hemi}.white.32k_fs_LR.surf.gii (seed)
                         xfms
                             acpc_dc2standard.nii.gz
                             standard2acpc_dc.nii.gz
                     T1w
-                        Diffusion.bedpostX
+                        Diffusion.bedpostX (bedpostX)
