@@ -21,17 +21,10 @@ def nfact_decomp_args() -> dict:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     args.add_argument(
-        "-p",
-        "--ptxdir",
-        nargs="+",
-        dest="ptxdir",
-        help="List of file paths to probtrackx directories. If not provided will then --list_ofsubjects must be provided",
-    )
-    args.add_argument(
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
-        help="Filepath to a list of subjects. If not given then --ptxdir must be directories.",
+        help="Filepath to a list of subjects. List can contain a single subject.",
     )
     args.add_argument("-o", "--outdir", dest="outdir", help="Path to output folder")
     args.add_argument("-d", "--dim", dest="dim", help="Number of dimensions/components")
@@ -57,14 +50,13 @@ def nfact_decomp_args() -> dict:
         help="What algorithm to run. Options are: ICA (default), or NMF.",
     )
     args.add_argument(
-        "-w",
+        "-W",
         "--wta",
         dest="wta",
         action="store_true",
         default=False,
         help="Save winner-takes-all maps",
     )
-
     args.add_argument(
         "-z",
         "--wta_zthr",
@@ -88,7 +80,6 @@ def nfact_decomp_args() -> dict:
         default=False,
         help="sign flip components",
     )
-
     args.add_argument(
         "-O",
         "--overwrite",
@@ -103,13 +94,6 @@ def nfact_decomp_args() -> dict:
         dest="config",
         default=False,
         help="Provide config file to change hyperparameters for ICA and NFM. Please see sckit learn documentation for NFM and FASTICA for further details",
-    )
-    args.add_argument(
-        "-C",
-        "--save_grey_as_cifit",
-        dest="save_grey_as_cifit",
-        default=False,
-        help="Instead of saving grey matter components as gifti save them in cifit form. Must provide a list of ROIS ",
     )
     no_args(args)
     return vars(args.parse_args())
