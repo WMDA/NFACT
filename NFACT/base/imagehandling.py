@@ -37,37 +37,6 @@ def mat2vol(matrix: np.array, lut_vol: object) -> np.ndarray:
     return matvol
 
 
-# TODO: seperate this function out
-def get_file(img_file: list, sub: str) -> list:
-    """
-    Function to get an imaging file
-    type and returns it. Checks that file
-    is correct file type and exists.
-
-    Parameters
-    ----------
-    img_file: list
-        a list of imaging files
-    sub: str
-       path to subjects directory.
-
-    Returns
-    -------
-    img_files: list
-        list of imging files
-
-    """
-    img_files = [os.path.join(sub, file) for file in img_file]
-    [
-        error_and_exit(
-            os.path.exists(path), f"Unable to find {path}. Please check it exists"
-        )
-        for path in img_files
-    ]
-    [check_files_are_imaging_files(path) for path in img_files]
-    return img_files
-
-
 def get_imaging_details_from_path(path: str) -> dict:
     """
     Function to return imaging suffix,

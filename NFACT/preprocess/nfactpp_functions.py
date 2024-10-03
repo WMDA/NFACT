@@ -1,77 +1,6 @@
-import os
-import glob
 from NFACT.base.utils import error_and_exit
-
-
-def hcp_get_seeds(sub: str) -> list:
-    """
-    Function to get HCP stream seeds
-
-    Parameters
-    ----------
-    sub: str
-        string of subject
-
-    Returns
-    -------
-    seeds: list
-       list of seeds
-    """
-    seeds = glob.glob(
-        os.path.join(sub, "MNINonLinear/fsaverage_LR32k/*.white.32k_fs_LR.surf.gii")
-    )
-    subject = os.path.basename(sub)
-    error_and_exit(seeds, f"Cannot find seed files for {subject}")
-    return seeds
-
-
-def hcp_get_rois(sub: str) -> list:
-    """
-    Function to get HCP stream ROIS
-
-    Parameters
-    ----------
-    sub: str
-        string of subject
-
-    Returns
-    -------
-    rois: list
-       list of rois
-    """
-    rois = glob.glob(
-        os.path.join(sub, "MNINonLinear/fsaverage_LR32k/*.atlasroi.32k_fs_LR.shape.gii")
-    )
-    subject = os.path.basename(sub)
-    error_and_exit(rois, f"Cannot find seed files for {subject}")
-    return rois
-
-
-def hcp_reorder_seeds_rois(seeds: list, rois: list) -> dict:
-    """
-    Function to return seeds and rois
-    in same order.
-
-    Parameters
-    ----------
-    seeds: list
-        a list of seeds
-    rois: list
-        a list of rois
-
-    Returns
-    -------
-    dict: dict
-        dictionary of left/right
-        hemisphere seed and ROI
-
-    """
-    left_seed = [seed for seed in seeds if "L.white" in seed][0]
-    right_seed = [seed for seed in seeds if "R.white" in seed][0]
-    left_rois = [roi for roi in rois if "L.atlasroi" in roi][0]
-    right_rois = [roi for roi in rois if "R.atlasroi" in roi][0]
-
-    return {"left": [left_seed, left_rois], "right": [right_seed, right_rois]}
+from NFACT.base.imagehandling import check_files_are_imaging_files
+import os
 
 
 def update_seeds_file(file_path: str) -> None:
@@ -97,3 +26,96 @@ def update_seeds_file(file_path: str) -> None:
             file.write(update_extensions)
     except Exception as e:
         error_and_exit(False, f"Unable to change seeds file due to {e}")
+
+
+def get_file(img_file: list, sub: str) -> list:
+    """
+    Function to get an imaging file
+    type and returns it. Checks that file
+    is correct file type and exists.
+
+    Parameters
+    ----------
+    img_file: list
+        a list of imaging files
+    sub: str
+       path to subjects directory.
+
+    Returns
+    -------
+    img_files: list
+        list of imging files
+
+    """
+    img_files = [os.path.join(sub, file.lstrip("/")) for file in img_file]
+    [
+        error_and_exit(
+            os.path.exists(path), f"Unable to find {path}. Please check it exists"
+        )
+        for path in img_files
+    ]
+    [check_files_are_imaging_files(path) for path in img_files]
+    return img_files
+
+
+def filetree_get_files(filetree: object, sub: str, hemi: str, file: str) -> str:
+    """
+    Function to get files from filetree.
+
+    Parameters
+    ----------
+    filetree: FileTree object
+        loaded tree
+    sub: str
+        subject string
+    hemi: str
+        string of hemishpere
+    file: str
+        name of file
+
+    Returns
+    -------
+    file_path:str
+    """
+    return filetree.update(sub=sub, hemi=hemi).get(file)
+
+
+def process_filetree_args(arg: dict, sub: str) -> dict:
+    """
+    Function to process filetree arguments
+
+    Parameteres
+    -----------
+    arg: dict
+        dictionary of command
+        line arguments
+    sub: str
+        string of subject id
+
+    Returns
+    -------
+    arg: dict
+        dictionary of processed
+        arguments
+    """
+    del arg["seed"]
+    del arg["rois"]
+    arg["seed"] = list(
+        set(
+            [
+                filetree_get_files(arg["file_tree"], sub, hemi, "seed")
+                for hemi in ["L", "R"]
+            ]
+        )
+    )
+    arg["warps"] = [
+        filetree_get_files(arg["file_tree"], sub, "L", f"warp_{warp}")
+        for warp in range(1, 3)
+    ]
+    arg["bpx_path"] = filetree_get_files(arg["file_tree"], sub, "L", "bedpostX")
+    if arg["surface"]:
+        arg["rois"] = [
+            filetree_get_files(arg["file_tree"], sub, hemi, "roi")
+            for hemi in ["L", "R"]
+        ]
+    return arg

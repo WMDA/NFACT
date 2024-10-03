@@ -21,41 +21,6 @@ def to_use_gpu():
     return True if get_probtrack2_arguments(bin=True) else False
 
 
-def hcp_files(sub: str, out_dir: str) -> dict:
-    """
-    Function to return
-    HCP standard seed, ROI
-    and warps. Also checks that they exist
-
-    Parameters
-    ----------
-    sub: str
-        string to subjects files
-    out_dir: str
-        str of name of out_dir
-
-    Returns
-    -------
-    dict: dictionary object
-        dict of seeds, ROIS and warps
-    """
-
-    bpx_path = os.path.join(sub, "T1w/Diffusion.bedpostX")
-    error_and_exit(
-        os.path.exists(bpx_path[0]), "Cannot find Diffusion.bedpostX directory"
-    )
-    warp = [
-        os.path.join(sub, "MNINonLinear/xfms/standard2acpc_dc.nii.gz"),
-        os.path.join(sub, "MNINonLinear/xfms/acpc_dc2standard.nii.gz"),
-    ]
-    [error_and_exit(os.path.exists(path), f"Unable to find {path}") for path in warp]
-    return {
-        "seed": os.path.join(sub, out_dir, "seeds.txt"),
-        "warps": warp,
-        "bpx_path": bpx_path,
-    }
-
-
 def process_command_arguments(arg: dict, sub: str) -> dict:
     """
     Function to process command line
@@ -84,9 +49,7 @@ def process_command_arguments(arg: dict, sub: str) -> dict:
     }
 
 
-def build_probtrackx2_arguments(
-    arg: dict, sub: str, hcp_stream=False, ptx_options=False
-) -> list:
+def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
     """
     Function to build out probtrackx2 arguments
 
@@ -105,12 +68,8 @@ def build_probtrackx2_arguments(
     list: list object
         list of probtrackx2 arguements
     """
-    if hcp_stream:
-        print("HCP arguments")
-        command_arguments = hcp_files(sub, arg["outdir"])
-    if not hcp_stream:
-        command_arguments = process_command_arguments(arg, sub)
 
+    command_arguments = process_command_arguments(arg, sub)
     binary = "probtrackx2_gpu" if arg["gpu"] else "probtrackx2"
     warps = command_arguments["warps"]
     seeds = command_arguments["seed"]

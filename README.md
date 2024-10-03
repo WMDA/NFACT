@@ -86,7 +86,7 @@ nfact --list_of_subject /absolute path/sub_list \
 --seed thalamus.nii.gz \
 --algo NMF \
 --dim 100 \
---outdir /absolute path /save directory \
+--outdir /absolute path/save directory \
 --warps standard2acpc_dc.nii.gz acpc_dc2standard.nii.gz \
 --ref $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz \
 --bpx Diffusion.bedpostX 
@@ -118,130 +118,104 @@ Required before runing NFACT PP:
     - crossing-fibre diffusion modelled data (bedpostX)
     - Seeds (either surfaces or volumes)
 
-NFACT PP has three streams, surface seed mode, volume stream mode and HCP stream.
+NFACT PP has three streams, surface seed, volume, mode and filestree.
 
 Required input:
-    - Study folder
-    - Standard space image
+    - List of subjects
+    - Output directory
 
-Input needed for HCP mode:
-    - HCP folder structure
+Input needed for filestree mode:
+    - .tree file (NFACT_PP comes with some defaults such as hcp)
 
 Input needed for both surface and volume mode:
-    - Warps
-    - bpx folder name
+    - Seeds path inside folder
+    - Warps path inside a subjects folder
+    - bedpostx folder path inside a subjects folder
    
 Input for surface seed mode:
-    - Seeds as surface
-    - ROIs as surfaces
+    - Seeds as surfaces
+    - ROIs as surfaces (medial wall)
     
 Input needed for volume mode:
-    - Seeds as volume
-
-Optional inputs:
-    - list of subjects file. If this isn't provided then NFACT PP will try from the study folder to get list of subjects
-    - Target2.nii.gz. If not given then will create a whole brain mask
-    - To run on GPU 
-    - To run in parallel or on cluster
-    - Other ptx options
-
+    - Seeds as volumes 
 
  ### NFACT PP input folder 
 
-An example set up
+NFACT pp can be used in a folder agnostic way by providing the paths to seeds/bedpostX/target inside a subject folder (i.e --seeds seeds/amygdala.nii.gz).
+
+The other way is to use the --file_tree command with the name of a file tree (see https://open.win.ox.ac.uk/pages/fsl/file-tree/index.html for further details on filetree).
+In this case seeds/rois/bedpostx do not need to be specified as nfact_pp will try and find the appriopriate files.
 
 ```
-/home/study1
-    ├── ptx_options.txt                                  - An optional txt file with additional ptx options
-    ├── list_of_subject.txt                              - An optional list of subjects file with full path to subjects
-    ├── subject-01
-    │       ├── dmri.bedpostx                            - the bedpostx directory          
-    │       ├── std2diff.nii.gz diff2std.nii.gz          - standard to diffusion warp (and visa versa)
-    │       ├── seeds.gii/.nii                           - the seed files
-    |       ├── target.nii.gz                            - the target file        
-    │       └── rois.gii                                 - the left and right medial wall files
-    ├── subject-02
-    │       ├── dmri.bedpostx                            - the bedpostx directory          
-    │       ├── std2diff.nii.gz diff2std.nii.gz          - standard to diffusion warp (and visa versa)
-    │       ├── seeds.gii/.nii                           - the seed files
-    |       ├── target.nii.gz                            - the target file        
-    │       └── rois.gii                                 - the left and right medial wall files
-    └── subject-03                 
-    │       ├── dmri.bedpostx                            - the bedpostx directory          
-    │       ├── std2diff.nii.gz diff2std.nii.gz          - standard to diffusion warp (and visa versa)
-    │       ├── seeds.gii/.nii                           - the seed files
-    |       ├── target.nii.gz                            - the target file        
-    │       └── rois.gii                                 - the left and right medial wall files
+nfact_pp --file_tree hcp --list_of_subjects /home/study/list_of_subjects
 ```
 
+Filetrees are saved in filetrees folder in nfact, so custom filetrees can be put there and called similar to the command above. NFACT_PP currently has a built in a filetree for HCP (from qunex output) to perform full brain tractography. 
 
+Use of custom filetree
+-----------------------
+seed files are aliased as (seed), medial wall as (roi), warps as (warp_1)/(warp_2) and bedpostX as (bedpostX). Two seeds are supported if the seeds are bilateral indicated
+with {hemi}.seed, with the actual seed names being L.seed.nii.gz/R.seed.nii.gz. A singe seed can be given as well.
 
 ### Usage:
 
 ```
-usage: nfact_pp [-h] -f STUDY_FOLDER -i REF [-l LIST_OF_SUBJECTS] [-b BPX_PATH] [-t TARGET2] [-s SEED [SEED ...]] [-r ROIS [ROIS ...]] [-w WARPS [WARPS ...]] [-o OUT] [-H] [-g] [-N NSAMPLES] [-R RES] [-P PTX_OPTIONS] [-n N_CORES] [-C] [-D] [-O]
+usage: nfact_pp [-h] [-l LIST_OF_SUBJECTS] [-o OUTDIR] [-s SEED [SEED ...]] [-w WARPS [WARPS ...]] [-b BPX_PATH] [-r ROIS [ROIS ...]] [-f FILE_TREE] [-i REF] [-t TARGET2] [-N NSAMPLES] [-m MM_RES] [-p PTX_OPTIONS] [-n N_CORES] [-C] [-O]
 
 options:
   -h, --help            show this help message and exit
-  -f STUDY_FOLDER, --study_folder STUDY_FOLDER
-                        REQUIRED Study folder containing sub directories of participants.
-  -i REF, --image_standard_space REF
-                        REQUIRED Standard space reference image
   -l LIST_OF_SUBJECTS, --list_of_subjects LIST_OF_SUBJECTS
-                        A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. All subjects need full file path to subjects directory
-  -b BPX_PATH, --bpx BPX_PATH
-                        Name of Diffusion.bedpostX directory
-  -t TARGET2, --target TARGET2
-                        Path to target image. If not given will create a whole mask from reference image
+                        REQUIRED FOR ALL MODES: A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. All subjects need full file path to subjects directory
+  -o OUTDIR, --outdir OUTDIR
+                        REQUIRED FOR ALL MODES: Directory to save results in
   -s SEED [SEED ...], --seed SEED [SEED ...]
-                        The suffixes of the paths leading to the left and right hemisphere cortical seeds (white-grey boundary GIFTI)
-  -r ROIS [ROIS ...], --rois ROIS [ROIS ...]
-                        The suffixes of the paths leading to the left and right hemisphere medial wall masks (GIFTI)
+                        REQUIRED FOR VOLUME/SEED MODE: A single or list of seeds
   -w WARPS [WARPS ...], --warps WARPS [WARPS ...]
-                        The suffix of the path leading to the transforms between standard space and diffusion space
-  -o OUT, --out OUT     Name of folder to save results into. Default is nfact_pp
-  -H, --hcp_stream      HCP stream option. Will search through HCP folder structure for L/R white.32k_fs_LR.surf.gii and ROIs. Then performs suface seed stream
-  -g, --gpu             Use GPU version
+                        REQUIRED FOR VOLUME/SEED MODE: Path to warps inside a subjects directory (can accept multiple arguments)
+  -b BPX_PATH, --bpx BPX_PATH
+                        REQUIRED FOR VOLUME/SEED MODE: Path to Bedpostx folder inside a subjects directory.
+  -r ROIS [ROIS ...], --rois ROIS [ROIS ...]
+                        REQUIRED FOR SEED MODE: A single or list of ROIS. Use when doing whole brain surface tractography to provide medial wall.
+  -f FILE_TREE, --file_tree FILE_TREE
+                        REQUIRED FOR FILESTREE MODE: Use this option to provide name of predefined file tree to perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.
+  -i REF, --ref REF     Standard space reference image. Default is $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz
+  -t TARGET2, --target TARGET2
+                        Name of target. If not given will create a whole mask from reference image
   -N NSAMPLES, --nsamples NSAMPLES
                         Number of samples per seed used in tractography (default = 1000)
-  -R RES, --res RES     Resolution of NMF volume components (Default = 2 mm)
-  -P PTX_OPTIONS, --ptx_options PTX_OPTIONS
+  -m MM_RES, --mm_res MM_RES
+                        Resolution of target image (Default = 2 mm)
+  -p PTX_OPTIONS, --ptx_options PTX_OPTIONS
                         Path to ptx_options file for additional options
   -n N_CORES, --n_cores N_CORES
                         If should parallel process and with how many cores
-  -C, --cluster         Run on cluster
-  -D, --dont_log        Run on cluster
+  -C, --cluster         Run on cluster. Currently not implemented
   -O, --overwrite       Overwrite previous file structure
 
 Example Usage:
     Seed surface mode:
-           nfact_pp --study_folder /home/mr_robot/subjects
-               --list /home/mr_robot/sub_list
-               --bpx_path Diffusion.bedpostX
-               --seeds L.white.32k_fs_LR.surf.gii R.white.32k_fs_LR.surf.gii
-               --rois L.atlasroi.32k_fs_LR.shape.gii  R.atlasroi.32k_fs_LR.shape.gii
-               --warps standard2acpc_dc.nii.gz acpc_dc2standard.nii.gz
-               --image_standard_space $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz
-               --gpu --n_cores 3
-
+           nfact_pp --list_of_subjects /home/study/sub_list
+               --outdir /home/study
+               --bpx_path /path_to/.bedpostX
+               --seeds /path_to/L.white.32k_fs_LR.surf.gii /path_to/R.white.32k_fs_LR.surf.gii
+               --rois /path_to/L.atlasroi.32k_fs_LR.shape.gii /path_to/R.atlasroi.32k_fs_LR.shape.gii
+               --warps /path_to/standard2acpc_dc.nii.gz /path_to/acpc_dc2standard.nii.gz
+               --n_cores 3
 
     Volume surface mode:
-            nfact_pp --study_folder /home/mr_robot/subjects
-                --list /home/mr_robot/sub_list
-                --bpx_path Diffusion.bedpostX
-                --seeds L.white.nii.gz R.white.nii.gz
-                --warps standard2acpc_dc.nii.gz acpc_dc2standard.nii.gz
-                --image_standard_space $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz
+            nfact_pp --list_of_subjects /home/study/sub_list
+                --bpx_path /path_to/.bedpostX
+                --seeds /path_to/L.white.nii.gz /path_to/R.white.nii.gz
+                --warps /path_to/standard2acpc_dc.nii.gz /path_to/acpc_dc2standard.nii.gz
+                --ref MNI152_T1_1mm_brain.nii.gz
                 --target dlpfc.nii.gz
-                --gpu --n_cores 3
 
+    Filestree mode:
+        nfact_pp --filestree hcp
+            --list_of_subjects /home/study/sub_list
+            --outdir /home/study
+            --n_cores 3
 
-    HCP mode:
-        nfact_pp --hcp_stream
-            --study_folder /home/mr_robot/subjects
-            --list /home/mr_robot/for_axon/nfact_dev/sub_list
-            --image_standard_space $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz
-            --gpu --n_cores 3
 ```
 ------------------------------------------------------------------------------------------------------------------------------------------
 ```

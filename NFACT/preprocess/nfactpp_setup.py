@@ -1,111 +1,9 @@
 from .probtrackx_functions import get_probtrack2_arguments
 from NFACT.base.utils import colours, error_and_exit
 from NFACT.base.filesystem import make_directory
-from NFACT.base.setup import check_study_folder_exists
 import os
-import glob
 import re
-
-
-def directory_contains_subjects(study_folder_path: str) -> bool:
-    """
-    Function to check that study directory contains
-    subjects
-
-    Parameters
-    ---------
-    study_folder_path: str
-        study folder path
-
-    Returns
-    -------
-    bool: boolean
-       True if it does else
-       False and error messages
-    """
-    content = [
-        direct
-        for direct in os.listdir(study_folder_path)
-        if os.path.isdir(os.path.join(study_folder_path, direct))
-    ]
-    if not content:
-        col = colours()
-        print(f"{col['red']}Study folder is empty{col['reset']}")
-        return False
-    return True
-
-
-def check_study_folder_is_dir(study_folder_path: str) -> bool:
-    """
-    Function to check that study folder is a
-    direcotry
-
-    Parameters
-    ----------
-    study_folder_path: str
-        Study folder path
-
-    Returns
-    -------
-    bool: boolean
-       True if is
-       else prints error message and
-       returns false
-    """
-    if not os.path.isdir(study_folder_path):
-        col = colours()
-        print(f"{col['red']}Study folder provided is not a directory{col['reset']}")
-        return False
-
-    return True
-
-
-def check_study_folder(study_folder_path: str) -> bool:
-    """
-    Check that the study directory exists,
-    is a directory and contains subjects
-
-    Parameters
-    ----------
-    study_folder_path: str
-        path to study directory
-
-    Returns
-    -------
-    bool: boolean
-       True if study folder passes
-       else prints error message and
-       returns false
-    """
-    if not check_study_folder_exists(
-        study_folder_path, "Study folder provided doesn't exist"
-    ):
-        return False
-    if not check_study_folder_is_dir(study_folder_path):
-        return False
-    if not directory_contains_subjects(study_folder_path):
-        return False
-    return True
-
-
-def list_of_subjects_from_directory(study_folder: str) -> list:
-    """
-    Function to get list of subjects from a directory
-    if a list of subjects is not given
-
-    Parameters
-    ---------
-    study_folder: str
-       path to study folder
-
-    Returns
-    -------
-    list: list object
-        list of subjects
-    """
-    print("Getting list of subjects from directory")
-    list_of_subject = glob.glob(os.path.join(study_folder, "*"))
-    return [direct for direct in list_of_subject if os.path.isdir(direct)]
+from file_tree import FileTree
 
 
 def check_fsl_is_installed():
@@ -148,7 +46,7 @@ def check_arguments(arg: dict) -> None:
     default_args = ["outdir", "list_of_subjects", "seed", "warps"]
 
     for key in default_args:
-        if key in default_args[1:] and arg["hcp_stream"]:
+        if key in default_args:
             continue
         else:
             error_and_exit(
@@ -156,7 +54,7 @@ def check_arguments(arg: dict) -> None:
             )
 
 
-def check_surface_arguments(seed: list, roi: list) -> bool:
+def check_seeds_surfaces(seed: list) -> bool:
     """
     Function to check that is seeds
     are surfaces then ROIS are provided.
@@ -165,8 +63,6 @@ def check_surface_arguments(seed: list, roi: list) -> bool:
     ----------
     seed: list
         list of seeds
-    roi: list
-        list of ROIS
 
     Returns
     -------
@@ -247,3 +143,15 @@ def nfact_pp_folder_setup(nfactpp_diretory: str) -> None:
     make_directory(nfactpp_diretory)
     sub_folders = ["logs", "files"]
     [make_directory(os.path.join(nfactpp_diretory, sub)) for sub in sub_folders]
+
+
+def load_file_tree(tree_name):
+    try:
+        tree = FileTree.read(
+            os.path.join(
+                os.path.dirname(os.path.dirname(__file__)), "filetrees", tree_name
+            )
+        )
+        return tree
+    except Exception as e:
+        error_and_exit(False, f"Unable to load tree file, due to {e}")
