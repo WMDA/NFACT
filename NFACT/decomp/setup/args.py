@@ -20,21 +20,31 @@ def nfact_decomp_args() -> dict:
         description=print(nfact_decomp_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-
+    col = colours()
     args.add_argument(
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
-        help="Filepath to a list of subjects. List can contain a single subject.",
+        help=f"{col['red']}REQUIRED:{col['reset']} Filepath to a list of subjects. List can contain a single subject.",
     )
-    args.add_argument("-o", "--outdir", dest="outdir", help="Path to output folder")
-    args.add_argument("-d", "--dim", dest="dim", help="Number of dimensions/components")
+    args.add_argument(
+        "-o",
+        "--outdir",
+        dest="outdir",
+        help=f"{col['red']}REQUIRED:{col['reset']} Path to output folder",
+    )
+    args.add_argument(
+        "-d",
+        "--dim",
+        dest="dim",
+        help=f"{col['red']}REQUIRED:{col['reset']} Number of dimensions/components",
+    )
 
     args.add_argument(
         "--seeds",
         "-s",
         dest="seeds",
-        help="File of seeds used in NFACT_PP/probtrackx",
+        help=f"{col['red']}REQUIRED:{col['reset']} File of seeds used in NFACT_PP/probtrackx",
     )
     args.add_argument(
         "-m",
