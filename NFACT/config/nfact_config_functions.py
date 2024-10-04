@@ -21,6 +21,7 @@ def nfact_config_args() -> dict:
     dict: dictionary
         dictionary of cmd arguments
     """
+
     args = argparse.ArgumentParser(
         prog="nfact_config",
         description=print(nfact_config_spalsh()),
@@ -47,7 +48,6 @@ def nfact_config_args() -> dict:
         default=False,
         help="Creates a subject list from a given directory",
     )
-
     args.add_argument(
         "-o",
         "--output_dir",
@@ -73,6 +73,7 @@ def nfact_config_spalsh() -> str:
     -------
     str: splash
     """
+
     col = colours()
     return f"""
 {col['pink']} 
@@ -103,6 +104,7 @@ def get_arguments(function: object) -> dict:
     dict: dictionary object
         dict of functions
     """
+
     signature = inspect.signature(function)
     return dict(
         zip(
@@ -131,6 +133,7 @@ def create_combined_algo_dict() -> dict:
         dict of ICA and NMF
         arguments
     """
+
     dictionary_to_save = {"ica": get_arguments(FastICA), "nmf": get_arguments(NMF)}
     del dictionary_to_save["nmf"]["n_components"]
     del dictionary_to_save["ica"]["n_components"]
@@ -160,7 +163,20 @@ def save_to_json(path: str, dictionary_to_save: dict, file_name: str) -> None:
         json_file.write(config_file)
 
 
-def check_arguments(args):
+def check_arguments(args: dict) -> None:
+    """
+    Function to check arguments
+
+    Parameters
+    ----------
+    args: dict
+        dictionary of command line args
+
+    Returns
+    -------
+    None
+    """
+
     arg_type = ["decomp_only", "config", "subject_list"]
     matching = [arg for arg in args.keys() if arg in arg_type and args[arg]]
     if len(matching) > 1:
@@ -185,6 +201,7 @@ def check_study_folder(study_folder_path: str) -> None:
     -------
     None
     """
+
     error_and_exit(
         os.path.exists(study_folder_path), "Study folder provided doesn't exist"
     )
@@ -216,6 +233,7 @@ def list_of_subjects_from_directory(study_folder_path: str) -> list:
     list: list object
         list of subjects
     """
+
     list_of_subject = glob.glob(os.path.join(study_folder_path, "*"))
     return [f"{direct}\n" for direct in list_of_subject if os.path.isdir(direct)]
 
@@ -238,7 +256,6 @@ def filter_sublist(sub_list: str) -> list:
     """
 
     remove_dir = ["analysis", "code", "sourcedata", "derivatives", "."]
-
     return [
         dirs
         for dirs in sub_list
@@ -262,6 +279,7 @@ def create_subject_list(study_folder_path: str, ouput_dir: str) -> None:
     -------
     None
     """
+
     check_study_folder(study_folder_path)
     sub_list = list_of_subjects_from_directory(study_folder_path)
     sub_list = filter_sublist(sub_list)
