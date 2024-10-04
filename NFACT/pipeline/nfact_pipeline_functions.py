@@ -4,7 +4,7 @@ import os
 
 
 def non_compulsory_arguments(
-    standard: bool = False, skip: bool = False, volume: bool = False
+    standard: bool = False, skip: bool = False, volume: bool = False, file_tree=False
 ) -> list:
     """
     Function to return what are non
@@ -24,6 +24,10 @@ def non_compulsory_arguments(
         returns volume non
         compulsory arguments
         Default is False.
+    file_tree: bool
+        if file_tree option
+        is used.
+        Default is False.
 
     Returns
     -------
@@ -38,6 +42,8 @@ def non_compulsory_arguments(
         return standard_args + ["ref", "bpx_path", "warps", "rois"]
     if volume:
         return standard_args + ["rois"]
+    if file_tree:
+        return standard_args + ["ref", "bpx_path", "warps", "rois", "seed"]
 
 
 def get_compulsory_arguments(args):
@@ -57,8 +63,13 @@ def get_compulsory_arguments(args):
     """
     if args["input"]["skip"]:
         return non_compulsory_arguments(skip=True)
-    if [seed for seed in args["input"]["seed"] if "nii" in seed]:
-        return non_compulsory_arguments(volume=True)
+    if args["pre_process"]["file_tree"]:
+        return non_compulsory_arguments(file_tree=True)
+    try:
+        if [seed for seed in args["input"]["seed"] if "nii" in seed]:
+            return non_compulsory_arguments(volume=True)
+    except TypeError:
+        error_and_exit(False, "Seeds not provided. Please define with --seed")
     return non_compulsory_arguments(standard=True)
 
 
