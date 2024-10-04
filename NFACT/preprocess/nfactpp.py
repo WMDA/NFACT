@@ -129,7 +129,9 @@ def pre_processing(arg: dict, handler) -> None:
         handler.set_suppress_messages = True
 
     # Running probtrackx2
-    Probtrackx(subjects_commands, arg["cluster"], arg["n_cores"])
+    probtrack = Probtrackx(subjects_commands, arg["n_cores"])
+    probtrack.run()
+
     if arg["surface"]:
         [
             update_seeds_file(os.path.join(sub, arg["outdir"], "seeds.txt"))
