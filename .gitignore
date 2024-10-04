@@ -164,5 +164,5 @@ cython_debug/
 # user
 dev
 dev/*
-nfact_config.config
+nfact_config*.config
 .ruff_cache
