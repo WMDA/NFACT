@@ -22,47 +22,41 @@ def nfactdr_args() -> dict:
     )
     col = colours()
     args.add_argument(
-        "-p",
-        "--ptxdir",
-        nargs="+",
-        dest="ptxdir",
-        help="List of file paths to probtrackx directories. If not provided will then --list_ofsubjects must be provided",
-    )
-    args.add_argument(
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
-        help="Filepath to a list of subjects. If not given then --ptxdir must be directories.",
-    )
-    args.add_argument(
-        "-n",
-        "--nfact_decomp_dir",
-        dest="nfact_decomp_dir",
-        help="Filepath to the NFACT_decomp directory. Use this if you have ran NFACT decomp",
-    )
-    args.add_argument(
-        "-d",
-        "--decomp_dir",
-        dest="decomp_dir",
-        help="Filepath to decomposition components. WARNING NFACT decomp expects components to be named in a set way. See documentation for further info.",
+        help=f"{col['red']}REQUIRED:{col['reset']} Filepath to a list of subjects",
     )
     args.add_argument(
         "-o",
         "--outdir",
         dest="outdir",
-        help=f"{col['red']}REQUIRED{col['reset']}: Path to output directory",
+        help=f"{col['red']}REQUIRED:{col['reset']}  Path to output directory",
     )
     args.add_argument(
         "-a",
         "--algo",
         dest="algo",
-        help=f"{col['red']}REQUIRED{col['reset']}: Which NFACT algorithm to perform dual regression on",
+        help=f"{col['red']}REQUIRED:{col['reset']} Which NFACT algorithm to perform dual regression on",
     )
     args.add_argument(
         "--seeds",
         "-s",
         dest="seeds",
-        help=f"{col['red']}REQUIRED{col['reset']}: File of seeds used in NFACT_PP/probtrackx",
+        help=f"{col['red']}REQUIRED:{col['reset']} File of seeds used in NFACT_PP/probtrackx",
+    )
+    args.add_argument(
+        "-n",
+        "--nfact_decomp_dir",
+        dest="nfact_decomp_dir",
+        help=f"{col['plum']}REQUIRED IF NFACT_DECOMP:{col['reset']} Filepath to the NFACT_decomp directory. Use this if you have ran NFACT decomp",
+    )
+    args.add_argument(
+        "-d",
+        "--decomp_dir",
+        dest="decomp_dir",
+        help=f"""{col['plum']}REQUIRED IF NOT NFACT_DECOMP:{col['reset']} Filepath to decomposition components. 
+        WARNING NFACT decomp expects components to be named in a set way. See documentation for further info.""",
     )
     args.add_argument(
         "-N",

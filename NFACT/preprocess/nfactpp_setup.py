@@ -28,32 +28,6 @@ def check_fsl_is_installed():
     return True
 
 
-def check_arguments(arg: dict) -> None:
-    """
-    Function to check that
-    either  hcp_stream given or
-    default arguments.
-
-    Parameters
-    ----------
-    arg: dict
-        Command line dictionary
-
-    Returns
-    -------
-    None
-    """
-    default_args = ["outdir", "list_of_subjects", "seed", "warps"]
-
-    for key in default_args:
-        if key in default_args:
-            continue
-        else:
-            error_and_exit(
-                arg[key], f"Missing {key} argument. Please specify with --{key}."
-            )
-
-
 def check_seeds_surfaces(seed: list) -> bool:
     """
     Function to check that is seeds

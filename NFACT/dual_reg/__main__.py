@@ -2,7 +2,6 @@ from .dual_regression import Dual_regression
 from .nfact_dr_args import nfactdr_args, nfact_dr_splash
 from .nfact_dr_set_up import (
     check_nfact_decomp_directory,
-    check_compulsory_arguments,
     create_nfact_dr_folder_set_up,
 )
 from .nfact_dr_functions import get_group_level_components, get_paths
@@ -13,6 +12,7 @@ from NFACT.base.setup import (
     check_subject_exist,
     process_seeds,
     seed_type,
+    check_arguments,
 )
 from NFACT.base.utils import colours, nprint
 from NFACT.base.logging import NFACT_logs
@@ -46,8 +46,8 @@ def nfact_dr_main(args: dict = None) -> None:
         to_exit = True
 
     # Do argument checking
+    check_arguments(args, ["seeds", "list_of_subjects", "algo"])
     args["algo"] = check_algo(args["algo"])
-    check_compulsory_arguments(args)
 
     # Get component paths
     paths = get_paths(args)

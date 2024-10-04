@@ -3,7 +3,6 @@ from .probtrackx_functions import to_use_gpu
 from .nfactpp_args import nfact_pp_args
 from .nfactpp_setup import (
     check_fsl_is_installed,
-    check_arguments,
     check_ptx_options_are_valid,
 )
 from NFACT.base.utils import error_and_exit, colours
@@ -13,6 +12,7 @@ from NFACT.base.setup import (
     check_subject_exist,
     return_list_of_subjects_from_file,
     does_list_of_subjects_exist,
+    check_arguments,
 )
 
 import os
@@ -45,7 +45,7 @@ def nfact_pp_main(arg: dict = None):
     # Check that complusory arguments given
 
     if not arg["file_tree"]:
-        check_arguments(arg)
+        check_arguments(arg, ["outdir", "list_of_subjects", "seed", "warps"])
 
     # Error handle if FSL not installed or loaded
     error_and_exit(

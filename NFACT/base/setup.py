@@ -1,4 +1,4 @@
-from .utils import error_and_exit, colours
+from .utils import error_and_exit
 from .filesystem import read_file_to_list, make_directory
 from .imagehandling import (
     check_files_are_imaging_files,
@@ -170,9 +170,6 @@ def check_algo(algo: str) -> str:
        returns lower case
        of str
     """
-    error_and_exit(
-        algo, "--algo not given. Please specify either ICA and NMF (case insensitive)"
-    )
     implemented_decomp_methods = ["nmf", "ica"]
     if algo.lower() not in implemented_decomp_methods:
         error_and_exit(
@@ -199,28 +196,12 @@ def get_subjects(args: dict) -> dict:
        dictionary of command line
        arguments with valid list of subjects
     """
-    if args["ptxdir"]:
-        if args["list_of_subjects"]:
-            col = colours()
-            print(
-                f'{col["red"]}ptxdir specified. Ignoring list of subjects{col["reset"]}'
-            )
-
-        [
-            error_and_exit(
-                os.path.isdir(item),
-                "ptxdir argument is not a list of subject directories.",
-            )
-            for item in args["ptxdir"]
-        ]
-        return args
-    if args["list_of_subjects"]:
-        error_and_exit(
-            does_list_of_subjects_exist(args["list_of_subjects"]),
-            "List of subjects doesn't exist",
-        )
-        args["ptxdir"] = return_list_of_subjects_from_file(args["list_of_subjects"])
-        return args
+    error_and_exit(
+        does_list_of_subjects_exist(args["list_of_subjects"]),
+        "List of subjects doesn't exist",
+    )
+    args["ptxdir"] = return_list_of_subjects_from_file(args["list_of_subjects"])
+    return args
 
 
 def which_folders_dont_exist(nfact_directory: str, sub_folders: list) -> list:
@@ -281,3 +262,26 @@ def creat_subfolder_setup(directory: str, sub_folders: list) -> None:
         make_directory(directory)
 
     [make_directory(os.path.join(directory, sub)) for sub in sub_folders]
+
+
+def check_arguments(arg: dict, comp_args: list) -> None:
+    """
+    Function to check complusory arguments
+    and exits if not given
+
+    Parameters
+    ----------
+    arg: dict
+        Command line dictionary
+    comp_args: list
+         list of complusory arguments
+
+    Returns
+    -------
+    None
+    """
+
+    for key in comp_args:
+        error_and_exit(
+            arg[key], f"Missing {key} argument. Please specify with --{key}."
+        )

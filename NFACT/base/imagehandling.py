@@ -184,10 +184,6 @@ def save_grey_matter_gifit(
     nib.GiftiImage(darrays=darrays).to_filename(file_name)
 
 
-def save_grey_matter_cifit():
-    return None
-
-
 # TODO: seprate getting seeds out from saving
 def save_grey_matter_components(
     save_type: str,
@@ -247,5 +243,3 @@ def save_grey_matter_components(
             save_grey_matter_volume(
                 grey_matter_seed, file_name, seed, coord_mat2[mask_to_get_seed, :3]
             )
-        if save_type == "cifti":
-            return None

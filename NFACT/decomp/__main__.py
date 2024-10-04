@@ -10,6 +10,7 @@ from NFACT.base.setup import (
     get_subjects,
     seed_type,
     process_seeds,
+    check_arguments,
 )
 
 from .setup.args import nfact_decomp_args, nfact_decomp_splash
@@ -30,7 +31,6 @@ from .decomposition.matrix_handling import (
 
 from .pipes.image_handling import winner_takes_all, save_images
 from .setup.arg_check import (
-    check_complusory_arguments,
     process_command_args,
 )
 
@@ -60,7 +60,7 @@ def nfact_decomp_main(args: dict = None) -> None:
     col = colours()
 
     # Do argument checking
-    check_complusory_arguments(args)
+    check_arguments(args, ["list_of_subjects", "dim", "seeds", "outdir"])
     args["algo"] = check_algo(args["algo"])
     args = process_command_args(args)
 

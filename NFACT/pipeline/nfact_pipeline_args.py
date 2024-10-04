@@ -22,13 +22,15 @@ def nfact_parser() -> dict:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     col = colours()
-    input_args = args.add_argument_group("Inputs")
+    input_args = args.add_argument_group(
+        f"{col['darker_pink']}Pipeline inputs{col['reset']}"
+    )
     input_args.add_argument(
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
         default=False,
-        help=f"{col['red']}REQUIRED{col['reset']} Filepath to a list of subjects.",
+        help=f"{col['red']}REQUIRED FOR ALL: {col['reset']}Filepath to a list of subjects.",
     )
     input_args.add_argument(
         "-s",
@@ -36,7 +38,14 @@ def nfact_parser() -> dict:
         nargs="+",
         dest="seed",
         default=False,
-        help=f"{col['red']}REQUIRED{col['reset']} A single or list of seeds",
+        help=f"""{col['pink']}REQUIRED FOR ALL IF NOT USING FILESTREE MODE: {col['reset']}
+        A single or list of seeds""",
+    )
+    input_args.add_argument(
+        "-o",
+        "--outdir",
+        dest="outdir",
+        help=f"{col['red']}REQUIRED FOR ALL: {col['reset']}Path to where to create an output folder",
     )
     input_args.add_argument(
         "-c",
@@ -52,33 +61,26 @@ def nfact_parser() -> dict:
         action="store_true",
         help="Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.",
     )
-    input_args.add_argument(
-        "-o", "--outdir", dest="outdir", help="Path to where to create an output folder"
-    )
 
-    nfact_pp_args = args.add_argument_group("PP")
-    nfact_pp_args.add_argument(
-        "-i",
-        "--image_standard_space",
-        dest="ref",
-        default=False,
-        help=f"{col['red']}REQUIRED{col['reset']} Standard space reference image",
+    nfact_pp_args = args.add_argument_group(
+        f"{col['darker_pink']}nfact_pp inputs{col['reset']}"
     )
-    nfact_pp_args.add_argument(
-        "-b",
-        "--bpx",
-        dest="bpx_path",
-        default=False,
-        help="Path to Bedpostx folder inside a subjects directory.",
-    )
-
     nfact_pp_args.add_argument(
         "-w",
         "--warps",
         dest="warps",
         nargs="+",
         default=False,
-        help="Path to warps inside a subjects directory (can accept multiple arguments)",
+        help=f"""{col['pink']}REQUIRED FOR NFACT_PP VOLUME/SEED MODE:{col['reset']} 
+        Path to warps inside a subjects directory (can accept multiple arguments)""",
+    )
+    nfact_pp_args.add_argument(
+        "-b",
+        "--bpx",
+        dest="bpx_path",
+        default=False,
+        help=f"""{col['pink']}REQUIRED FOR NFACT_PP VOLUME/SEED MODE:{col['reset']}
+        Path to Bedpostx folder inside a subjects directory.""",
     )
     nfact_pp_args.add_argument(
         "-r",
@@ -86,7 +88,23 @@ def nfact_parser() -> dict:
         dest="rois",
         nargs="+",
         default=False,
-        help="A single or list of ROIS",
+        help=f"""{col['purple']}REQUIRED FOR NFACT_PP SEED MODE: {col['reset']} 
+        A single or list of ROIS. Use when doing whole brain surface tractography to provide medial wall.""",
+    )
+    nfact_pp_args.add_argument(
+        "-f",
+        "--file_tree",
+        dest="file_tree",
+        default=False,
+        help=f"""{col['plum']}REQUIRED FOR FILESTREE MODE: {col['reset']}Use this option to provide name of predefined file tree to 
+        perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.""",
+    )
+    nfact_pp_args.add_argument(
+        "-i",
+        "--image_standard_space",
+        dest="ref",
+        default=False,
+        help="Standard space reference image",
     )
     nfact_pp_args.add_argument(
         "-t",
@@ -95,9 +113,15 @@ def nfact_parser() -> dict:
         default=False,
         help="Path to target image. If not given will create a whole mask from reference image",
     )
-    nfact_decomp_args = args.add_argument_group("decomp")
+    nfact_decomp_args = args.add_argument_group(
+        f"{col['darker_pink']}nfact_decomp/nfact_dr inputs{col['reset']}"
+    )
     nfact_decomp_args.add_argument(
-        "-d", "--dim", default=False, dest="dim", help="Number of dimensions/components"
+        "-d",
+        "--dim",
+        default=False,
+        dest="dim",
+        help=f"{col['red']}REQUIRED FOR NFACT DECOMP:{col['reset']} Number of dimensions/components",
     )
     nfact_decomp_args.add_argument(
         "-a",
