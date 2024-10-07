@@ -82,7 +82,7 @@ def nfact_pp_args() -> dict:
         "-t",
         "--target",
         dest="target2",
-        default=None,
+        default=False,
         help="Name of target. If not given will create a whole mask from reference image",
     )
 
@@ -113,14 +113,6 @@ def nfact_pp_args() -> dict:
         dest="n_cores",
         help="If should parallel process and with how many cores",
         default=False,
-    )
-    option.add_argument(
-        "-C",
-        "--cluster",
-        dest="cluster",
-        action="store_true",
-        default=False,
-        help=f"Run on cluster. {col['red']}Currently not implemented{col['reset']} ",
     )
     option.add_argument(
         "-O",

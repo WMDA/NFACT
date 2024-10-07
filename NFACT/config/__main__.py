@@ -4,8 +4,8 @@ from .nfact_config_functions import (
     save_to_json,
     create_subject_list,
     check_arguments,
+    create_config,
 )
-from NFACT.base.config import get_nfact_arguments, process_dictionary_arguments
 
 
 def nfact_config_main() -> None:
@@ -31,8 +31,7 @@ def nfact_config_main() -> None:
         arguments = create_combined_algo_dict()
         file_name = "nfact_config_decomp"
     if args["config"]:
-        arguments = get_nfact_arguments()
-        arguments = process_dictionary_arguments(arguments)
+        arguments = create_config()
         file_name = "nfact_config_pipeline"
 
     print(f'Saving {file_name}.config to {args["output_dir"]}\n')

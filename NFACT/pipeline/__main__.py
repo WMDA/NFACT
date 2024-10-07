@@ -3,6 +3,8 @@ from .nfact_pipeline_functions import (
     pipeline_args_check,
     build_module_arguments,
     write_decomp_list,
+    compulsory_args_for_config,
+    update_nfact_args_in_place,
 )
 from NFACT.base.config import get_nfact_arguments, process_dictionary_arguments
 from NFACT.base.utils import error_and_exit, colours, Timer
@@ -56,21 +58,14 @@ def nfact_pipeline_main() -> None:
 
     # Build out arguments from config file
     if args["input"]["config"]:
-        print(
-            "WARNING: No argument checking of config files occurs before modules are loaded."
-        )
+        print("Arguments taken from config file rather than command line")
         global_arguments = load_json(args["input"]["config"])
         nfact_pp_args = global_arguments["nfact_pp"]
         nfact_decomp_args = global_arguments["nfact_decomp"]
         nfact_dr_args = global_arguments["nfact_dr"]
+        compulsory_args_for_config(global_arguments)
 
-    nfact_pp_args["outdir"] = os.path.join(nfact_pp_args["outdir"], "nfact")
-    nfact_decomp_args["outdir"] = os.path.join(nfact_decomp_args["outdir"], "nfact")
-    nfact_dr_args["outdir"] = os.path.join(nfact_dr_args["outdir"], "nfact")
-    nfact_dr_args["nfact_decomp_dir"] = os.path.join(
-        nfact_dr_args["outdir"], "nfact_decomp"
-    )
-
+    update_nfact_args_in_place(global_arguments)
     print(f'NFACT directory is at {nfact_pp_args["outdir"]}')
     make_directory(nfact_pp_args["outdir"], ignore_errors=True)
 
@@ -107,7 +102,7 @@ def nfact_pipeline_main() -> None:
     )
 
     # Run NFACT_PP
-    if not args["input"]["skip"]:
+    if not global_arguments["global_input"]["skip"]:
         print(f'{col["plum"]}Running NFACT PP{col["reset"]}')
         print(nfact_pp_splash())
         nfact_pp_main(nfact_pp_args)
