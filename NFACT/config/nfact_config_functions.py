@@ -1,5 +1,6 @@
 from NFACT.base.utils import colours, error_and_exit, no_args
 from NFACT.base.filesystem import write_to_file
+from NFACT.base.config import get_nfact_arguments, process_dictionary_arguments
 import inspect
 from sklearn.decomposition import FastICA, NMF
 import json
@@ -116,6 +117,66 @@ def get_arguments(function: object) -> dict:
             ],
         )
     )
+
+
+def process_config_file(args: dict) -> dict:
+    """
+    Function to process arguments
+    to remove duplicates and indicate
+    the required arguments.
+
+    Parameters
+    ----------
+    args: dict
+       dictionary of arguments
+
+    Returns
+    -------
+    args: dictionary
+        processed dict of arguments
+
+    """
+
+    args = {
+        key: {
+            top_key: value
+            for top_key, value in sub_dict.items()
+            if top_key not in ["list_of_subjects", "outdir"]
+            and not (
+                (key == "nfact_decomp" and top_key in ["algo", "seeds"])
+                or (
+                    key == "nfact_dr"
+                    and top_key in ["algo", "seeds", "nfact_decomp_dir", "decomp_dir"]
+                )
+            )
+        }
+        for key, sub_dict in args.items()
+    }
+
+    args["global_input"] = {}
+    args["global_input"]["list_of_subjects"] = "Required"
+    args["global_input"]["outputdir"] = "Required"
+    return {"global_input": args.pop("global_input"), **args}
+
+
+def create_config() -> dict:
+    """
+    Function to create a config file.
+
+    Parameteres
+    -----------
+    None
+
+    Returns
+    -------
+    dict: dictionary
+        dict of all arguments
+        needed for a config file
+
+    """
+    arguments = get_nfact_arguments()
+    arguments = process_dictionary_arguments(arguments)
+    return process_config_file(arguments)
 
 
 def create_combined_algo_dict() -> dict:
