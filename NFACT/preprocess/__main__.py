@@ -70,8 +70,7 @@ def nfact_pp_main(arg: dict = None):
         arg["ref"] = os.path.join(
             os.getenv("FSLDIR"), "data", "standard", "MNI152_T1_2mm_brain.nii.gz"
         )
-    print(arg)
-    exit(0)
+
     if arg["ptx_options"]:
         try:
             arg["ptx_options"] = read_file_to_list(arg["ptx_options"])

@@ -102,7 +102,7 @@ def nfact_pipeline_main() -> None:
     )
 
     # Run NFACT_PP
-    if not args["input"]["skip"]:
+    if not global_arguments["global_input"]["skip"]:
         print(f'{col["plum"]}Running NFACT PP{col["reset"]}')
         print(nfact_pp_splash())
         nfact_pp_main(nfact_pp_args)

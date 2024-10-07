@@ -141,7 +141,7 @@ def process_config_file(args: dict) -> dict:
         key: {
             top_key: value
             for top_key, value in sub_dict.items()
-            if top_key not in ["list_of_subjects", "outdir", "seed"]
+            if top_key not in ["list_of_subjects", "outdir", "seed", "overwrite"]
             and not (
                 (key == "nfact_decomp" and top_key in ["seeds"])
                 or (
@@ -156,7 +156,11 @@ def process_config_file(args: dict) -> dict:
     args["global_input"] = {}
     args["global_input"]["list_of_subjects"] = "Required"
     args["global_input"]["outdir"] = "Required"
-    args["global_input"]["seed"] = ["Required as list unless file_tree specified"]
+    args["global_input"]["seed"] = ["Required unless file_tree specified"]
+    args["global_input"]["overwrite"] = False
+    args["global_input"]["skip"] = False
+    args["nfact_pp"]["rois"] = []
+    args["nfact_pp"]["warps"] = []
     return {"global_input": args.pop("global_input"), **args}
 
 

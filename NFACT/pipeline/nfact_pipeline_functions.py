@@ -231,6 +231,7 @@ def assign_nfactpp_in_place(args: dict) -> None:
     """
     args["nfact_pp"]["seed"] = args["global_input"]["seed"]
     args["nfact_pp"]["list_of_subjects"] = args["global_input"]["list_of_subjects"]
+    args["nfact_pp"]["overwrite"] = args["global_input"]["overwrite"]
 
 
 def assign_outdir_in_place(args: dict) -> None:
@@ -249,6 +250,24 @@ def assign_outdir_in_place(args: dict) -> None:
     """
     for module in ["nfact_pp", "nfact_decomp", "nfact_dr"]:
         args[module]["outdir"] = os.path.join(args["global_input"]["outdir"], "nfact")
+
+
+def assign_nfact_decomp_in_place(args: dict) -> None:
+    """
+    Function to assign outputdir in
+    place for nfact_dr
+
+    Parameters
+    ----------
+    args: dict
+        dict of command line arguments
+
+    Returns
+    -------
+    None
+    """
+
+    args["nfact_decomp"]["overwrite"] = args["global_input"]["overwrite"]
 
 
 def assign_nfact_dr_in_place(args: dict) -> None:

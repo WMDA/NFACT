@@ -344,6 +344,49 @@ options:
   -o OUTPUT_DIR, --output_dir OUTPUT_DIR
                         Where to save config file
 ```
+
+### nfact_config_pipeline.config overview
+
+This is the config file for the main
+```
+{
+    "global_input": {
+        "list_of_subjects": "Required",
+        "outdir": "Required",
+        "seed": [
+            "Required unless file_tree specified"
+        ],
+        "overwrite": false,
+        "skip": false
+    },
+    "nfact_pp": {
+        "warps": [],
+        "bpx_path": false,
+        "rois": [],
+        "file_tree": false,
+        "ref": false,
+        "target2": false,
+        "nsamples": "1000",
+        "mm_res": "2",
+        "ptx_options": false,
+        "n_cores": false,
+        "cluster": false
+    },
+    "nfact_decomp": {
+        "dim": "Required",
+        "migp": "1000",
+        "algo": "ICA",
+        "wta": false,
+        "wta_zthr": "0.0",
+        "normalise": false,
+        "sign_flip": false,
+        "config": false
+    },
+    "nfact_dr": {
+        "normalise": false
+    }
+
+```
 ------------------------------------------------------------------------------------------------------------------------------------------
 ```
  _   _ ______   ___   _____  _____   _____  _     ___  ___
