@@ -310,7 +310,8 @@ options:
 
 ```
 
-nfact_dr is independent from nfact_decomp however, nfact_decomp expects a strict naming convention of files. If nfact_decomp has not been ran then group average files and components must all be in the same file. Components must named W_dim* and G_dim.
+nfact_dr is independent from nfact_decomp however, nfact_decomp expects a strict naming convention of files. If nfact_decomp has not been ran then group average files and components must all be in the same folder. Components must be named W_dim* and G_dim* with group average files named coords_for_fdt_matrix2, lookup_tractspace_fdt_matrix2.nii.gz. 
+
 ------------------------------------------------------------------------------------------------------------------------------------------
 ```
  _   _______ ___  _____ _____                    __ _
