@@ -82,7 +82,7 @@ def nfact_pp_args() -> dict:
         "-t",
         "--target",
         dest="target2",
-        default=None,
+        default=False,
         help="Name of target. If not given will create a whole mask from reference image",
     )
 

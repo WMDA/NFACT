@@ -83,7 +83,7 @@ def nfact_decomp_main(args: dict = None) -> None:
     if args["overwrite"]:
         if os.path.exists(os.path.join(args["outdir"], "nfact_decomp")):
             print(
-                f'{col["red"]}Overwrite flag given. {args["outdir"]} directory being overwritten{col["reset"]}\n'
+                f'{col["red"]}Overwrite flag given. {args["outdir"]}/nfact_decomp directory being overwritten{col["reset"]}\n'
             )
             shutil.rmtree(
                 os.path.join(args["outdir"], "nfact_decomp"), ignore_errors=True

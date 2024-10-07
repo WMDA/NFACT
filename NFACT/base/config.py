@@ -22,18 +22,23 @@ def get_function_output(function: object) -> dict:
     dict: dictionary object
         dict of arg and default.
     """
-
     source_code = inspect.getsource(function)
     pattern = re.compile(
         r'\.add_argument\([^)]*?dest=["\']([a-zA-Z0-9_]+)["\']'
-        r"(?:[^)]*?default\s*=\s*([^\s,\)]+))?",
+        r"(?:[^)]*?default\s*=\s*([^\s,\)]+))?"
+        r"(?:[^)]*?help\s*=\s*([^\)]+))?",
         re.DOTALL,
     )
 
     matches = pattern.findall(source_code)
 
     return {
-        dest: (default.strip('"') if default else False) for dest, default in matches
+        dest: (
+            "Required"
+            if "REQUIRED FOR ALL" in help_text or "REQUIRED:" in help_text
+            else (default.strip('"') if default else False)
+        )
+        for dest, default, help_text in matches
     }
 
 
