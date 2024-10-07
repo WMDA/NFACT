@@ -285,7 +285,7 @@ def assign_nfact_dr_in_place(args: dict) -> None:
     None
     """
     args["nfact_dr"]["nfact_decomp_dir"] = os.path.join(
-        args["global_input"]["outdir"], "nfact_decomp"
+        args["global_input"]["outdir"], "nfact", "nfact_decomp"
     )
     args["nfact_dr"]["algo"] = args["nfact_decomp"]["algo"]
 
@@ -307,3 +307,4 @@ def update_nfact_args_in_place(args: dict) -> None:
     assign_outdir_in_place(args)
     assign_nfactpp_in_place(args)
     assign_nfact_dr_in_place(args)
+    assign_nfact_decomp_in_place(args)
