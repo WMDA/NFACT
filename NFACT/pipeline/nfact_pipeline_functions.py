@@ -184,3 +184,107 @@ def write_decomp_list(
         omatrix_2_paths,
         text_is_list=True,
     )
+
+
+def compulsory_args_for_config(args: dict):
+    """
+    Function to check for required
+    arguments in nfact config file
+
+    Parameters
+    ----------
+    args: dict
+       arguments for NFACT
+
+    Returns
+    ------
+    None
+    """
+
+    if ("Required" in args["global_input"]["seed"][0]) and (
+        not args["nfact_pp"]["file_tree"]
+    ):
+        error_and_exit(False, "config file either needs seeds or file_tree argument")
+    if args["nfact_pp"]["file_tree"]:
+        args["global_input"]["seed"] = []
+    [
+        error_and_exit(False, f"{key} not given in config file. Please provide")
+        for _, sub_dict in args.items()
+        for key, value in sub_dict.items()
+        if value == "Required"
+    ]
+
+
+def assign_nfactpp_in_place(args: dict) -> None:
+    """
+    Function to assign arguments in
+    place for nfact_pp
+
+    Parameters
+    ----------
+    args: dict
+        dict of command line arguments
+
+    Returns
+    -------
+    None
+    """
+    args["nfact_pp"]["seed"] = args["global_input"]["seed"]
+    args["nfact_pp"]["list_of_subjects"] = args["global_input"]["list_of_subjects"]
+
+
+def assign_outdir_in_place(args: dict) -> None:
+    """
+    Function to assign outputdir in
+    place for nfact modules
+
+    Parameters
+    ----------
+    args: dict
+        dict of command line arguments
+
+    Returns
+    -------
+    None
+    """
+    for module in ["nfact_pp", "nfact_decomp", "nfact_dr"]:
+        args[module]["outdir"] = os.path.join(args["global_input"]["outdir"], "nfact")
+
+
+def assign_nfact_dr_in_place(args: dict) -> None:
+    """
+    Function to assign outputdir in
+    place for nfact_dr
+
+    Parameters
+    ----------
+    args: dict
+        dict of command line arguments
+
+    Returns
+    -------
+    None
+    """
+    args["nfact_dr"]["nfact_decomp_dir"] = os.path.join(
+        args["global_input"]["outdir"], "nfact_decomp"
+    )
+    args["nfact_dr"]["algo"] = args["nfact_decomp"]["algo"]
+
+
+def update_nfact_args_in_place(args: dict) -> None:
+    """
+    Function to update arguments
+    in place for nfact modules.
+
+    Parameters
+    ----------
+    args: dict
+        dict of command line arguments
+
+    Returns
+    -------
+    None
+    """
+    assign_outdir_in_place(args)
+    assign_nfactpp_in_place(args)
+    assign_nfact_dr_in_place(args)
