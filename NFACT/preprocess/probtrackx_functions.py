@@ -284,6 +284,7 @@ class Probtrackx:
         self.parallel = parallel
         self.col = colours()
         self.cluster = config.has_queues()
+        self.gpu = True if "gpu" in command[0] else False
 
     def run(self):
         if self.parallel:
@@ -291,18 +292,19 @@ class Probtrackx:
         if not self.parallel:
             self.__single_subject_run()
 
+    def __single_subject_command(self):
+        return {
+            "command": (self.__cluster if self.cluster else self.__run_probtrackx),
+            "print_str": "on cluster" if self.cluster else "locally",
+        }
+
     def __single_subject_run(self) -> None:
         """
         Method to do single subject mode
         Loops over all the subject and
         decides if to
         """
-
-        run_probtractkx = {
-            "command": (self.__cluster if self.cluster else self.__run_probtrackx),
-            "print_str": "on cluster" if self.cluster else "locally",
-        }
-
+        run_probtractkx = self.__single_subject_command()
         print(
             f"{self.col['pink']}\nRunning subjects {run_probtractkx['print_str']}{self.col['reset']}"
         )
@@ -317,8 +319,9 @@ class Probtrackx:
             command,
             name=f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
             logdir=os.path.join(os.path.dirname(command[2]), "logs"),
-            jobtime=300 if "gpu" in command[0] else 1440,
-            jobram=100000,
+            jobtime=60 if self.gpu else 300,
+            jobram=30,
+            coprocessor="cuda" if self.gpu else False,
         )
 
     def __parallel_mode(self) -> None:
@@ -349,6 +352,15 @@ class Probtrackx:
         signal.signal(signal.SIGINT, kill_pool)
         pool.map(self.__run_probtrackx, self.command)
 
+    def __log_name(self):
+        return "PP_log_" + get_current_date()
+
+    def __log_path(self, nfactpp_diretory):
+        return os.path.join(nfactpp_diretory, "logs", self.__log_name())
+
+    def __nfact_dir(self, command):
+        return os.path.dirname(command[2])
+
     def __run_probtrackx(self, command: list) -> None:
         """
         Method to run probtrackx
@@ -362,18 +374,15 @@ class Probtrackx:
         -------
         None
         """
-        nfactpp_diretory = os.path.dirname(command[2])
+        nfactpp_diretory = self.__nfact_dir(command[2])
 
         print(
             "Running",
             command[0],
-            f"on subject {os.path.basename(os.path.dirname(command[2]))}",
+            f"on subject {os.path.basename(nfactpp_diretory)}",
         )
         try:
-            log_name = "PP_log_" + get_current_date()
-            with open(
-                os.path.join(nfactpp_diretory, "logs", log_name), "w"
-            ) as log_file:
+            with open(self.__log_path(nfactpp_diretory), "w") as log_file:
                 run = subprocess.run(
                     command,
                     stdout=log_file,

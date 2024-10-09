@@ -375,8 +375,7 @@ This is the config file for the nfact pipeline. Please check the individual modu
         "nsamples": "1000",
         "mm_res": "2",
         "ptx_options": false,
-        "n_cores": false,
-        "cluster": false
+        "n_cores": false
     },
     "nfact_decomp": {
         "dim": "Required",

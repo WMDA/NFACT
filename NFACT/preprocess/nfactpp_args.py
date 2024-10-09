@@ -1,5 +1,7 @@
 import argparse
 from NFACT.base.utils import colours, no_args
+from NFACT.version import __version__
+import sys
 
 
 def nfact_pp_args() -> dict:
@@ -20,7 +22,6 @@ def nfact_pp_args() -> dict:
         prog="nfact_pp",
         description=print(nfact_pp_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=nfact_pp_example_usage(),
     )
     col = colours()
     option.add_argument(
@@ -122,9 +123,59 @@ def nfact_pp_args() -> dict:
         default=False,
         help="Overwrite previous file structure",
     )
-    no_args(option)
+    option.add_argument(
+        "-V",
+        "--verbose",
+        dest="verbose",
+        action="store_true",
+        default=False,
+        help="Returns help message with all arguments",
+    )
 
-    return vars(option.parse_args())
+    no_args(option)
+    help_messages = cluster_help_messages()
+    option.add_argument(
+        "--cluster_time",
+        dest="cluster_time",
+        default=False,
+        help=help_messages["cluster_time"],
+    )
+    option.add_argument(
+        "--cluster_queue",
+        dest="cluster_queue",
+        default=False,
+        help=help_messages["cluster_queue"],
+    )
+    option.add_argument(
+        "--cluster_ram",
+        dest="cluster_ram",
+        default=False,
+        help=help_messages["cluster_ram"],
+    )
+    if check_if_verbose_has_been_given():
+        print("NFACT Version", __version__)
+        option.print_help()
+        print(nfact_pp_example_usage())
+        exit(0)
+
+    exit(0)
+
+    return vars(args)
+
+
+def check_if_verbose_has_been_given():
+    return any(flag in sys.argv for flag in ["-V", "--verbose"])
+
+
+def cluster_help_messages():
+    help_dict = {
+        "cluster_time": "Time to take for a job to run",
+        "cluster_queue": "Queue to submit jobs to",
+        "cluster_ram": "Amount of RAM needed for job",
+    }
+    if check_if_verbose_has_been_given():
+        return help_dict
+    return {key: argparse.SUPPRESS for key in help_dict}
 
 
 def nfact_pp_splash() -> str:
@@ -165,6 +216,7 @@ def nfact_pp_example_usage() -> str:
     str: str object
     """
     col = colours()
+
     return f"""
 Example Usage:
     {col['purple']}Seed surface mode:{col['reset']}
@@ -189,5 +241,4 @@ Example Usage:
             --list_of_subjects /home/study/sub_list  
             --outdir /home/study 
             --n_cores 3 
-            \n
 """
