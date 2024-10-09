@@ -38,9 +38,8 @@ def nfact_pp_main(arg: dict = None):
     to_exit = False
     if not arg:
         arg = nfact_pp_args()
-        print(arg)
         to_exit = True
-    exit()
+
     handler = Signit_handler()
     col = colours()
     # Check that complusory arguments given

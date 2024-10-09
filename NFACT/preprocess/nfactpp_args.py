@@ -158,9 +158,7 @@ def nfact_pp_args() -> dict:
         print(nfact_pp_example_usage())
         exit(0)
 
-    exit(0)
-
-    return vars(args)
+    return vars(option.parse_args())
 
 
 def check_if_verbose_has_been_given():
