@@ -266,33 +266,78 @@ def get_probtrack2_arguments(bin: bool = False) -> None:
     return help_arguments.stderr.decode("utf-8")
 
 
+def cluster_parameters(args: dict) -> dict:
+    """
+    Function to return cluster
+    parameters
+
+    Parameters
+    ----------
+    args: dict
+        dictionary of command
+        line arguments
+
+    Returns
+    ------
+    args: dict
+        dictionary of processed
+        command line arguments
+    """
+    args["cluster_ram"] = args["cluster_ram"] if args["cluster_ram"] else 30
+    args["cluster_time"] = (
+        args["cluster_time"] if args["cluster_time"] else 60 if args["gpu"] else 300
+    )
+    args["cluster_queue"] = args["cluster_queue"] if args["cluster_queue"] else None
+    return args
+
+
 class Probtrackx:
     """
     Class to run probtrackx
 
     Usage
     -----
-    Probtrackx(command, cluster, parallel)
+    probtrackx = Probtrackx(command: list,
+        cluster_time: int,
+        cluster_queue: str,
+        cluster_ram: int,
+        parallel: bool = False,
+        dont_cluster: bool = False)
+    probtrackx.run()
     """
 
     def __init__(
         self,
         command: list,
+        cluster_time: int,
+        cluster_queue: str,
+        cluster_ram: int,
         parallel: bool = False,
+        dont_cluster: bool = False,
     ) -> None:
         self.command = command
         self.parallel = parallel
         self.col = colours()
-        self.cluster = config.has_queues()
+        self.cluster = config.has_queues() if not dont_cluster else False
         self.gpu = True if "gpu" in command[0] else False
+        self.cluster_time = cluster_time
+        self.cluster_queue = cluster_queue
+        self.cluster_ram = cluster_ram
 
     def run(self):
+        """
+        Method to run probtrackx
+        """
         if self.parallel:
             self.__parallel_mode()
         if not self.parallel:
             self.__single_subject_run()
 
     def __single_subject_command(self):
+        """
+        Method to get single subjects
+
+        """
         return {
             "command": (self.__cluster if self.cluster else self.__run_probtrackx),
             "print_str": "on cluster" if self.cluster else "locally",
@@ -319,8 +364,9 @@ class Probtrackx:
             command,
             name=f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
             logdir=os.path.join(os.path.dirname(command[2]), "logs"),
-            jobtime=60 if self.gpu else 300,
-            jobram=30,
+            jobtime=self.cluster_time,
+            jobram=self.cluster_ram,
+            queue=self.cluster_queue,
             coprocessor="cuda" if self.gpu else False,
         )
 
@@ -374,8 +420,7 @@ class Probtrackx:
         -------
         None
         """
-        nfactpp_diretory = self.__nfact_dir(command[2])
-
+        nfactpp_diretory = self.__nfact_dir(command)
         print(
             "Running",
             command[0],

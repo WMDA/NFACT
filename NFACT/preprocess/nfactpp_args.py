@@ -28,7 +28,8 @@ def nfact_pp_args() -> dict:
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
-        help=f"""{col['red']}REQUIRED FOR ALL MODES:{col['reset']} A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. 
+        help=f"""{col['red']}REQUIRED FOR ALL MODES:{col['reset']} 
+        A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. 
         All subjects need full file path to subjects directory""",
     )
     option.add_argument(
@@ -49,7 +50,8 @@ def nfact_pp_args() -> dict:
         "--warps",
         dest="warps",
         nargs="+",
-        help=f"{col['pink']}REQUIRED FOR VOLUME/SEED MODE:{col['reset']} Path to warps inside a subjects directory (can accept multiple arguments)",
+        help=f"""{col['pink']}REQUIRED FOR VOLUME/SEED MODE:{col['reset']} 
+        Path to warps inside a subjects directory (can accept multiple arguments)""",
     )
     option.add_argument(
         "-b",
@@ -86,7 +88,6 @@ def nfact_pp_args() -> dict:
         default=False,
         help="Name of target. If not given will create a whole mask from reference image",
     )
-
     option.add_argument(
         "-N",
         "--nsamples",
@@ -152,6 +153,14 @@ def nfact_pp_args() -> dict:
         default=False,
         help=help_messages["cluster_ram"],
     )
+    option.add_argument(
+        "-D",
+        "--dont_cluster",
+        dest="dont_cluster",
+        action="store_true",
+        default=False,
+        help=help_messages["dont_cluster"],
+    )
     if check_if_verbose_has_been_given():
         print("NFACT Version", __version__)
         option.print_help()
@@ -161,15 +170,45 @@ def nfact_pp_args() -> dict:
     return vars(option.parse_args())
 
 
-def check_if_verbose_has_been_given():
+def check_if_verbose_has_been_given() -> bool:
+    """
+    Function to check if verbose
+    flag given.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    bool: boolean
+        bool if -V or --verbose
+        given
+    """
     return any(flag in sys.argv for flag in ["-V", "--verbose"])
 
 
-def cluster_help_messages():
+def cluster_help_messages() -> dict:
+    """
+    Function to return help message
+    depending on the
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    help_dict: dict
+        dictionary of help
+        messages
+
+    """
     help_dict = {
         "cluster_time": "Time to take for a job to run",
         "cluster_queue": "Queue to submit jobs to",
         "cluster_ram": "Amount of RAM needed for job",
+        "dont_cluster": "Do not use cluster even if cluster enviornment is available",
     }
     if check_if_verbose_has_been_given():
         return help_dict

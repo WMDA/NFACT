@@ -17,6 +17,7 @@ from .probtrackx_functions import (
     Probtrackx,
     get_target2,
     seeds_to_ascii,
+    cluster_parameters,
 )
 from NFACT.base.utils import colours, error_and_exit
 
@@ -120,8 +121,16 @@ def pre_processing(arg: dict, handler) -> None:
     # This supresses the signit kill message or else it prints it off multiple times for each core
     if arg["n_cores"]:
         handler.set_suppress_messages = True
+    arg = cluster_parameters(arg)
+
     # Running probtrackx2
-    probtrack = Probtrackx(subjects_commands, arg["n_cores"])
+    probtrack = Probtrackx(
+        subjects_commands,
+        arg["cluster_time"],
+        arg["cluster_queue"],
+        arg["cluster_ram"],
+        arg["n_cores"],
+    )
     probtrack.run()
 
     if arg["surface"]:
