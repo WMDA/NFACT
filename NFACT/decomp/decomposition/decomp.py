@@ -1,14 +1,13 @@
 from .matrix_handling import (
     melodic_incremental_group_pca,
 )
-from NFACT.base.utils import error_and_exit
+from NFACT.base.utils import error_and_exit, nprint, Timer
 from NFACT.base.matrix_handling import normalise_components
 from NFACT.config.nfact_config_functions import create_combined_algo_dict
 
-from sklearn.decomposition import FastICA, NMF
+from sklearn.decomposition import FastICA, NMF, PCA
 import numpy as np
 from sklearn.utils._testing import ignore_warnings
-import logging
 from sklearn.exceptions import ConvergenceWarning
 import warnings
 
@@ -77,6 +76,27 @@ def nmf_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
     return {"grey_components": grey_matter, "white_components": decomp.components_}
 
 
+def pca_reduction(n_components: int, fdt_matrix: np.array) -> np.ndarray:
+    """
+    Function to conduct PCA for ICA using
+    sckit learns implementation.
+
+    Parameters
+    ----------
+    n_components: int
+        number of components to retain
+    fdt_matrix: np.array
+        connectivity matrix
+    """
+    timer = Timer()
+    timer.tic()
+    pca_matrix = PCA(n_components).fit_transform(fdt_matrix)
+    nprint(f"Old matrix size {fdt_matrix.shape[0]}x{fdt_matrix.shape[1]}")
+    nprint(f"New matrix size now {pca_matrix.shape[0]}x{pca_matrix.shape[1]}")
+    nprint(f"PCA finished in {timer.toc()} secs.\n")
+    return pca_matrix
+
+
 def get_parameters(parameters: dict, algo: str, n_components: int) -> dict:
     """
     Function to get parameters for
@@ -120,6 +140,7 @@ def matrix_decomposition(
     signflip: bool,
     pca_dim: int,
     parameters: dict,
+    pca_type: str,
 ) -> dict:
     """
     Wrapper function to decompose a matrix2 into
@@ -141,6 +162,8 @@ def matrix_decomposition(
         to sign flip ICA components so heavy tail is > 0
     pca_dim: int
         number of pca dimensions for ICA
+    pca_type: str
+        type of PCA to do
 
     Returns
     -------
@@ -149,13 +172,15 @@ def matrix_decomposition(
     """
 
     if algo == "ica":
-        # TODO: either change function to accept single argument or offer differnt inputs
-        pca_matrix = melodic_incremental_group_pca(fdt_matrix, pca_dim, pca_dim)
+        if pca_type == "pca":
+            nprint("Doing PCA reduction")
+            pca_matrix = pca_reduction(pca_dim, fdt_matrix)
+        else:
+            pca_matrix = melodic_incremental_group_pca(fdt_matrix, pca_dim, pca_dim)
         components = ica_decomp(parameters, pca_matrix, fdt_matrix)
 
         if signflip:
-            print("Sign-flipping components")
-            logging.info("Sign-flipping components")
+            nprint("Sign-flipping components")
             components["grey_components"] = sign_flip(components["grey_components"].T).T
             components["white_components"] = sign_flip(components["white_components"])
 

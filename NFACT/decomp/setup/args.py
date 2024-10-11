@@ -39,7 +39,6 @@ def nfact_decomp_args() -> dict:
         dest="dim",
         help=f"{col['red']}REQUIRED:{col['reset']} Number of dimensions/components",
     )
-
     args.add_argument(
         "--seeds",
         "-s",
@@ -47,11 +46,19 @@ def nfact_decomp_args() -> dict:
         help=f"{col['red']}REQUIRED:{col['reset']} File of seeds used in NFACT_PP/probtrackx",
     )
     args.add_argument(
-        "-m",
-        "--migp",
-        dest="migp",
+        "-c",
+        "--components",
+        dest="components",
         default="1000",
-        help="MELODIC's Incremental Group-PCA dimensionality (default is 1000)",
+        help="Components for the PCA (default is 1000)",
+    )
+    args.add_argument(
+        "-p",
+        "--pca_type",
+        dest="pca_type",
+        default="pca",
+        help="""Type of PCA to do before ICA. Default is PCA which is sckitlearn's PCA. 
+        Other option is migp (MELODIC's Incremental Group-PCA dimensionality). This is case insensitive""",
     )
     args.add_argument(
         "-a",
@@ -81,7 +88,7 @@ def nfact_decomp_args() -> dict:
         dest="normalise",
         action="store_true",
         default=False,
-        help="normalise components by scaling",
+        help="Normalise components by scaling. Still mainatins positive values if NMF",
     )
     args.add_argument(
         "-S",
@@ -89,7 +96,7 @@ def nfact_decomp_args() -> dict:
         dest="sign_flip",
         action="store_true",
         default=False,
-        help="sign flip components",
+        help="Sign flip components of ICA so long tail is >0",
     )
     args.add_argument(
         "-O",
@@ -97,14 +104,14 @@ def nfact_decomp_args() -> dict:
         dest="overwrite",
         action="store_true",
         default=False,
-        help="Overwrite previous file structure. Useful if wanting to perform multiple GLMs or ICA and NFM",
+        help="Overwrite previous file structure",
     )
     args.add_argument(
-        "-c",
-        "--config",
+        "-n",
+        "--nfact_config",
         dest="config",
         default=False,
-        help="Provide config file to change hyperparameters for ICA and NFM. Please see sckit learn documentation for NFM and FASTICA for further details",
+        help="Provide config file to change hyperparameters for ICA and NMF. Please see sckit learn documentation for NMF and FASTICA for further details",
     )
     no_args(args)
     return vars(args.parse_args())

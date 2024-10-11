@@ -85,7 +85,6 @@ def nfact_pp_args() -> dict:
         default=False,
         help="Name of target. If not given will create a whole mask from reference image",
     )
-
     option.add_argument(
         "-N",
         "--nsamples",
