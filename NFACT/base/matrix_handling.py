@@ -5,7 +5,7 @@ import numpy as np
 
 
 def normalise_components(
-    grey_matter: np.array, white_matter: np.array, demean: bool = True
+    grey_matter: np.array, white_matter: np.array
 ) -> dict:
     """
     Normalise components.
@@ -17,8 +17,6 @@ def normalise_components(
         grey matter component
     white_matter: np.array
         white matter component
-    demean: bool
-        Demean matrix. default is True
 
     Returns
     -------
@@ -29,8 +27,8 @@ def normalise_components(
     nprint(f"{col['plum']}Normalising components{col['reset']}")
 
     return {
-        "grey_matter": StandardScaler(with_mean=demean).fit_transform(grey_matter),
-        "white_matter": StandardScaler(with_mean=demean)
+        "grey_matter": StandardScaler().fit_transform(grey_matter),
+        "white_matter": StandardScaler()
         .fit_transform(white_matter.T)
         .T,
     }

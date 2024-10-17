@@ -147,8 +147,7 @@ def matrix_decomposition(
     grey * white matter components.
 
     Performs either ICA or NFM depending on input.
-    Will normalise components however with NFM it does
-    not demean components to keep values positive.
+    Will normalise components.
 
     Parameters
     ----------
@@ -187,11 +186,9 @@ def matrix_decomposition(
     if algo == "nmf":
         components = nmf_decomp(parameters, fdt_matrix)
 
-    demean = True if algo == "ica" else False
-
     if normalise:
         normalised = normalise_components(
-            components["grey_components"], components["white_components"], demean
+            components["grey_components"], components["white_components"]
         )
         components["normalised_white"] = normalised["white_matter"]
         components["normalised_grey"] = normalised["grey_matter"]
