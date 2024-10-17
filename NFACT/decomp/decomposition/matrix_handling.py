@@ -151,6 +151,7 @@ def melodic_incremental_group_pca(
     migpa_timer.tic()
     col = colours()
     nprint(f"{col['purple']}\nPerforming PCA (MIGP){col['reset']}")
+    nprint("WARNING THIS CAN TAKE A VERY LONG TIME")
     if keep_mean:
         matrix_mean = np.mean(fdt_matrix, axis=1, keepdims=True)
 

@@ -85,7 +85,7 @@ def test_nmf_worked(test_nmf):
 
 def test_normalise_comp(test_ica):
     norm_comp = normalise_components(
-        test_ica["grey_components"], test_ica["white_components"], True
+        test_ica["grey_components"], test_ica["white_components"]
     )
     assert isinstance(norm_comp, dict)
     assert isinstance(norm_comp["white_matter"], np.ndarray)

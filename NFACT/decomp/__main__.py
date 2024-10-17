@@ -140,8 +140,9 @@ def nfact_decomp_main(args: dict = None) -> None:
         algo=args["algo"],
         normalise=args["normalise"],
         signflip=args["sign_flip"],
-        pca_dim=args["migp"],
+        pca_dim=args["components"],
         parameters=parameters,
+        pca_type=args["pca_type"],
     )
     nprint(
         f'{col["darker_pink"]}Decomposition took {decomposition_timer.toc()} secs{col["reset"]}\n'
