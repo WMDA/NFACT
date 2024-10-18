@@ -94,9 +94,9 @@ def nfact_decomp_args() -> dict:
         "-S",
         "--sign_flip",
         dest="sign_flip",
-        action="store_true",
-        default=False,
-        help="Sign flip components of ICA so long tail is >0",
+        action="store_false",
+        default=True,
+        help="Don't Sign flip components of ICA",
     )
     args.add_argument(
         "-O",

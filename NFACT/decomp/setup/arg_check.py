@@ -15,7 +15,6 @@ def process_dim(dim: dict) -> dict:
     dim: int/float
         number of dimensions as
         float or int
-
     """
     dim = str(dim)
     if ".0" in dim:
