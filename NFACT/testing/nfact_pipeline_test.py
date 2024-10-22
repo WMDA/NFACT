@@ -96,9 +96,7 @@ def test_signflip(test_ica):
 
 
 def test_wta(test_ica):
-    assert isinstance(
-        create_wta_map(test_ica["white_components"], 0, 0.0, True), np.ndarray
-    )
+    assert isinstance(create_wta_map(test_ica["white_components"], 0, 0.0), np.ndarray)
 
 
 def dual_reg_class(list_of_mat_files, components, method):
