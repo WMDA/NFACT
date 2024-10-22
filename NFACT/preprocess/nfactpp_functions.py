@@ -109,13 +109,13 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
         )
     )
     arg["warps"] = [
-        filetree_get_files(arg["file_tree"], sub, "L", f"warp_{warp}")
-        for warp in range(1, 3)
+        filetree_get_files(arg["file_tree"], sub, "L", "diff2std"),
+        filetree_get_files(arg["file_tree"], sub, "L", "std2diff"),
     ]
     arg["bpx_path"] = filetree_get_files(arg["file_tree"], sub, "L", "bedpostX")
     if arg["surface"]:
         arg["rois"] = [
-            filetree_get_files(arg["file_tree"], sub, hemi, "roi")
+            filetree_get_files(arg["file_tree"], sub, hemi, "medial_wall")
             for hemi in ["L", "R"]
         ]
     return arg

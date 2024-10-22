@@ -123,7 +123,7 @@ def load_file_tree(tree_name):
     try:
         tree = FileTree.read(
             os.path.join(
-                os.path.dirname(os.path.dirname(__file__)), "filetrees", tree_name
+                os.path.dirname(os.path.dirname(__file__)), "filetree", tree_name
             )
         )
         return tree

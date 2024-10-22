@@ -121,7 +121,7 @@ def pre_processing(arg: dict, handler) -> None:
     if arg["n_cores"]:
         handler.set_suppress_messages = True
     # Running probtrackx2
-    Probtrackx(subjects_commands, arg["cluster"], arg["n_cores"])
+    Probtrackx(subjects_commands, arg["n_cores"])
     print(arg)
     if arg["surface"]:
         [

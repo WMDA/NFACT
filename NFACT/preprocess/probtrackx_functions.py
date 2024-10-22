@@ -271,27 +271,20 @@ class Probtrackx:
 
     Usage
     -----
-    Probtrackx(command, cluster, parallel)
+    Probtrackx(command, parallel)
     """
 
     def __init__(
         self,
         command: list,
-        cluster: bool = False,
         parallel: bool = False,
     ) -> None:
         self.command = command
-        self.cluster = cluster
         self.parallel = parallel
         self.col = colours()
         if self.parallel:
             self.parallel_mode()
-        if self.cluster:
-            print(
-                f"{self.col['red']}Cluster implementation currently not available{self.col['reset']}"
-            )
-            return None
-        if not self.parallel and not self.cluster:
+        if not self.parallel:
             self.single_subject_run()
 
     def run_probtrackx(self, command: list) -> None:
