@@ -194,48 +194,6 @@ def get_target2(
         )
 
 
-def seeds_to_ascii(surfin: str, roi: str, surfout: str) -> None:
-    """
-    Function to create seeds from
-    surfaces.
-
-    Parameters
-    ----------
-    surfin: str
-        input surface
-    roi: str,
-        medial wall surface
-    surfout: str
-        name of output surface.
-        Needs to be full path
-    """
-    print(f"Converting seed surface {os.path.basename(surfin)} to ASC")
-    try:
-        run = subprocess.run(
-            [
-                "surf2surf",
-                "-i",
-                surfin,
-                "-o",
-                surfout,
-                f"--values={roi}",
-                "--outputtype=ASCII",
-            ],
-            capture_output=True,
-        )
-
-    except subprocess.CalledProcessError as error:
-        error_and_exit(False, f"Error in calling surf2surf: {error}")
-    except KeyboardInterrupt:
-        run.kill()
-
-    if run.returncode != 0:
-        error_and_exit(
-            False,
-            f"FSL surf2surf failure due to {run.stderr}. Unable to create asc surface",
-        )
-
-
 def get_probtrack2_arguments(bin: bool = False) -> None:
     """
     Function to get probtrack2

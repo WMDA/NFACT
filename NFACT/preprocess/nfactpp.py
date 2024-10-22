@@ -6,7 +6,6 @@ from .nfactpp_setup import (
     load_file_tree,
 )
 from .nfactpp_functions import (
-    update_seeds_file,
     get_file,
     filetree_get_files,
     process_filetree_args,
@@ -16,12 +15,9 @@ from .probtrackx_functions import (
     write_options_to_file,
     Probtrackx,
     get_target2,
-    seeds_to_ascii,
 )
 from NFACT.base.utils import colours, error_and_exit
-
 import os
-import re
 import shutil
 
 
@@ -81,22 +77,6 @@ def pre_processing(arg: dict, handler) -> None:
             )
             for seed_location in seed
         ]
-        if arg["surface"]:
-            roi = get_file(arg["rois"], sub)
-            seed_names = [
-                re.sub(r"..ii", "", os.path.basename(seeds)) for seeds in seed
-            ]
-            for img in range(0, len(roi)):
-                seeds_to_ascii(
-                    seed[img],
-                    roi[img],
-                    os.path.join(nfactpp_diretory, "files", f"{seed_names[img]}.asc"),
-                )
-            asc_seeds = [
-                os.path.join(nfactpp_diretory, "files", f"{seed}.asc")
-                for seed in seed_names
-            ]
-            seed_text = "\n".join(asc_seeds)
         error_and_exit(write_options_to_file(nfactpp_diretory, seed_text))
         if not arg["target2"]:
             print(
@@ -122,13 +102,3 @@ def pre_processing(arg: dict, handler) -> None:
         handler.set_suppress_messages = True
     # Running probtrackx2
     Probtrackx(subjects_commands, arg["cluster"], arg["n_cores"])
-    print(arg)
-    if arg["surface"]:
-        [
-            update_seeds_file(
-                os.path.join(
-                    arg["outdir"], "nfact_pp", os.path.basename(sub), "seeds.txt"
-                )
-            )
-            for sub in arg["list_of_subjects"]
-        ]

@@ -1,0 +1,10 @@
+{sub}
+    MNINonLinear
+        fsaverage_LR32k
+            {sub}.{hemi}.atlasroi.32k_fs_LR.shape.gii (medial_wall)
+            {sub}.{hemi}.white.32k_fs_LR.surf.gii (seed)
+        xfms
+            acpc_dc2standard.nii.gz (diff2std)
+            standard2acpc_dc.nii.gz (std2diff)
+    T1w
+        Diffusion.bedpostX (bedpostX)
