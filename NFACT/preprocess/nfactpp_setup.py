@@ -119,7 +119,20 @@ def nfact_pp_folder_setup(nfactpp_diretory: str) -> None:
     [make_directory(os.path.join(nfactpp_diretory, sub)) for sub in sub_folders]
 
 
-def load_file_tree(tree_name):
+def load_file_tree(tree_name: str) -> object:
+    """
+    Function to load tree object
+
+    Parameters
+    ----------
+    tree_name: str
+        str of tree name to load
+
+    Returns
+    -------
+    tree: FileTree object
+        filetree object
+    """
     try:
         tree = FileTree.read(
             os.path.join(
