@@ -69,7 +69,7 @@ def nfact_pp_args() -> dict:
         "--file_tree",
         dest="file_tree",
         default=False,
-        help=f"""{col['plum']}REQUIRED FOR FILESTREE MODE: {col['reset']}Use this option to provide name of predefined file tree to 
+        help=f"""{col['plum']}REQUIRED FOR FILETREE MODE: {col['reset']}Use this option to provide name of predefined file tree to 
         perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.""",
     )
     option.add_argument(
@@ -112,14 +112,6 @@ def nfact_pp_args() -> dict:
         dest="n_cores",
         help="If should parallel process and with how many cores",
         default=False,
-    )
-    option.add_argument(
-        "-C",
-        "--cluster",
-        dest="cluster",
-        action="store_true",
-        default=False,
-        help=f"Run on cluster. {col['red']}Currently not implemented{col['reset']} ",
     )
     option.add_argument(
         "-O",
@@ -180,14 +172,14 @@ Example Usage:
                --bpx_path /path_to/.bedpostX 
                --seeds /path_to/L.white.32k_fs_LR.surf.gii /path_to/R.white.32k_fs_LR.surf.gii 
                --rois /path_to/L.atlasroi.32k_fs_LR.shape.gii /path_to/R.atlasroi.32k_fs_LR.shape.gii 
-               --warps /path_to/standard2acpc_dc.nii.gz /path_to/acpc_dc2standard.nii.gz 
+               --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz 
                --n_cores 3 
 
     {col['pink']}Volume surface mode:{col['reset']}
             nfact_pp --list_of_subjects /home/study/sub_list  
                 --bpx_path /path_to/.bedpostX 
                 --seeds /path_to/L.white.nii.gz /path_to/R.white.nii.gz 
-                --warps /path_to/standard2acpc_dc.nii.gz /path_to/acpc_dc2standard.nii.gz 
+                --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz 
                 --ref MNI152_T1_1mm_brain.nii.gz 
                 --target dlpfc.nii.gz
 
