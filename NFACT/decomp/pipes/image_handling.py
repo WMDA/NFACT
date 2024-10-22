@@ -111,9 +111,9 @@ def winner_takes_all(
     dim: str
         number of dimensions (for saving files)
     """
-    demean = True if algo == "ICA" else False
-    white_wta_map = create_wta_map(components["white_components"], 0, z_thr, demean)
-    grey_wta_map = create_wta_map(components["grey_components"], 1, z_thr, demean)
+
+    white_wta_map = create_wta_map(components["white_components"], 0, z_thr)
+    grey_wta_map = create_wta_map(components["grey_components"], 1, z_thr)
     save_white_matter(
         white_wta_map,
         os.path.join(
@@ -137,7 +137,6 @@ def create_wta_map(
     component: np.array,
     axis: int,
     z_thr: float,
-    demean: bool,
 ) -> np.ndarray:
     """
     Function to create a winner takes all
@@ -152,8 +151,6 @@ def create_wta_map(
         from
     z_thr: float
         threshold the map at
-    demean: bool
-        to demean when z scoring
 
     Returns
     -------
@@ -161,7 +158,7 @@ def create_wta_map(
         array of thresholded component
     """
 
-    component_zscored = StandardScaler(with_mean=demean).fit_transform(component)
+    component_zscored = StandardScaler().fit_transform(component)
     component_max = np.max(component_zscored, axis=axis, keepdims=True)
     component_wta = np.argmax(component_zscored, axis=axis, keepdims=True) + 1
     component_wta[component_max < z_thr] = 0.0
