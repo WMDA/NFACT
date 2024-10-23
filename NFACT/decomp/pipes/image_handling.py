@@ -9,7 +9,7 @@ from NFACT.base.utils import colours, nprint, error_and_exit
 
 
 def save_images(
-    save_type: str, components: dict, nfact_path: str, seeds: list, algo: str, dim: int
+    components: dict, nfact_path: str, seeds: list, algo: str, dim: int
 ) -> None:
     """
     Function to save  grey and white
@@ -17,9 +17,6 @@ def save_images(
 
     Parameters
     ----------
-    save_type: str
-        should grey matter be saved as
-        gifti, nifit or cifti
     components: dict
         dictionary of components
     nfact_path: str
@@ -51,7 +48,6 @@ def save_images(
             if "grey" in comp:
                 nprint(f"{col['pink']}Saving {comp}{col['reset']}")
                 save_grey_matter_components(
-                    save_type,
                     components[comp],
                     nfact_path,
                     seeds,
@@ -86,7 +82,6 @@ def winner_takes_all(
     z_thr: float,
     algo: str,
     nfact_path: str,
-    save_type: str,
     seeds: list,
     dim: str,
 ) -> None:
@@ -122,7 +117,6 @@ def winner_takes_all(
         os.path.join(nfact_path, "components", algo, "WTA", f"W_WTA_dim{dim}"),
     )
     save_grey_matter_components(
-        save_type,
         grey_wta_map,
         nfact_path,
         seeds,
