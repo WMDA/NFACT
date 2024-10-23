@@ -11,7 +11,6 @@ from NFACT.base.setup import (
     get_subjects,
     check_subject_exist,
     process_seeds,
-    seed_type,
     check_arguments,
 )
 from NFACT.base.utils import colours, nprint
@@ -62,7 +61,6 @@ def nfact_dr_main(args: dict = None) -> None:
 
     # Process seeds
     seeds = process_seeds(args["seeds"])
-    img_type = seed_type(seeds)
 
     # logging
     log = NFACT_logs(args["algo"], "DR", len(args["ptxdir"]))
@@ -89,7 +87,6 @@ def nfact_dr_main(args: dict = None) -> None:
         parallel=False,
         list_of_files=args["ptxdir"],
         component=components,
-        save_type=img_type,
         seeds=seeds,
         nfact_directory=os.path.join(args["outdir"], "nfact_dr"),
     )

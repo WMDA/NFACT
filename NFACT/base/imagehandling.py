@@ -4,8 +4,29 @@ from fsl.data.image import Image
 import nibabel as nib
 import numpy as np
 import re
-
 from .utils import error_and_exit
+
+
+def imaging_type(path: str) -> str:
+    """
+    Function to return imaging
+    type based on extension.
+
+    Parameters
+    ----------
+    path: str
+        path to str
+
+    Return
+    ------
+    str: string
+        str of nifit or gifti
+    """
+    file_extensions = get_imaging_details_from_path(path)["file_extensions"]
+    if ".nii" in file_extensions:
+        return "nifti"
+    if ".gii" in file_extensions:
+        return "gifti"
 
 
 def mat2vol(matrix: np.array, lut_vol: object) -> np.ndarray:
@@ -186,7 +207,6 @@ def save_grey_matter_gifit(
 
 # TODO: seprate getting seeds out from saving
 def save_grey_matter_components(
-    save_type: str,
     grey_matter_components: np.array,
     nfact_path: str,
     seeds: list,
@@ -201,9 +221,7 @@ def save_grey_matter_components(
 
     Parameters
     ----------
-    save_type: str
-        should grey matter be saved as
-        gifti, nifit or cifti
+
     grey_matter_components: str
         grey_matter_component matrix
     nfact_path: str
@@ -224,6 +242,7 @@ def save_grey_matter_components(
     coord_mat2 = np.loadtxt(coord_path, dtype=int)
     seeds_id = coord_mat2[:, -2]
     for idx, seed in enumerate(seeds):
+        save_type = imaging_type(seed)
         mask_to_get_seed = seeds_id == idx
         grey_matter_seed = grey_matter_components[mask_to_get_seed, :]
         file_name = os.path.join(

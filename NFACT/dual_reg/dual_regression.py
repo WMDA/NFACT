@@ -29,8 +29,8 @@ class Dual_regression:
             parallell=False,
             list_of_files=list_of_subjects,
             component=components,
-            save
-        )
+            seeds=seeds,
+            nfact_directory=/path/to/nfact_dir)
     dual_reg.run()
     """
 
@@ -41,7 +41,6 @@ class Dual_regression:
         parallel: bool,
         list_of_files: list,
         component: dict,
-        save_type: str,
         seeds: list,
         nfact_directory: str,
     ) -> None:
@@ -50,7 +49,6 @@ class Dual_regression:
         self.parallel = parallel
         self.list_of_file = list_of_files
         self.component = component
-        self.save_type = save_type
         self.seeds = seeds
         self.nfact_directory = nfact_directory
 
@@ -163,7 +161,6 @@ class Dual_regression:
 
         """
         save_dual_regression_images(
-            self.save_type,
             components,
             self.nfact_directory,
             self.seeds,

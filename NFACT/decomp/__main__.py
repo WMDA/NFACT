@@ -1,6 +1,3 @@
-import os
-import shutil
-
 from NFACT.base.logging import NFACT_logs
 from NFACT.base.utils import Timer, colours, nprint
 from NFACT.base.signithandler import Signit_handler
@@ -8,7 +5,6 @@ from NFACT.base.setup import (
     check_subject_exist,
     check_algo,
     get_subjects,
-    seed_type,
     process_seeds,
     check_arguments,
 )
@@ -30,9 +26,9 @@ from .decomposition.matrix_handling import (
 )
 
 from .pipes.image_handling import winner_takes_all, save_images
-from .setup.arg_check import (
-    process_command_args,
-)
+from .setup.arg_check import process_command_args
+import os
+import shutil
 
 
 def nfact_decomp_main(args: dict = None) -> None:
@@ -73,7 +69,6 @@ def nfact_decomp_main(args: dict = None) -> None:
 
     # process seeds
     seeds = process_seeds(args["seeds"])
-    img_type = seed_type(seeds)
 
     if args["config"]:
         args["config"] = load_config_file(args["config"], args["algo"])
@@ -150,7 +145,6 @@ def nfact_decomp_main(args: dict = None) -> None:
 
     # Save the results
     save_images(
-        img_type,
         components,
         os.path.join(
             args["outdir"],
@@ -172,7 +166,6 @@ def nfact_decomp_main(args: dict = None) -> None:
                 args["outdir"],
                 "nfact_decomp",
             ),
-            img_type,
             seeds,
             args["dim"],
         )

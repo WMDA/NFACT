@@ -40,7 +40,6 @@ def vol2mat(matvol: np.ndarray, lut_vol: object) -> np.ndarray:
 
 
 def save_dual_regression_images(
-    save_type: str,
     components: dict,
     nfact_path: str,
     seeds: list,
@@ -51,13 +50,9 @@ def save_dual_regression_images(
 ) -> None:
     """
     Function to save regression images
-    TODO: paths need changing
 
     Parameters
     ----------
-    save_type: str
-        should grey matter be saved as
-        gifti, nifit or cifti
     components: dict
         dictionary of components
     nfact_path: str
@@ -91,7 +86,6 @@ def save_dual_regression_images(
 
         if "grey" in comp:
             save_grey_matter_components(
-                save_type,
                 components[comp],
                 nfact_path,
                 seeds,
