@@ -321,11 +321,20 @@ def filter_sublist(sub_list: str) -> list:
         filtered list of subjects
     """
 
-    remove_dir = ["analysis", "code", "sourcedata", "derivatives", "."]
+    remove_dir = [
+        "analysis",
+        "code",
+        "sourcedata",
+        "derivatives",
+        ".",
+        "nfact_dr",
+        "nfact_pp",
+        "nfact\n",
+    ]
     return [
         dirs
         for dirs in sub_list
-        if not any(os.path.basename(dirs).lower().startswith(rem) for rem in remove_dir)
+        if not any(rem in os.path.basename(dirs).lower() for rem in remove_dir)
     ]
 
 
@@ -345,9 +354,12 @@ def create_subject_list(study_folder_path: str, ouput_dir: str) -> None:
     -------
     None
     """
-
+    if study_folder_path == ".":
+        study_folder_path = os.getcwd()
     check_study_folder(study_folder_path)
     sub_list = list_of_subjects_from_directory(study_folder_path)
+    if "nfact_pp" in study_folder_path:
+        sub_list = [sub.rstrip("\n") + "/omatrix2\n" for sub in sub_list]
     sub_list = filter_sublist(sub_list)
     write_to_file(ouput_dir, "nfact_config_sublist", sub_list, text_is_list=True)
     return None
