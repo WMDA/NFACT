@@ -9,12 +9,14 @@ from .nfactpp_functions import (
     get_file,
     filetree_get_files,
     process_filetree_args,
+    rename_seed,
 )
 from .probtrackx_functions import (
     build_probtrackx2_arguments,
     write_options_to_file,
     Probtrackx,
     get_target2,
+    seeds_to_gifti,
 )
 from NFACT.base.utils import colours, error_and_exit
 import os
@@ -77,6 +79,20 @@ def pre_processing(arg: dict, handler) -> None:
             )
             for seed_location in seed
         ]
+        if arg["surface"]:
+            roi = get_file(arg["rois"], sub)
+            seed_names = rename_seed(seed)
+            for img in range(0, len(roi)):
+                seeds_to_gifti(
+                    seed[img],
+                    roi[img],
+                    os.path.join(nfactpp_diretory, "files", f"{seed_names[img]}"),
+                )
+            asc_seeds = [
+                os.path.join(nfactpp_diretory, "files", f"{seed}.gii")
+                for seed in seed_names
+            ]
+            seed_text = "\n".join(asc_seeds)
         error_and_exit(write_options_to_file(nfactpp_diretory, seed_text))
         if not arg["target2"]:
             print(
