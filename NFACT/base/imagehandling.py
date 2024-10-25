@@ -202,7 +202,7 @@ def save_grey_matter_gifit(
         )
         for col in grey_matter_component.T
     ]
-    nib.GiftiImage(darrays=darrays).to_filename(file_name)
+    nib.GiftiImage(darrays=darrays).to_filename(f"{file_name}.func.gii")
 
 
 # TODO: seprate getting seeds out from saving

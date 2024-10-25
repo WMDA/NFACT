@@ -86,10 +86,12 @@ def pre_processing(arg: dict, handler) -> None:
                 seeds_to_gifti(
                     seed[img],
                     roi[img],
-                    os.path.join(nfactpp_diretory, "files", f"{seed_names[img]}"),
+                    os.path.join(
+                        nfactpp_diretory, "files", f"{seed_names[img]}.surf.gii"
+                    ),
                 )
             asc_seeds = [
-                os.path.join(nfactpp_diretory, "files", f"{seed}.gii")
+                os.path.join(nfactpp_diretory, "files", f"{seed}.surf.gii")
                 for seed in seed_names
             ]
             seed_text = "\n".join(asc_seeds)
