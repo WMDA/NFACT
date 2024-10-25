@@ -1,6 +1,7 @@
 from NFACT.base.utils import error_and_exit
 from NFACT.base.imagehandling import check_files_are_imaging_files
 import os
+import re
 
 
 def get_file(img_file: list, sub: str) -> list:
@@ -94,3 +95,53 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
             for hemi in ["L", "R"]
         ]
     return arg
+
+
+def update_seeds_file(file_path: str) -> None:
+    """
+    Function to update file extension
+    in seeds.txt. Updates surface asc to
+    gii.
+
+    Parameters
+    ----------
+    file_path: str
+        string to file path
+
+    Returns
+    -------
+    None
+    """
+    try:
+        with open(file_path, "r") as file:
+            content = file.read()
+            update_extensions = content.replace(".asc", ".gii")
+        with open(file_path, "w") as file:
+            file.write(update_extensions)
+    except Exception as e:
+        error_and_exit(False, f"Unable to change seeds file due to {e}")
+
+
+def rename_seed(seed: list) -> list:
+    """
+    Function to renmae seed. Either
+    will rename it as left_seed or
+    right_seed. Or removes unecessary extensions
+
+    Parameters
+    ----------
+    seed: list
+        list of seed names
+
+    Returns
+    -------
+    seed: list
+        list of processed seed names.
+    """
+
+    if os.path.basename(seed[0]).startswith("L.") or os.path.basename(
+        seed[0]
+    ).startswith("R."):
+        return ["left_seed" if "L." in seed else "right_seed" for seed in seed]
+
+    return [re.sub(r"..ii", "", os.path.basename(seeds)) for seeds in seed]

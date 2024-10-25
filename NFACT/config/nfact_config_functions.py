@@ -119,25 +119,52 @@ def get_arguments(function: object) -> dict:
     )
 
 
-def process_config_file(args: dict) -> dict:
+def process_global_arguments(args: dict) -> dict:
     """
-    Function to process arguments
-    to remove duplicates and indicate
-    the required arguments.
+    Function to process global arguments
 
     Parameters
     ----------
     args: dict
-       dictionary of arguments
+        command line arguments
 
     Returns
     -------
-    args: dictionary
-        processed dict of arguments
+    args: dict
+        dictionary of arguments with
+        global arguments
+    """
+    args["global_input"] = {}
+    args["global_input"]["list_of_subjects"] = "Required"
+    args["global_input"]["outdir"] = "Required"
+    args["global_input"]["seed"] = ["Required unless file_tree specified"]
+    args["global_input"]["overwrite"] = False
+    args["global_input"]["pp_skip"] = False
+    args["global_input"]["dr_skip"] = False
+    return args
+
+
+def reorganise_args(args: dict) -> dict:
+    """
+    Function to reorganise
+    command line arguments
+    removing duplicates
+    such as sub list, output dir
+    seed etc
+
+    Parameters
+    ----------
+    args: dict
+        command line arguments
+
+    Returns
+    -------
+    dict: dictionary
+        dictionary of arguments with
+        reorganised
 
     """
-
-    args = {
+    return {
         key: {
             top_key: value
             for top_key, value in sub_dict.items()
@@ -153,12 +180,26 @@ def process_config_file(args: dict) -> dict:
         for key, sub_dict in args.items()
     }
 
-    args["global_input"] = {}
-    args["global_input"]["list_of_subjects"] = "Required"
-    args["global_input"]["outdir"] = "Required"
-    args["global_input"]["seed"] = ["Required unless file_tree specified"]
-    args["global_input"]["overwrite"] = False
-    args["global_input"]["skip"] = False
+
+def process_config_file(args: dict) -> dict:
+    """
+    Function to process arguments
+    to remove duplicates and indicate
+    the required arguments.
+
+    Parameters
+    ----------
+    args: dict
+       dictionary of arguments
+
+    Returns
+    -------
+    args: dictionary
+        processed dict of arguments
+    """
+
+    args = reorganise_args(args)
+    args = process_global_arguments(args)
     args["nfact_pp"]["rois"] = []
     args["nfact_pp"]["warps"] = []
     return {"global_input": args.pop("global_input"), **args}

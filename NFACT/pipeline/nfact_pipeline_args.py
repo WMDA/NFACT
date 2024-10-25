@@ -55,13 +55,19 @@ def nfact_parser() -> dict:
         help="An nfact_config file. If this is provided no other arguments are needed.",
     )
     input_args.add_argument(
-        "-S",
-        "--skip",
-        dest="skip",
+        "-P",
+        "--pp_skip",
+        dest="pp_skip",
         action="store_true",
         help="Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.",
     )
-
+    input_args.add_argument(
+        "-D",
+        "--dr_skip",
+        dest="dr_skip",
+        action="store_true",
+        help="Skips NFACT_DR",
+    )
     nfact_pp_args = args.add_argument_group(
         f"{col['darker_pink']}nfact_pp inputs{col['reset']}"
     )
