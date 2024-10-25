@@ -153,16 +153,16 @@ def nfact_pipeline_main() -> None:
         pass
 
     # Run NFACT_DR
-    if global_arguments["global_input"]["dr_skip"]:
-        print("Skipping nfact_dr")
-    if len(nfact_pp_args["list_of_subjects"]) > 1:
+    if (len(nfact_pp_args["list_of_subjects"]) > 1) and (
+        not global_arguments["global_input"]["dr_skip"]
+    ):
         print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
         print(nfact_dr_splash())
         nfact_dr_main(nfact_dr_args)
         print(f'{col["pink"]}\nFinished running NFACT_DR{col["reset"]}')
         print("-" * 70)
     else:
-        print("Only one subject given. Skipping dual regression")
+        print("Skipping dual regression")
 
     # Exit
     print(f"Decomposition pipeline took {time.toc()} seconds")
