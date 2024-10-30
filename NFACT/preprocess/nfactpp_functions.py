@@ -85,8 +85,8 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
         )
     )
     arg["warps"] = [
-        filetree_get_files(arg["file_tree"], sub, "L", "diff2std"),
         filetree_get_files(arg["file_tree"], sub, "L", "std2diff"),
+        filetree_get_files(arg["file_tree"], sub, "L", "diff2std"),
     ]
     arg["bpx_path"] = filetree_get_files(arg["file_tree"], sub, "L", "bedpostX")
     if arg["surface"]:
@@ -122,7 +122,7 @@ def update_seeds_file(file_path: str) -> None:
         error_and_exit(False, f"Unable to change seeds file due to {e}")
 
 
-def rename_seed(seed: list) -> list:
+def rename_seed(seeds: list) -> list:
     """
     Function to renmae seed. Either
     will rename it as left_seed or
@@ -139,9 +139,14 @@ def rename_seed(seed: list) -> list:
         list of processed seed names.
     """
 
-    if os.path.basename(seed[0]).startswith("L.") or os.path.basename(
-        seed[0]
-    ).startswith("R."):
-        return ["left_seed" if "L." in seed else "right_seed" for seed in seed]
-
-    return [re.sub(r"..ii", "", os.path.basename(seeds)) for seeds in seed]
+    return [
+        (
+            "left_seed"
+            if "L" in (seed_extension := seed.split("."))
+            else "right_seed"
+            if "R" in seed_extension
+            else re.sub(r".gii|.surf", "", os.path.basename(seed))
+        )
+        for seed in seeds
+        if (seed_extension := seed.split("."))
+    ]
