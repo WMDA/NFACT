@@ -59,7 +59,6 @@ def save_images(
                     grey_prefix,
                 )
         except Exception as e:
-            breakpoint()
             nprint(f"{col['red']}Unable to save grey matter due to: {e}")
             nprint("Continuing however dual regression not possbile.{col['reset']}")
         try:
