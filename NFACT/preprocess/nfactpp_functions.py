@@ -85,8 +85,8 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
         )
     )
     arg["warps"] = [
-        filetree_get_files(arg["file_tree"], sub, "L", "diff2std"),
         filetree_get_files(arg["file_tree"], sub, "L", "std2diff"),
+        filetree_get_files(arg["file_tree"], sub, "L", "diff2std"),
     ]
     arg["bpx_path"] = filetree_get_files(arg["file_tree"], sub, "L", "bedpostX")
     if arg["surface"]:

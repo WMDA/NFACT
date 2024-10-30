@@ -64,7 +64,7 @@ def nfact_pp_main(arg: dict = None):
     print("Checking GPU status")
     arg["gpu"] = to_use_gpu()
     print("GPU found, Using GPU\n") if arg["gpu"] else print(
-        "No GPU. USing CPU version\n"
+        "No GPU. Using CPU version\n"
     )
     if not arg["ref"]:
         arg["ref"] = os.path.join(

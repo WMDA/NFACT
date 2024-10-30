@@ -181,6 +181,7 @@ def get_target2(
             ],
             capture_output=True,
         )
+
     except FileNotFoundError:
         error_and_exit(False, "Unable to find reference image. Please check it exists")
     except subprocess.CalledProcessError as error:
