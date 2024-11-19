@@ -121,6 +121,28 @@ def nfact_pp_args() -> dict:
         default=False,
         help="Overwrite previous file structure",
     )
+    option.add_argument(
+        "-C",
+        "--cluster",
+        dest="cluster",
+        action="store_true",
+        default=False,
+        help="Use cluster enviornment",
+    )
+    option.add_argument(
+        "-q",
+        "--queue",
+        dest="queue",
+        default=False,
+        help="Cluster queue to submit to",
+    )
+    option.add_argument(
+        "-q",
+        "--queue",
+        dest="queue",
+        default=False,
+        help="Cluster queue to submit to",
+    )
     no_args(option)
 
     return vars(option.parse_args())

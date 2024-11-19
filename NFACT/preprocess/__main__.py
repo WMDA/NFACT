@@ -1,5 +1,5 @@
 from .nfactpp import pre_processing
-from .probtrackx_functions import to_use_gpu
+from .probtrackx_functions import to_use_gpu, cluster_parameters
 from .nfactpp_args import nfact_pp_args
 from .nfactpp_setup import (
     check_fsl_is_installed,
@@ -43,7 +43,7 @@ def nfact_pp_main(arg: dict = None):
     handler = Signit_handler()
     col = colours()
     # Check that complusory arguments given
-
+    arg = cluster_parameters(arg)
     if not arg["file_tree"]:
         check_arguments(arg, ["outdir", "list_of_subjects", "seed", "warps"])
 

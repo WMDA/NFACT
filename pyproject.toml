@@ -24,7 +24,8 @@ dependencies = [
     'scikit-learn',
     'fslpy',
     'tqdm',
-    'file-tree'
+    'file-tree',
+    'fsl_sub'
 ]
 requires-python = ">=3.9"
 [project.optional-dependencies]

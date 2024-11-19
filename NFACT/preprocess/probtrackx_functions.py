@@ -283,6 +283,7 @@ def cluster_parameters(args: dict) -> dict:
         dictionary of processed
         command line arguments
     """
+    queues = config.has_queues()
     args["cluster_ram"] = args["cluster_ram"] if args["cluster_ram"] else 30
     args["cluster_time"] = (
         args["cluster_time"] if args["cluster_time"] else 60 if args["gpu"] else 300
@@ -309,16 +310,16 @@ class Probtrackx:
     def __init__(
         self,
         command: list,
+        cluster: bool,
         cluster_time: int,
         cluster_queue: str,
         cluster_ram: int,
         parallel: bool = False,
-        dont_cluster: bool = False,
     ) -> None:
         self.command = command
         self.parallel = parallel
         self.col = colours()
-        self.cluster = config.has_queues() if not dont_cluster else False
+        self.cluster = cluster
         self.gpu = True if "gpu" in command[0] else False
         self.cluster_time = cluster_time
         self.cluster_queue = cluster_queue
