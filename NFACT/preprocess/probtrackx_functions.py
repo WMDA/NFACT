@@ -4,7 +4,7 @@ import os
 import subprocess
 import multiprocessing
 import signal
-from fsl_sub import submit, config
+from fsl_sub import submit
 
 
 def to_use_gpu():
@@ -283,7 +283,7 @@ def cluster_parameters(args: dict) -> dict:
         dictionary of processed
         command line arguments
     """
-    queues = config.has_queues()
+    # queues = config.has_queues()
     args["cluster_ram"] = args["cluster_ram"] if args["cluster_ram"] else 30
     args["cluster_time"] = (
         args["cluster_time"] if args["cluster_time"] else 60 if args["gpu"] else 300
