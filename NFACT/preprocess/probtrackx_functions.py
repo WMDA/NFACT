@@ -1,9 +1,10 @@
+from NFACT.base.filesystem import write_to_file, get_current_date
+from NFACT.base.utils import colours, error_and_exit
 import os
 import subprocess
 import multiprocessing
 import signal
-from NFACT.base.filesystem import write_to_file, get_current_date
-from NFACT.base.utils import colours, error_and_exit
+from fsl_sub import submit, config
 
 
 def to_use_gpu():
@@ -181,7 +182,6 @@ def get_target2(
             ],
             capture_output=True,
         )
-
     except FileNotFoundError:
         error_and_exit(False, "Unable to find reference image. Please check it exists")
     except subprocess.CalledProcessError as error:
@@ -266,81 +266,111 @@ def get_probtrack2_arguments(bin: bool = False) -> None:
     return help_arguments.stderr.decode("utf-8")
 
 
+def cluster_parameters(args: dict) -> dict:
+    """
+    Function to return cluster
+    parameters
+
+    Parameters
+    ----------
+    args: dict
+        dictionary of command
+        line arguments
+
+    Returns
+    ------
+    args: dict
+        dictionary of processed
+        command line arguments
+    """
+    args["cluster_ram"] = args["cluster_ram"] if args["cluster_ram"] else 30
+    args["cluster_time"] = (
+        args["cluster_time"] if args["cluster_time"] else 60 if args["gpu"] else 300
+    )
+    args["cluster_queue"] = args["cluster_queue"] if args["cluster_queue"] else None
+    return args
+
+
 class Probtrackx:
     """
     Class to run probtrackx
 
     Usage
     -----
-    Probtrackx(command, parallel)
+    probtrackx = Probtrackx(command: list,
+        cluster_time: int,
+        cluster_queue: str,
+        cluster_ram: int,
+        parallel: bool = False,
+        dont_cluster: bool = False)
+    probtrackx.run()
     """
 
     def __init__(
         self,
         command: list,
+        cluster_time: int,
+        cluster_queue: str,
+        cluster_ram: int,
         parallel: bool = False,
+        dont_cluster: bool = False,
     ) -> None:
         self.command = command
         self.parallel = parallel
         self.col = colours()
-        if self.parallel:
-            self.parallel_mode()
-        if not self.parallel:
-            self.single_subject_run()
+        self.cluster = config.has_queues() if not dont_cluster else False
+        self.gpu = True if "gpu" in command[0] else False
+        self.cluster_time = cluster_time
+        self.cluster_queue = cluster_queue
+        self.cluster_ram = cluster_ram
 
-    def run_probtrackx(self, command: list) -> None:
+    def run(self):
         """
         Method to run probtrackx
-
-        Parameters
-        ----------
-        command: list
-            command in list form to run
-
-        Returns
-        -------
-        None
         """
-        nfactpp_diretory = os.path.dirname(command[2])
+        if self.parallel:
+            self.__parallel_mode()
+        if not self.parallel:
+            self.__single_subject_run()
 
-        print(
-            "Running",
-            command[0],
-            f"on subject {os.path.basename(os.path.dirname(command[2]))}",
-        )
+    def __single_subject_command(self):
+        """
+        Method to get single subjects
 
-        try:
-            log_name = "PP_log_" + get_current_date()
-            with open(
-                os.path.join(nfactpp_diretory, "logs", log_name), "w"
-            ) as log_file:
-                run = subprocess.run(
-                    command,
-                    stdout=log_file,
-                    stderr=log_file,
-                    universal_newlines=True,
-                )
-        except subprocess.CalledProcessError as error:
-            error_and_exit(False, f"Error in calling probtrackx2: {error}")
-        except KeyboardInterrupt:
-            run.kill()
-        except Exception as e:
-            error_and_exit(False, f"The following error occured: {e}")
-            return None
-        # Error handling subprocess
-        if run.returncode != 0:
-            error_and_exit(False, f"Error in {command[0]} please check log files")
+        """
+        return {
+            "command": (self.__cluster if self.cluster else self.__run_probtrackx),
+            "print_str": "on cluster" if self.cluster else "locally",
+        }
 
-    def single_subject_run(self) -> None:
+    def __single_subject_run(self) -> None:
         """
         Method to do single subject mode
-        Loops over all the subject.
+        Loops over all the subject and
+        decides if to
         """
-        print(f"{self.col['pink']}\nRunning in single subject mode{self.col['reset']}")
+        run_probtractkx = self.__single_subject_command()
+        print(
+            f"{self.col['pink']}\nRunning subjects {run_probtractkx['print_str']}{self.col['reset']}"
+        )
         for sub_command in self.command:
-            self.run_probtrackx(sub_command)
+            run_probtractkx["command"](sub_command)
 
-    def parallel_mode(self) -> None:
+    def __cluster(self, command):
+        """
+        Method to submit jobs to cluster
+        """
+        submit(
+            command,
+            name=f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
+            logdir=os.path.join(os.path.dirname(command[2]), "logs"),
+            jobtime=self.cluster_time,
+            jobram=self.cluster_ram,
+            queue=self.cluster_queue,
+            coprocessor="cuda" if self.gpu else False,
+        )
+
+    def __parallel_mode(self) -> None:
         """
         Method to parallell process
         multiple subjects
@@ -366,4 +396,51 @@ class Probtrackx:
             exit(0)
 
         signal.signal(signal.SIGINT, kill_pool)
-        pool.map(self.run_probtrackx, self.command)
+        pool.map(self.__run_probtrackx, self.command)
+
+    def __log_name(self):
+        return "PP_log_" + get_current_date()
+
+    def __log_path(self, nfactpp_diretory):
+        return os.path.join(nfactpp_diretory, "logs", self.__log_name())
+
+    def __nfact_dir(self, command):
+        return os.path.dirname(command[2])
+
+    def __run_probtrackx(self, command: list) -> None:
+        """
+        Method to run probtrackx
+
+        Parameters
+        ----------
+        command: list
+            command in list form to run
+
+        Returns
+        -------
+        None
+        """
+        nfactpp_diretory = self.__nfact_dir(command)
+        print(
+            "Running",
+            command[0],
+            f"on subject {os.path.basename(nfactpp_diretory)}",
+        )
+        try:
+            with open(self.__log_path(nfactpp_diretory), "w") as log_file:
+                run = subprocess.run(
+                    command,
+                    stdout=log_file,
+                    stderr=log_file,
+                    universal_newlines=True,
+                )
+        except subprocess.CalledProcessError as error:
+            error_and_exit(False, f"Error in calling probtrackx2: {error}")
+        except KeyboardInterrupt:
+            run.kill()
+        except Exception as e:
+            error_and_exit(False, f"The following error occured: {e}")
+            return None
+        # Error handling subprocess
+        if run.returncode != 0:
+            error_and_exit(False, f"Error in {command[0]} please check log files")
