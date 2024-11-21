@@ -164,7 +164,7 @@ def get_target2(
     None
     """
     col = colours()
-    print(f"{col['pink']}Creating:{col['reset']} target2 image")
+    print(f"{col['pink']}Creating:{col['reset']} Target2 Image")
     try:
         run = subprocess.run(
             [
@@ -350,7 +350,7 @@ class Probtrackx:
         multiple subjects
         """
         print(
-            f"{self.col['pink']}\nRunning in:{self.col['reset']} Parrellel processing mode with {self.parallel} cores"
+            f"{self.col['pink']}\nRunning in:{self.col['reset']} Parallel Processing Mode ({self.parallel} cores)"
         )
         pool = multiprocessing.Pool(processes=int(self.parallel))
 

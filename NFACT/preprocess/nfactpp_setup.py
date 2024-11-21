@@ -63,9 +63,11 @@ def check_roi_seed_len(seed: list, roi: list):
     -------
     None
     """
-    error_and_exit(roi, "Surfaces given as seeds but no ROI. Please provide ROI")
     error_and_exit(
-        len(seed) == len(roi), "Number of seeds and number of ROIS must match"
+        roi, "Surfaces given as seeds but no medial wall. Please provide medial wall"
+    )
+    error_and_exit(
+        len(seed) == len(roi), "Number of seeds and number of medial wall must match"
     )
 
 
@@ -110,7 +112,7 @@ def nfact_pp_folder_setup(nfactpp_diretory: str) -> None:
     None
     """
     col = colours()
-    print(f"{col['pink']}nfact pre-processing folder:{col['reset']} {nfactpp_diretory}")
+    print(f"{col['pink']}nfact_PP folder:{col['reset']} {nfactpp_diretory}")
 
     make_directory(nfactpp_diretory)
     sub_folders = ["logs", "files"]
