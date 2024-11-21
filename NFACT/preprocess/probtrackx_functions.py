@@ -4,7 +4,7 @@ import os
 import subprocess
 import multiprocessing
 import signal
-from fsl_sub import submit
+import time
 
 
 def to_use_gpu():
@@ -266,7 +266,7 @@ def get_probtrack2_arguments(bin: bool = False) -> None:
     return help_arguments.stderr.decode("utf-8")
 
 
-def cluster_parameters(args: dict) -> dict:
+def cluster_parameters(arg: dict) -> dict:
     """
     Function to return cluster
     parameters
@@ -283,13 +283,53 @@ def cluster_parameters(args: dict) -> dict:
         dictionary of processed
         command line arguments
     """
-    # queues = config.has_queues()
-    args["cluster_ram"] = args["cluster_ram"] if args["cluster_ram"] else 30
-    args["cluster_time"] = (
-        args["cluster_time"] if args["cluster_time"] else 60 if args["gpu"] else 300
+
+    queues = run_fsl_sub(
+        [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"), "--has_queues"]
     )
-    args["cluster_queue"] = args["cluster_queue"] if args["cluster_queue"] else None
-    return args
+    if not queues:
+        print("No queues detected. Not running on cluster")
+        arg["cluster"] = None
+        return arg
+
+    arg["cluster_ram"] = arg["cluster_ram"] if arg["cluster_ram"] else 30
+    arg["cluster_time"] = (
+        arg["cluster_time"] if arg["cluster_time"] else 160 if arg["gpu"] else 600
+    )
+    arg["cluster_queue"] = (
+        arg["cluster_queue"] if arg["cluster_queue"] in queues.keys() else None
+    )
+    return arg
+
+
+def run_fsl_sub(command: list) -> str:
+    """
+    Function wrapper around fsl_sub calls.
+
+    Parameters
+    ----------
+    command: list
+        list of command to run
+    report: bool
+        to use fsl_sub_report
+
+    Returns
+    -------
+    run: str
+        output of fsl_sub call
+    """
+    try:
+        run = subprocess.run(
+            command,
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as error:
+        error_and_exit(False, f"Error in calling fsl_sub due to: {error}")
+    except KeyboardInterrupt:
+        run.kill()
+    if run.returncode != 0:
+        error_and_exit(False, f"fsl_sub failed due to {run.stderr}")
+    return run
 
 
 class Probtrackx:
@@ -347,29 +387,61 @@ class Probtrackx:
     def __single_subject_run(self) -> None:
         """
         Method to do single subject mode
-        Loops over all the subject and
-        decides if to
+        Loops over all the subject
         """
         run_probtractkx = self.__single_subject_command()
         print(
             f"{self.col['pink']}\nRunning subjects {run_probtractkx['print_str']}{self.col['reset']}"
         )
+
+        submitted_jobs = []
         for sub_command in self.command:
-            run_probtractkx["command"](sub_command)
+            if self.__cluster:
+                job = run_probtractkx["command"](sub_command)
+                submitted_jobs.append(job)
+            if not self.__cluster:
+                run_probtractkx["command"](sub_command)
+        self.__wait_for_complete(submitted_jobs)
 
     def __cluster(self, command):
         """
         Method to submit jobs to cluster
         """
-        submit(
+        cluster_command = [
+            os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"),
             command,
-            name=f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
-            logdir=os.path.join(os.path.dirname(command[2]), "logs"),
-            jobtime=self.cluster_time,
-            jobram=self.cluster_ram,
-            queue=self.cluster_queue,
-            coprocessor="cuda" if self.gpu else False,
+            "-T",
+            self.cluster_time,
+            "-R",
+            self.cluster_ram,
+            "-q",
+            self.cluster_queue,
+            "-c",
+            "cuda" if self.gpu else False,
+            "-N",
+            f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
+        ]
+        return run_fsl_sub(cluster_command)
+
+    def __wait_for_complete(self, job_id):
+        while True:
+            running = True
+            for job in job_id:
+                running = self.__check_job(job)
+
+            if not running:
+                print("All NFACT_PP have finihsed")
+                break
+
+            time.sleep(300)
+
+    def __check_job(self, job_id):
+        output = run_fsl_sub(
+            [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub_report"), job_id]
         )
+        if "finished" in output:
+            return False
+        return True
 
     def __parallel_mode(self) -> None:
         """

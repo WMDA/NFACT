@@ -43,7 +43,6 @@ def nfact_pp_main(arg: dict = None):
     handler = Signit_handler()
     col = colours()
     # Check that complusory arguments given
-    arg = cluster_parameters(arg)
     if not arg["file_tree"]:
         check_arguments(arg, ["outdir", "list_of_subjects", "seed", "warps"])
 
@@ -70,7 +69,7 @@ def nfact_pp_main(arg: dict = None):
         arg["ref"] = os.path.join(
             os.getenv("FSLDIR"), "data", "standard", "MNI152_T1_2mm_brain.nii.gz"
         )
-
+    arg = cluster_parameters(arg)
     if arg["ptx_options"]:
         try:
             arg["ptx_options"] = read_file_to_list(arg["ptx_options"])
