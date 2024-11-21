@@ -10,6 +10,7 @@ from .nfactpp_functions import (
     filetree_get_files,
     process_filetree_args,
     rename_seed,
+    stoppage,
 )
 from .probtrackx_functions import (
     build_probtrackx2_arguments,
@@ -107,6 +108,15 @@ def pre_processing(arg: dict, handler) -> None:
                 arg["ref"],
                 "nearestneighbour",
             )
+
+        if arg["stop"]:
+            stop_ptx = stoppage(os.path.join(nfactpp_diretory, "files"))
+
+            if arg["ptx_options"]:
+                [arg["ptx_options"].append(command) for command in stop_ptx]
+            else:
+                arg["ptx_options"] = stop_ptx
+
         subjects_commands.append(
             build_probtrackx2_arguments(
                 arg,

@@ -1,7 +1,9 @@
 from NFACT.base.utils import error_and_exit
 from NFACT.base.imagehandling import check_files_are_imaging_files
+from NFACT.base.filesystem import make_directory
 import os
 import re
+import shutil
 
 
 def get_file(img_file: list, sub: str) -> list:
@@ -149,4 +151,61 @@ def rename_seed(seeds: list) -> list:
         )
         for seed in seeds
         if (seed_extension := seed.split("."))
+    ]
+
+
+def make_stop_dirs(file_directory: str) -> None:
+    """
+    Function to create stop and wstop
+    directories.
+
+    Parameters
+    ----------
+    file_directory: str
+        path to nfact_pp/sub/files
+        directory
+
+    Returns
+    -------
+    None
+    """
+    make_directory(os.path.join(file_directory, "wtstop"))
+    make_directory(os.path.join(file_directory, "stop"))
+
+
+def stoppage(file_directory: str, paths_dict: dict) -> list:
+    """
+    function to set up stoppage masks
+
+    Parameters
+    -----------
+    file_directory:
+        path to nfact_pp/sub/files
+        directory
+
+    paths_dict: dict
+        dictionary of paths to stoppage and
+        wstop masks.
+
+    Returns
+    -------
+    list: list_oject
+        list of additional ptx options
+        with --stop and --wtstop
+    """
+    make_stop_dirs(file_directory)
+    try:
+        [
+            shutil.copy(file, os.path.join(file_directory, "stop"))
+            for file in paths_dict["stoppage_mask"]
+        ]
+        [
+            shutil.copy(file, os.path.join(file_directory, "wtstop"))
+            for file in paths_dict["wtstop_mask"]
+        ]
+    except Exception as e:
+        error_and_exit(False, f"Unable to move masks due to {e}")
+    return [
+        f'--stop={os.path.join(file_directory, 'stop')}',
+        f'--wtstop={os.path.join(file_directory, 'wtstop')}',
     ]

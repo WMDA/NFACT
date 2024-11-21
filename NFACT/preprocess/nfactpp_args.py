@@ -121,6 +121,16 @@ def nfact_pp_args() -> dict:
         default=False,
         help="Overwrite previous file structure",
     )
+    option.add_argument(
+        "-j",
+        "--json_stop",
+        dest="stop",
+        default=False,
+        help="""
+        File path to a json file containing stop and wtstop masks. 
+        Keys must be stoppage_mask and wtstop_mask.
+        If filestree is wanted put the word filestree along with a --file_tree [filetree_arg]""",
+    )
     no_args(option)
 
     return vars(option.parse_args())

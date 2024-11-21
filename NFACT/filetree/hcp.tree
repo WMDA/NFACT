@@ -6,5 +6,27 @@
         xfms
             acpc_dc2standard.nii.gz (diff2std)
             standard2acpc_dc.nii.gz (std2diff)
+        Results
+            Tractography
+                CIFTI_STRUCTURE_ACCUMBENS_LEFT.nii.gz (wstop1)
+                CIFTI_STRUCTURE_ACCUMBENS_RIGHT.nii.gz (wstop2)
+                CIFTI_STRUCTURE_AMYGDALA_LEFT.nii.gz (wstop3)
+                CIFTI_STRUCTURE_AMYGDALA_RIGHT.nii.gz (wstop4)
+                CIFTI_STRUCTURE_CAUDATE_LEFT.nii.gz (wstop5)
+                CIFTI_STRUCTURE_CAUDATE_RIGHT.nii.gz (wstop6)
+                CIFTI_STRUCTURE_CEREBELLUM_LEFT.nii.gz (wstop7)
+                CIFTI_STRUCTURE_CEREBELLUM_RIGHT.nii.gz (wstop8)
+                CIFTI_STRUCTURE_HIPPOCAMPUS_LEFT.nii.gz (wstop9)
+                CIFTI_STRUCTURE_HIPPOCAMPUS_RIGHT.nii.gz (wstop10)
+                CIFTI_STRUCTURE_PALLIDUM_LEFT.nii.gz (wstop11)
+                CIFTI_STRUCTURE_PALLIDUM_RIGHT.nii.gz (wstop12)
+                CIFTI_STRUCTURE_PUTAMEN_LEFT.nii.gz (wstop13)
+                CIFTI_STRUCTURE_PUTAMEN_RIGHT.nii.gz (wstop14)
+                CIFTI_STRUCTURE_THALAMUS_LEFT.nii.gz (wstop15)
+                CIFTI_STRUCTURE_THALAMUS_RIGHT.nii.gz (wstop16)
+                pial.L.asc (stop1)
+                pial.R.asc (stop1)
+                white.L.asc (wstop17)
+                white.R.asc (wstop18)
     T1w
         Diffusion.bedpostX (bedpostX)
