@@ -73,7 +73,7 @@ def nfact_pp_main(arg: dict = None):
 
     if arg["stop"] == []:
         arg["stop"] = True
-    if type(arg["stop"]) == list:
+    if type(arg["stop"]) is list:
         arg["stop"] = arg["stop"][0]
 
     if arg["ptx_options"]:
