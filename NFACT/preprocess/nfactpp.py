@@ -11,6 +11,7 @@ from .nfactpp_functions import (
     process_filetree_args,
     rename_seed,
     stoppage,
+    get_stop_files_filestree,
 )
 from .probtrackx_functions import (
     build_probtrackx2_arguments,
@@ -20,6 +21,7 @@ from .probtrackx_functions import (
     seeds_to_gifti,
 )
 from NFACT.base.utils import colours, error_and_exit
+from NFACT.base.filesystem import load_json
 import os
 import shutil
 
@@ -58,8 +60,11 @@ def pre_processing(arg: dict, handler) -> None:
     else:
         print(f'{col["darker_pink"]}Volume seed mode{col["reset"]}')
 
-    print("Number of subjects: ", len(arg["list_of_subjects"]))
+    print(
+        f"{col["plum"]}Number of subjects:{col["reset"]} ", len(arg["list_of_subjects"])
+    )
     subjects_commands = []
+    print("\n", "SUBJECT SETUP", "-" * 80)
     for sub in arg["list_of_subjects"]:
         sub_id = os.path.basename(sub)
         print(f"\n{col['pink']}Setting up:{col['reset']} {sub_id}")
@@ -110,8 +115,14 @@ def pre_processing(arg: dict, handler) -> None:
             )
 
         if arg["stop"]:
-            stop_ptx = stoppage(os.path.join(nfactpp_diretory, "files"))
-
+            print(f"{col['pink']}Processing:{col['reset']} stop and wtstop files")
+            if arg["file_tree"]:
+                stop_files = get_stop_files_filestree(arg["file_tree"], sub_id)
+            else:
+                stop_files = load_json(arg["stop"])
+            stop_ptx = stoppage(
+                sub, os.path.join(nfactpp_diretory, "files"), stop_files
+            )
             if arg["ptx_options"]:
                 [arg["ptx_options"].append(command) for command in stop_ptx]
             else:
@@ -128,5 +139,6 @@ def pre_processing(arg: dict, handler) -> None:
     # This supresses the signit kill message or else it prints it off multiple times for each core
     if arg["n_cores"]:
         handler.set_suppress_messages = True
+    print("\n", "TRACTOGRAPHY", "-" * 80)
     # Running probtrackx2
     Probtrackx(subjects_commands, arg["n_cores"])

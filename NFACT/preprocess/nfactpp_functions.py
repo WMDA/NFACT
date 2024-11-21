@@ -1,9 +1,8 @@
 from NFACT.base.utils import error_and_exit
 from NFACT.base.imagehandling import check_files_are_imaging_files
-from NFACT.base.filesystem import make_directory
+from NFACT.base.filesystem import write_to_file
 import os
 import re
-import shutil
 
 
 def get_file(img_file: list, sub: str) -> list:
@@ -154,35 +153,52 @@ def rename_seed(seeds: list) -> list:
     ]
 
 
-def make_stop_dirs(file_directory: str) -> None:
+def get_stop_files_filestree(files_tree: object, subject: str) -> dict:
     """
-    Function to create stop and wstop
-    directories.
+    Function to get stopping files path
+    from
 
     Parameters
     ----------
-    file_directory: str
-        path to nfact_pp/sub/files
-        directory
+    files_tree: object
+        FSL.filetree object
+    subject: str
+        str of subject
 
     Returns
     -------
-    None
+    dict: dictionary object
+        dict of list wtstop_mask
+        and stopping_mask
+
     """
-    make_directory(os.path.join(file_directory, "wtstop"))
-    make_directory(os.path.join(file_directory, "stop"))
+
+    return {
+        "wtstop_mask": [
+            filetree_get_files(files_tree, subject, "L", file)
+            for file in files_tree.template_keys()
+            if "wtstop" in file
+        ],
+        "stopping_mask": [
+            filetree_get_files(files_tree, subject, "L", file)
+            for file in files_tree.template_keys()
+            if file.startswith("stop")
+        ],
+    }
 
 
-def stoppage(file_directory: str, paths_dict: dict) -> list:
+def stoppage(img_file_path: str, file_directory: str, paths_dict: dict) -> list:
     """
-    function to set up stoppage masks
+    function to write stoppage and wtstop masks
+    to file and return the probtrackx commands
 
     Parameters
     -----------
+    img_file_path: str
+        path to subject imging file
     file_directory:
         path to nfact_pp/sub/files
         directory
-
     paths_dict: dict
         dictionary of paths to stoppage and
         wstop masks.
@@ -193,19 +209,27 @@ def stoppage(file_directory: str, paths_dict: dict) -> list:
         list of additional ptx options
         with --stop and --wtstop
     """
-    make_stop_dirs(file_directory)
-    try:
+
+    write_to_file(
+        file_directory,
+        "stop",
         [
-            shutil.copy(file, os.path.join(file_directory, "stop"))
-            for file in paths_dict["stoppage_mask"]
-        ]
+            os.path.join(img_file_path, file + "\n")
+            for file in paths_dict["stopping_mask"]
+        ],
+        text_is_list=True,
+    )
+    write_to_file(
+        file_directory,
+        "wtstop",
         [
-            shutil.copy(file, os.path.join(file_directory, "wtstop"))
+            os.path.join(img_file_path, file + "\n")
             for file in paths_dict["wtstop_mask"]
-        ]
-    except Exception as e:
-        error_and_exit(False, f"Unable to move masks due to {e}")
+        ],
+        text_is_list=True,
+    )
+
     return [
-        f'--stop={os.path.join(file_directory, 'stop')}',
-        f'--wtstop={os.path.join(file_directory, 'wtstop')}',
+        f'--stop={os.path.join(file_directory, "stop")}',
+        f'--wtstop={os.path.join(file_directory, "wtstop")}',
     ]

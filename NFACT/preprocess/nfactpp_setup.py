@@ -110,9 +110,7 @@ def nfact_pp_folder_setup(nfactpp_diretory: str) -> None:
     None
     """
     col = colours()
-    print(
-        f"{col['pink']}nfact pre-processing folder is in {nfactpp_diretory}{col['reset']}"
-    )
+    print(f"{col['pink']}nfact pre-processing folder:{col['reset']} {nfactpp_diretory}")
 
     make_directory(nfactpp_diretory)
     sub_folders = ["logs", "files"]
