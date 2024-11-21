@@ -64,7 +64,9 @@ def pre_processing(arg: dict, handler) -> None:
         f'{col["plum"]}Number of subjects:{col["reset"]} ', len(arg["list_of_subjects"])
     )
     subjects_commands = []
-    print("\n", "SUBJECT SETUP\n", "-" * 80)
+    print("\n")
+    print("SUBJECT SETUP\n")
+    print("-" * 80)
     for sub in arg["list_of_subjects"]:
         sub_id = os.path.basename(sub)
         print(f"\n{col['pink']}Setting up:{col['reset']} {sub_id}")
@@ -139,6 +141,8 @@ def pre_processing(arg: dict, handler) -> None:
     # This supresses the signit kill message or else it prints it off multiple times for each core
     if arg["n_cores"]:
         handler.set_suppress_messages = True
-    print("\n", "TRACTOGRAPHY\n", "-" * 80)
+    print("\n")
+    print("TRACTOGRAPHY\n")
+    print("-" * 80)
     # Running probtrackx2
     Probtrackx(subjects_commands, arg["n_cores"])
