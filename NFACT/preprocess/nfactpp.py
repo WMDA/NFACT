@@ -109,6 +109,24 @@ def target_generation(arg: dict, nfactpp_diretory: str, col: dict) -> None:
     )
 
 
+def print_to_screen(print_string: str) -> None:
+    """
+    Function to print to screen
+
+    Parameters
+    ----------
+    print_string: str
+        string to print
+
+    Returns
+    -------
+    None
+    """
+    print("\n")
+    print(f"{print_string}\n")
+    print("-" * 80)
+
+
 def process_subject(sub: str, arg: dict, col: dict) -> list:
     """
     Function to process subjects arguments.
@@ -143,7 +161,7 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
 
     if arg["surface"]:
         roi = get_file(arg["rois"], sub)
-        seed_text = process_surface(roi)
+        seed_text = process_surface(nfactpp_diretory, seed, roi)
 
     error_and_exit(write_options_to_file(nfactpp_diretory, seed_text))
     if not arg["target2"]:
@@ -160,7 +178,34 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
     )
 
 
-def pre_processing(arg: dict, handler) -> None:
+def set_up_filestree(arg: dict, col: dict) -> dict:
+    """
+    Function to set up filetree
+
+    Parameters
+    ----------
+    arg: dict
+        dictionary of cmd line args
+    col: dict
+        dict of colours
+
+    Returns
+    -------
+    arg: dict
+        dict of processed cmd line args
+    """
+    print(f'{col["plum"]}Filetree {arg["file_tree"].lower()} given {col["reset"]}')
+    arg["file_tree"] = load_file_tree(f"{arg['file_tree'].lower()}.tree")
+
+    # load a random subjects seed and ROI to check its type
+    arg["seed"] = [filetree_get_files(arg["file_tree"], "sub1", "L", "seed")]
+
+    # Needed for checking if seed is surface
+    arg["rois"] = ["filestree"]
+    return arg
+
+
+def pre_processing(arg: dict, handler: object) -> None:
     """
     Main function for nfact PP
 
@@ -169,6 +214,8 @@ def pre_processing(arg: dict, handler) -> None:
     arg: dict
        dictionary of command line
        arguments
+    handler: object
+        handler object for signit
 
     Returns
     -------
@@ -177,14 +224,7 @@ def pre_processing(arg: dict, handler) -> None:
     col = colours()
 
     if arg["file_tree"]:
-        print(f'{col["plum"]}Filetree {arg["file_tree"].lower()} given {col["reset"]}')
-        arg["file_tree"] = load_file_tree(f"{arg['file_tree'].lower()}.tree")
-
-        # load a random subjects seed and ROI to check its type
-        arg["seed"] = [filetree_get_files(arg["file_tree"], "sub1", "L", "seed")]
-
-        # Needed for checking if seed is surface
-        arg["rois"] = ["filestree"]
+        arg = set_up_filestree(arg, col)
 
     arg["surface"] = check_seeds_surfaces(arg["seed"])
 
@@ -197,10 +237,7 @@ def pre_processing(arg: dict, handler) -> None:
     print(
         f'{col["plum"]}Number of subjects:{col["reset"]} ', len(arg["list_of_subjects"])
     )
-
-    print("\n")
-    print("SUBJECT SETUP\n")
-    print("-" * 80)
+    print_to_screen("SUBJECT SETUP")
     subjects_commands = [
         process_subject(sub, arg, col) for sub in arg["list_of_subjects"]
     ]
@@ -208,8 +245,8 @@ def pre_processing(arg: dict, handler) -> None:
     # This supresses the signit kill message or else it prints it off multiple times for each core
     if arg["n_cores"]:
         handler.set_suppress_messages = True
-    print("\n")
-    print("TRACTOGRAPHY\n")
-    print("-" * 80)
+
+    print_to_screen("TRACTOGRAPHY")
+
     # Running probtrackx2
     Probtrackx(subjects_commands, arg["n_cores"])

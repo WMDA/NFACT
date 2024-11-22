@@ -235,9 +235,25 @@ def stoppage(img_file_path: str, file_directory: str, paths_dict: dict) -> list:
     ]
 
 
-def stop_masks(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str):
+def stop_masks(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str) -> dict:
     """
-    Function to make
+    Function to process stop masks
+
+    Parameters
+    ----------
+    arg: dict,
+       cmd processes
+    nfactpp_diretory: str
+        path to nfactpp_directory
+    sub: str
+        path to sub dirs
+    sub_id: str
+        subject id
+
+    Returns
+    -------
+    arg: dict
+        dict of cmd lines
     """
     if arg["file_tree"]:
         stop_files = get_stop_files_filestree(arg["file_tree"], sub_id)
