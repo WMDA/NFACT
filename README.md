@@ -155,8 +155,7 @@ Filetrees are saved in filetrees folder in nfact, so custom filetrees can be put
 
 Use of custom filetree
 -----------------------
-seed files are aliased as (seed), medial wall as (roi), warps as (warp_1)/(warp_2) and bedpostX as (bedpostX). Two seeds are supported if the seeds are bilateral indicated
-with {hemi}.seed, with the actual seed names being L.seed.nii.gz/R.seed.nii.gz. A singe seed can be given as well.
+seed files are aliased as (seed), medial wall as (medial_wall), warps as (diff2std, std2diff) and bedpostX as (bedpostX). Two seeds are supported if the seeds are bilateral indicated with {hemi}.seed, with the actual seed names being L.seed.nii.gz/R.seed.nii.gz. A singe seed can be given as well.
 
 ### Usage:
 
