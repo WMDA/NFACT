@@ -237,8 +237,9 @@ def pre_processing(arg: dict, handler: object) -> None:
         print(f'{col["darker_pink"]}Mode:{col["reset"]}Volume')
 
     print(
-        f'{col["plum"]}Number of subjects:{col["reset"]} ', len(arg["list_of_subjects"])
+        f'{col["darker_pink"]}Number of subjects:{col["reset"]} {len(arg["list_of_subjects"])}'
     )
+
     print_to_screen("SUBJECT SETUP")
     subjects_commands = [
         process_subject(sub, arg, col) for sub in arg["list_of_subjects"]

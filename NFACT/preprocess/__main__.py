@@ -88,9 +88,7 @@ def nfact_pp_main(arg: dict = None):
     nfact_pp_directory = os.path.join(arg["outdir"], "nfact_pp")
     if arg["overwrite"]:
         if os.path.exists(nfact_pp_directory):
-            print(
-                f'{col["red"]}{nfact_pp_directory} directory already exists. Overwriting{col["reset"]}'
-            )
+            print(f'{col["red"]}Overwriting:{col["reset"]} {nfact_pp_directory}.')
             shutil.rmtree(nfact_pp_directory, ignore_errors=True)
 
     make_directory(nfact_pp_directory)
