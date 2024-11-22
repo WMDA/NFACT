@@ -1,6 +1,6 @@
 from NFACT.base.utils import error_and_exit
 from NFACT.base.imagehandling import check_files_are_imaging_files
-from NFACT.base.filesystem import write_to_file
+from NFACT.base.filesystem import write_to_file, load_json
 import os
 import re
 
@@ -233,3 +233,36 @@ def stoppage(img_file_path: str, file_directory: str, paths_dict: dict) -> list:
         f'--stop={os.path.join(file_directory, "stop")}',
         f'--wtstop={os.path.join(file_directory, "wtstop")}',
     ]
+
+
+def stop_masks(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str) -> dict:
+    """
+    Function to process stop masks
+
+    Parameters
+    ----------
+    arg: dict,
+       cmd processes
+    nfactpp_diretory: str
+        path to nfactpp_directory
+    sub: str
+        path to sub dirs
+    sub_id: str
+        subject id
+
+    Returns
+    -------
+    arg: dict
+        dict of cmd lines
+    """
+    if arg["file_tree"]:
+        stop_files = get_stop_files_filestree(arg["file_tree"], sub_id)
+    else:
+        stop_files = load_json(arg["stop"])
+    stop_ptx = stoppage(sub, os.path.join(nfactpp_diretory, "files"), stop_files)
+    if arg["ptx_options"]:
+        [arg["ptx_options"].append(command) for command in stop_ptx]
+    else:
+        arg["ptx_options"] = stop_ptx
+
+    return arg
