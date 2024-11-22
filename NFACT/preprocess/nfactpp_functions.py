@@ -1,5 +1,6 @@
 from NFACT.base.utils import error_and_exit
 from NFACT.base.imagehandling import check_files_are_imaging_files
+from NFACT.base.filesystem import write_to_file, load_json
 import os
 import re
 
@@ -150,3 +151,118 @@ def rename_seed(seeds: list) -> list:
         for seed in seeds
         if (seed_extension := seed.split("."))
     ]
+
+
+def get_stop_files_filestree(files_tree: object, subject: str) -> dict:
+    """
+    Function to get stopping files path
+    from
+
+    Parameters
+    ----------
+    files_tree: object
+        FSL.filetree object
+    subject: str
+        str of subject
+
+    Returns
+    -------
+    dict: dictionary object
+        dict of list wtstop_mask
+        and stopping_mask
+
+    """
+
+    return {
+        "wtstop_mask": [
+            filetree_get_files(files_tree, subject, "L", file)
+            for file in files_tree.template_keys()
+            if "wtstop" in file
+        ],
+        "stopping_mask": [
+            filetree_get_files(files_tree, subject, "L", file)
+            for file in files_tree.template_keys()
+            if file.startswith("stop")
+        ],
+    }
+
+
+def stoppage(img_file_path: str, file_directory: str, paths_dict: dict) -> list:
+    """
+    function to write stoppage and wtstop masks
+    to file and return the probtrackx commands
+
+    Parameters
+    -----------
+    img_file_path: str
+        path to subject imging file
+    file_directory:
+        path to nfact_pp/sub/files
+        directory
+    paths_dict: dict
+        dictionary of paths to stoppage and
+        wstop masks.
+
+    Returns
+    -------
+    list: list_oject
+        list of additional ptx options
+        with --stop and --wtstop
+    """
+
+    write_to_file(
+        file_directory,
+        "stop",
+        [
+            os.path.join(img_file_path, file + "\n")
+            for file in paths_dict["stopping_mask"]
+        ],
+        text_is_list=True,
+    )
+    write_to_file(
+        file_directory,
+        "wtstop",
+        [
+            os.path.join(img_file_path, file + "\n")
+            for file in paths_dict["wtstop_mask"]
+        ],
+        text_is_list=True,
+    )
+
+    return [
+        f'--stop={os.path.join(file_directory, "stop")}',
+        f'--wtstop={os.path.join(file_directory, "wtstop")}',
+    ]
+
+
+def stop_masks(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str) -> dict:
+    """
+    Function to process stop masks
+
+    Parameters
+    ----------
+    arg: dict,
+       cmd processes
+    nfactpp_diretory: str
+        path to nfactpp_directory
+    sub: str
+        path to sub dirs
+    sub_id: str
+        subject id
+
+    Returns
+    -------
+    arg: dict
+        dict of cmd lines
+    """
+    if arg["file_tree"]:
+        stop_files = get_stop_files_filestree(arg["file_tree"], sub_id)
+    else:
+        stop_files = load_json(arg["stop"])
+    stop_ptx = stoppage(sub, os.path.join(nfactpp_diretory, "files"), stop_files)
+    if arg["ptx_options"]:
+        [arg["ptx_options"].append(command) for command in stop_ptx]
+    else:
+        arg["ptx_options"] = stop_ptx
+
+    return arg

@@ -65,11 +65,19 @@ def nfact_pp_main(arg: dict = None):
     print("GPU found, Using GPU\n") if arg["gpu"] else print(
         "No GPU. Using CPU version\n"
     )
+    print(
+        f'{col["plum"]}Filetree {arg["file_tree"].lower()} given {col["reset"]}'
+    ) if arg["file_tree"] else None
     if not arg["ref"]:
         arg["ref"] = os.path.join(
             os.getenv("FSLDIR"), "data", "standard", "MNI152_T1_2mm_brain.nii.gz"
         )
     arg = cluster_parameters(arg)
+    if arg["stop"] == []:
+        arg["stop"] = True
+    if type(arg["stop"]) is list:
+        arg["stop"] = arg["stop"][0]
+
     if arg["ptx_options"]:
         try:
             arg["ptx_options"] = read_file_to_list(arg["ptx_options"])
@@ -82,9 +90,7 @@ def nfact_pp_main(arg: dict = None):
     nfact_pp_directory = os.path.join(arg["outdir"], "nfact_pp")
     if arg["overwrite"]:
         if os.path.exists(nfact_pp_directory):
-            print(
-                f'{col["red"]}{nfact_pp_directory} directory already exists. Overwriting{col["reset"]}'
-            )
+            print(f'{col["red"]}Overwriting:{col["reset"]} {nfact_pp_directory}.')
             shutil.rmtree(nfact_pp_directory, ignore_errors=True)
 
     make_directory(nfact_pp_directory)

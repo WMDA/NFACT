@@ -164,7 +164,8 @@ def get_target2(
     -------
     None
     """
-    print("Creating target2 image")
+    col = colours()
+    print(f"{col['pink']}Creating:{col['reset']} Target2 Image")
     try:
         run = subprocess.run(
             [
@@ -210,7 +211,10 @@ def seeds_to_gifti(surfin: str, roi: str, surfout: str) -> None:
         name of output surface.
         Needs to be full path
     """
-    print(f"Working on seed surface {os.path.basename(surfin)}")
+    col = colours()
+    print(
+        f"{col['pink']}Working on seed surface:{col['reset']} {os.path.basename(surfin)}"
+    )
     try:
         run = subprocess.run(
             [
