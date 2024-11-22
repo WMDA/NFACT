@@ -180,7 +180,7 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
     )
 
 
-def set_up_filestree(arg: dict, col: dict) -> dict:
+def set_up_filestree(arg: dict) -> dict:
     """
     Function to set up filetree
 
@@ -196,7 +196,7 @@ def set_up_filestree(arg: dict, col: dict) -> dict:
     arg: dict
         dict of processed cmd line args
     """
-    print(f'{col["plum"]}Filetree {arg["file_tree"].lower()} given {col["reset"]}')
+
     arg["file_tree"] = load_file_tree(f"{arg['file_tree'].lower()}.tree")
 
     # load a random subjects seed and ROI to check its type
@@ -226,7 +226,7 @@ def pre_processing(arg: dict, handler: object) -> None:
     col = colours()
 
     if arg["file_tree"]:
-        arg = set_up_filestree(arg, col)
+        arg = set_up_filestree(arg)
 
     arg["surface"] = check_seeds_surfaces(arg["seed"])
 

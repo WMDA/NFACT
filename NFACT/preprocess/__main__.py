@@ -66,6 +66,9 @@ def nfact_pp_main(arg: dict = None):
     print("GPU found, Using GPU\n") if arg["gpu"] else print(
         "No GPU. Using CPU version\n"
     )
+    print(
+        f'{col["plum"]}Filetree {arg["file_tree"].lower()} given {col["reset"]}'
+    ) if arg["file_tree"] else None
     if not arg["ref"]:
         arg["ref"] = os.path.join(
             os.getenv("FSLDIR"), "data", "standard", "MNI152_T1_2mm_brain.nii.gz"
