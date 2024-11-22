@@ -124,7 +124,7 @@ def print_to_screen(print_string: str) -> None:
     """
     print("\n")
     print(f"{print_string}\n")
-    print("-" * 80)
+    print("-" * 100)
 
 
 def process_subject(sub: str, arg: dict, col: dict) -> list:
@@ -152,6 +152,7 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
 
     if arg["file_tree"]:
         arg = process_filetree_args(arg, sub_id)
+
     seed = get_file(arg["seed"], sub)
     seed_text = "\n".join(seed)
     # using this function not to return a file but check it is an imaging file
@@ -164,6 +165,7 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
         seed_text = process_surface(nfactpp_diretory, seed, roi)
 
     error_and_exit(write_options_to_file(nfactpp_diretory, seed_text))
+
     if not arg["target2"]:
         target_generation(arg, nfactpp_diretory, col)
 
@@ -229,10 +231,10 @@ def pre_processing(arg: dict, handler: object) -> None:
     arg["surface"] = check_seeds_surfaces(arg["seed"])
 
     if arg["surface"]:
-        print(f'{col["darker_pink"]}Surface seeds mode{col["reset"]}')
+        print(f'{col["darker_pink"]}Mode:{col["reset"]} Surface')
         check_roi_seed_len(arg["seed"], arg["rois"])
     else:
-        print(f'{col["darker_pink"]}Volume seed mode{col["reset"]}')
+        print(f'{col["darker_pink"]}Mode:{col["reset"]}Volume')
 
     print(
         f'{col["plum"]}Number of subjects:{col["reset"]} ', len(arg["list_of_subjects"])
@@ -247,6 +249,4 @@ def pre_processing(arg: dict, handler: object) -> None:
         handler.set_suppress_messages = True
 
     print_to_screen("TRACTOGRAPHY")
-
-    # Running probtrackx2
     Probtrackx(subjects_commands, arg["n_cores"])
