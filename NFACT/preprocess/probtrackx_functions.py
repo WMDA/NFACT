@@ -292,10 +292,12 @@ def cluster_parameters(arg: dict) -> dict:
         [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"), "--has_queues"]
     )
 
-    # if queues['stdout'] == 'No':
-    #    print(f"{col['darker_pink']}Cluster:{col['reset']} No queues detected. Not running on cluster")
-    #    arg["cluster"] = None
-    #    return arg
+    if queues["stdout"] == "No":
+        print(
+            f"{col['darker_pink']}Cluster:{col['reset']} No queues detected. Not running on cluster"
+        )
+        arg["cluster"] = None
+        return arg
 
     arg["cluster_ram"] = arg["cluster_ram"] if arg["cluster_ram"] else 30
     arg["cluster_time"] = (
@@ -338,10 +340,13 @@ def run_fsl_sub(command: list) -> str:
         error_and_exit(False, f"Error in calling fsl_sub due to: {error}")
     except KeyboardInterrupt:
         run.kill()
-    return {
+    output = {
         key: value.decode("utf-8").strip() if isinstance(value, bytes) else value
         for key, value in vars(run).items()
     }
+    if output["stderr"]:
+        error_and_exit(False, f"FSL sub failed due to {output['stderr']}")
+    return output
 
 
 class Probtrackx:
@@ -389,7 +394,6 @@ class Probtrackx:
     def __single_subject_command(self):
         """
         Method to get single subjects
-
         """
         return {
             "command": (self.__cluster if self.cluster else self.__run_probtrackx),
@@ -410,7 +414,7 @@ class Probtrackx:
         for sub_command in self.command:
             if self.__cluster:
                 job = run_probtractkx["command"](sub_command)
-                submitted_jobs.append(job)
+                submitted_jobs.append(job["stdout"])
             if not self.__cluster:
                 run_probtractkx["command"](sub_command)
         self.__wait_for_complete(submitted_jobs)
@@ -452,7 +456,7 @@ class Probtrackx:
         output = run_fsl_sub(
             [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub_report"), job_id]
         )
-        if "finished" in output:
+        if "finished" in output["stdout"]:
             return False
         return True
 
