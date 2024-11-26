@@ -287,22 +287,28 @@ def cluster_parameters(arg: dict) -> dict:
         dictionary of processed
         command line arguments
     """
-
+    col = colours()
     queues = run_fsl_sub(
         [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"), "--has_queues"]
     )
-    if not queues:
-        print("No queues detected. Not running on cluster")
-        arg["cluster"] = None
-        return arg
+
+    # if queues['stdout'] == 'No':
+    #    print(f"{col['darker_pink']}Cluster:{col['reset']} No queues detected. Not running on cluster")
+    #    arg["cluster"] = None
+    #    return arg
 
     arg["cluster_ram"] = arg["cluster_ram"] if arg["cluster_ram"] else 30
     arg["cluster_time"] = (
         arg["cluster_time"] if arg["cluster_time"] else 160 if arg["gpu"] else 600
     )
-    arg["cluster_queue"] = (
-        arg["cluster_queue"] if arg["cluster_queue"] in queues.keys() else None
-    )
+    print_string = "No queue given will assign"
+    if arg["cluster_queue"]:
+        print_string = arg["cluster_queue"]
+        arg["cluster_queue"] = (
+            arg["cluster_queue"] if arg["cluster_queue"] in queues["stdout"] else None
+        )
+
+    print(f"{col['darker_pink']}Cluster:{col['reset']} {print_string}")
     return arg
 
 
@@ -327,13 +333,15 @@ def run_fsl_sub(command: list) -> str:
             command,
             capture_output=True,
         )
+
     except subprocess.CalledProcessError as error:
         error_and_exit(False, f"Error in calling fsl_sub due to: {error}")
     except KeyboardInterrupt:
         run.kill()
-    if run.returncode != 0:
-        error_and_exit(False, f"fsl_sub failed due to {run.stderr}")
-    return run
+    return {
+        key: value.decode("utf-8").strip() if isinstance(value, bytes) else value
+        for key, value in vars(run).items()
+    }
 
 
 class Probtrackx:
@@ -364,7 +372,7 @@ class Probtrackx:
         self.parallel = parallel
         self.col = colours()
         self.cluster = cluster
-        self.gpu = True if "gpu" in command[0] else False
+        self.gpu = True if "probtrackx2_gpu" in command[0] else False
         self.cluster_time = cluster_time
         self.cluster_queue = cluster_queue
         self.cluster_ram = cluster_ram
@@ -425,6 +433,9 @@ class Probtrackx:
             "-N",
             f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
         ]
+        print(cluster_command)
+
+        exit(0)
         return run_fsl_sub(cluster_command)
 
     def __wait_for_complete(self, job_id):

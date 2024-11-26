@@ -66,13 +66,15 @@ def nfact_pp_main(arg: dict = None):
         "No GPU. Using CPU version\n"
     )
     print(
-        f'{col["plum"]}Filetree {arg["file_tree"].lower()} given {col["reset"]}'
+        f'{col["darker_pink"]}Filetree:{col["reset"]} {arg["file_tree"].lower()} '
     ) if arg["file_tree"] else None
     if not arg["ref"]:
         arg["ref"] = os.path.join(
             os.getenv("FSLDIR"), "data", "standard", "MNI152_T1_2mm_brain.nii.gz"
         )
-    arg = cluster_parameters(arg)
+
+    if arg["cluster"]:
+        arg = cluster_parameters(arg)
     if arg["stop"] == []:
         arg["stop"] = True
     if type(arg["stop"]) is list:

@@ -132,9 +132,23 @@ def nfact_pp_args() -> dict:
     option.add_argument(
         "-q",
         "--queue",
-        dest="queue",
-        default=False,
+        dest="cluster_queue",
+        default=None,
         help="Cluster queue to submit to",
+    )
+    option.add_argument(
+        "-cr",
+        "--cluster_ram",
+        dest="cluster_ram",
+        default=30,
+        help="Ram that job will take. Default is 30",
+    )
+    option.add_argument(
+        "-ct",
+        "--cluster_time",
+        dest="cluster_time",
+        default=False,
+        help="Time that job will take. nfact_pp will assign a time if none given",
     )
     option.add_argument(
         "-S",
