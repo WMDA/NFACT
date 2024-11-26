@@ -433,9 +433,7 @@ class Probtrackx:
             "-N",
             f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
         ]
-        print(cluster_command)
 
-        exit(0)
         return run_fsl_sub(cluster_command)
 
     def __wait_for_complete(self, job_id):
