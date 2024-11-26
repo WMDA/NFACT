@@ -447,7 +447,7 @@ class Probtrackx:
                 running = self.__check_job(job)
 
             if not running:
-                print("All NFACT_PP have finihsed")
+                print("All NFACT_PP jobs have finihsed")
                 break
 
             time.sleep(300)
