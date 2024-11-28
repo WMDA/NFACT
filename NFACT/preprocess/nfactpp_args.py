@@ -1,5 +1,5 @@
 import argparse
-from NFACT.base.utils import colours, no_args
+from NFACT.base.utils import colours, no_args, verbose_help_message
 
 
 def nfact_pp_args() -> dict:
@@ -20,7 +20,6 @@ def nfact_pp_args() -> dict:
         prog="nfact_pp",
         description=print(nfact_pp_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=nfact_pp_example_usage(),
     )
     col = colours()
     option.add_argument(
@@ -41,27 +40,27 @@ def nfact_pp_args() -> dict:
         "--seed",
         nargs="+",
         dest="seed",
-        help=f"{col['pink']}REQUIRED FOR VOLUME/SEED MODE:{col['reset']} A single or list of seeds",
+        help=f"{col['pink']}REQUIRED FOR VOLUME/SURFACE MODE:{col['reset']} A single or list of seeds",
     )
     option.add_argument(
         "-w",
         "--warps",
         dest="warps",
         nargs="+",
-        help=f"{col['pink']}REQUIRED FOR VOLUME/SEED MODE:{col['reset']} Path to warps inside a subjects directory (can accept multiple arguments)",
+        help=f"{col['pink']}REQUIRED FOR VOLUME/SURFACE MODE:{col['reset']} Path to warps inside a subjects directory (can accept multiple arguments)",
     )
     option.add_argument(
         "-b",
         "--bpx",
         dest="bpx_path",
-        help=f"{col['pink']}REQUIRED FOR VOLUME/SEED MODE:{col['reset']} Path to Bedpostx folder inside a subjects directory.",
+        help=f"{col['pink']}REQUIRED FOR VOLUME/SURFACE MODE:{col['reset']} Path to Bedpostx folder inside a subjects directory.",
     )
     option.add_argument(
         "-m",
         "--medial_wall",
         dest="medial_wall",
         nargs="+",
-        help=f"""{col['purple']}REQUIRED FOR SEED MODE: {col['reset']}Medial wall file . 
+        help=f"""{col['purple']}REQUIRED FOR SURFACE MODE: {col['reset']}Medial wall file . 
         Use when doing whole brain surface tractography to provide medial wall.""",
     )
     option.add_argument(
@@ -93,7 +92,7 @@ def nfact_pp_args() -> dict:
         help="Number of samples per seed used in tractography (default = 1000)",
     )
     option.add_argument(
-        "-m",
+        "-mm",
         "--mm_res",
         dest="mm_res",
         default=2,
@@ -132,9 +131,22 @@ def nfact_pp_args() -> dict:
         Argument can be used with the --filetree, in that case no json file is needed.
       """,
     )
+    option.add_argument(
+        "-hh",
+        "--verbose_help",
+        dest="verbose_help",
+        default=False,
+        action="store_true",
+        help="""
+        Prints help message and example usages
+      """,
+    )
     no_args(option)
+    args = option.parse_args()
+    if args.verbose_help:
+        verbose_help_message(option, nfact_pp_example_usage())
 
-    return vars(option.parse_args())
+    return vars(args)
 
 
 def nfact_pp_splash() -> str:
@@ -177,7 +189,7 @@ def nfact_pp_example_usage() -> str:
     col = colours()
     return f"""
 Example Usage:
-    {col['purple']}Seed surface mode:{col['reset']}
+    {col['purple']}Seed mode:{col['reset']}
            nfact_pp --list_of_subjects /home/study/sub_list
                --outdir /home/study   
                --bpx_path /path_to/.bedpostX 
@@ -186,7 +198,7 @@ Example Usage:
                --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz 
                --n_cores 3 
 
-    {col['pink']}Volume surface mode:{col['reset']}
+    {col['pink']}Volume mode:{col['reset']}
             nfact_pp --list_of_subjects /home/study/sub_list  
                 --bpx_path /path_to/.bedpostX 
                 --seeds /path_to/L.white.nii.gz /path_to/R.white.nii.gz 
@@ -199,5 +211,4 @@ Example Usage:
             --list_of_subjects /home/study/sub_list  
             --outdir /home/study 
             --n_cores 3 
-            \n
 """

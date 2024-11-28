@@ -1,6 +1,7 @@
 import time
 import logging
 import sys
+import importlib.metadata
 
 
 class Timer:
@@ -108,3 +109,25 @@ def no_args(args: object) -> None:
     if len(sys.argv) == 1:
         args.print_help(sys.stderr)
         sys.exit(1)
+
+
+def verbose_help_message(options: object, verbose_message_str: str) -> None:
+    """
+    Fnction to print out a verbose
+    help message.
+
+    Parameters
+    ----------
+    options: object
+        argparse option not parsed
+    verbose_message_str: str
+        str of additional help message to print
+
+    Returns
+    -------
+    None
+    """
+    print(options.format_help())
+    print(verbose_message_str)
+    print(f"NFACT version: {importlib.metadata.version('NFACT')}")
+    exit(0)
