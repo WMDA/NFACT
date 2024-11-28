@@ -127,7 +127,10 @@ def verbose_help_message(options: object, verbose_message_str: str) -> None:
     -------
     None
     """
+    col = colours()
     print(options.format_help())
     print(verbose_message_str)
-    print(f"NFACT version: {importlib.metadata.version('NFACT')}")
+    print(
+        f"{col['plum']}NFACT version:{col['reset']} {importlib.metadata.version('NFACT')}"
+    )
     exit(0)
