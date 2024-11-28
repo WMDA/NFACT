@@ -1,6 +1,5 @@
 # NFACT functions
 from .nfactpp_setup import (
-    check_seeds_surfaces,
     nfact_pp_folder_setup,
     check_medial_wall_seed_len,
     load_file_tree,
@@ -20,6 +19,7 @@ from .probtrackx_functions import (
     seeds_to_gifti,
 )
 from NFACT.base.utils import colours, error_and_exit
+from NFACT.base.setup import check_seeds_surfaces
 import os
 import shutil
 
