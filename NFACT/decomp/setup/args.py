@@ -189,6 +189,7 @@ def nfact_decomp_usage():
 {col['darker_pink']}Basic NMF usage with surface seeds:{col['reset']}
     nfact_decomp --list_of_subjects /absolute path/sub_list \ 
                  --seeds /absolute path/seeds.txt \ 
+                 --medial_wall /path/to/medial/wall
                  --dim 50
 
 {col['darker_pink']}ICA with config file usage:{col['reset']}
@@ -199,13 +200,13 @@ def nfact_decomp_usage():
                  --nfact_config /path/to/config/file
 
 {col['darker_pink']}Advanced ICA Usage:{col['reset']}
-nfact_decomp --list_of_subjects /absolute path/sub_list \ 
-             --seeds /absolute path/seeds.txt \ 
-             --outdir /absolute path/study_directory \ 
-             --algo ICA \ 
-             --migp 1000 \ 
-             --dim 100 \ 
-             --normalise \ 
-             --wta \ 
-             --wat_zthr 0.5
+    nfact_decomp --list_of_subjects /absolute path/sub_list \ 
+                 --seeds /absolute path/seeds.txt \ 
+                 --outdir /absolute path/study_directory \ 
+                 --algo ICA \ 
+                 --migp 1000 \ 
+                 --dim 100 \ 
+                 --normalise \ 
+                 --wta \ 
+                 --wat_zthr 0.5
 """
