@@ -173,7 +173,7 @@ def save_grey_matter_volume(
 
 
 def save_grey_matter_gifit(
-    grey_matter_component: np.array, file_name: str, seed: str
+    grey_matter_component: np.array, file_name: str, seed: str, medial_wall: str
 ) -> None:
     """
     Function to save grey matter as gifti
@@ -187,6 +187,8 @@ def save_grey_matter_gifit(
         file name
     seed: str
         path to seed
+    medial_wall: str
+        str to medial wall path
 
     Returns
     -------

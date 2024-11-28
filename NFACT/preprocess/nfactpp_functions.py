@@ -76,7 +76,7 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
         arguments
     """
     del arg["seed"]
-    del arg["rois"]
+    del arg["medial_wall"]
     arg["seed"] = list(
         set(
             [
@@ -91,7 +91,7 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
     ]
     arg["bpx_path"] = filetree_get_files(arg["file_tree"], sub, "L", "bedpostX")
     if arg["surface"]:
-        arg["rois"] = [
+        arg["medial_wall"] = [
             filetree_get_files(arg["file_tree"], sub, hemi, "medial_wall")
             for hemi in ["L", "R"]
         ]

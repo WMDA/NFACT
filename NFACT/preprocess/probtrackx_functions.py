@@ -196,7 +196,7 @@ def get_target2(
         )
 
 
-def seeds_to_gifti(surfin: str, roi: str, surfout: str) -> None:
+def seeds_to_gifti(surfin: str, medial_wall: str, surfout: str) -> None:
     """
     Function to create seeds from
     surfaces.
@@ -205,7 +205,7 @@ def seeds_to_gifti(surfin: str, roi: str, surfout: str) -> None:
     ----------
     surfin: str
         input surface
-    roi: str,
+    medial_wall: str,
         medial wall surface
     surfout: str
         name of output surface.
@@ -223,7 +223,7 @@ def seeds_to_gifti(surfin: str, roi: str, surfout: str) -> None:
                 surfin,
                 "-o",
                 surfout,
-                f"--values={roi}",
+                f"--values={medial_wall}",
                 "--outputtype=GIFTI_BIN_GZ",
             ],
             capture_output=True,

@@ -2,7 +2,7 @@
 from .nfactpp_setup import (
     check_seeds_surfaces,
     nfact_pp_folder_setup,
-    check_roi_seed_len,
+    check_medial_wall_seed_len,
     load_file_tree,
 )
 from .nfactpp_functions import (
@@ -48,7 +48,7 @@ def setup_subject_directory(nfactpp_diretory: str, seed: list) -> None:
         )
 
 
-def process_surface(nfactpp_diretory: str, seed: list, roi: list) -> str:
+def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str:
     """
     Function to process surface seeds
 
@@ -58,8 +58,8 @@ def process_surface(nfactpp_diretory: str, seed: list, roi: list) -> str:
         nfact_pp path
     seed: list
         list of seeds
-    roi: list
-        list of rois
+    medial_wall: list
+        list of medial_wall
 
     Returns
     -------
@@ -67,10 +67,10 @@ def process_surface(nfactpp_diretory: str, seed: list, roi: list) -> str:
         string of seeds names
     """
     seed_names = rename_seed(seed)
-    for img in range(0, len(roi)):
+    for img in range(0, len(medial_wall)):
         seeds_to_gifti(
             seed[img],
-            roi[img],
+            medial_wall[img],
             os.path.join(nfactpp_diretory, "files", f"{seed_names[img]}.surf.gii"),
         )
     asc_seeds = [
@@ -161,8 +161,8 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
     setup_subject_directory(nfactpp_diretory, seed)
 
     if arg["surface"]:
-        roi = get_file(arg["rois"], sub)
-        seed_text = process_surface(nfactpp_diretory, seed, roi)
+        medial_wall = get_file(arg["medial_wall"], sub)
+        seed_text = process_surface(nfactpp_diretory, seed, medial_wall)
 
     error_and_exit(write_options_to_file(nfactpp_diretory, seed_text))
 
@@ -199,11 +199,11 @@ def set_up_filestree(arg: dict) -> dict:
 
     arg["file_tree"] = load_file_tree(f"{arg['file_tree'].lower()}.tree")
 
-    # load a random subjects seed and ROI to check its type
+    # load a random subjects seed to check its type
     arg["seed"] = [filetree_get_files(arg["file_tree"], "sub1", "L", "seed")]
 
     # Needed for checking if seed is surface
-    arg["rois"] = ["filestree"]
+    arg["medial_wall"] = ["filestree"]
     return arg
 
 
@@ -232,7 +232,7 @@ def pre_processing(arg: dict, handler: object) -> None:
 
     if arg["surface"]:
         print(f'{col["darker_pink"]}Mode:{col["reset"]} Surface')
-        check_roi_seed_len(arg["seed"], arg["rois"])
+        check_medial_wall_seed_len(arg["seed"], arg["medial_wall"])
     else:
         print(f'{col["darker_pink"]}Mode:{col["reset"]}Volume')
 

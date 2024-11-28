@@ -57,11 +57,11 @@ def nfact_pp_args() -> dict:
         help=f"{col['pink']}REQUIRED FOR VOLUME/SEED MODE:{col['reset']} Path to Bedpostx folder inside a subjects directory.",
     )
     option.add_argument(
-        "-r",
-        "--rois",
-        dest="rois",
+        "-m",
+        "--medial_wall",
+        dest="medial_wall",
         nargs="+",
-        help=f"""{col['purple']}REQUIRED FOR SEED MODE: {col['reset']}A single or list of ROIS. 
+        help=f"""{col['purple']}REQUIRED FOR SEED MODE: {col['reset']}Medial wall file . 
         Use when doing whole brain surface tractography to provide medial wall.""",
     )
     option.add_argument(
