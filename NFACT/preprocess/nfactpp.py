@@ -10,10 +10,11 @@ from .nfactpp_functions import (
     process_filetree_args,
     rename_seed,
     stop_masks,
+    create_files_for_decomp,
+    write_options_to_file,
 )
 from .probtrackx_functions import (
     build_probtrackx2_arguments,
-    write_options_to_file,
     Probtrackx,
     get_target2,
     seeds_to_gifti,
@@ -24,7 +25,9 @@ import os
 import shutil
 
 
-def setup_subject_directory(nfactpp_diretory: str, seed: list) -> None:
+def setup_subject_directory(
+    nfactpp_diretory: str, seed: list, medial_wall: list
+) -> None:
     """
     Function to set up the subjects
     directory
@@ -46,6 +49,14 @@ def setup_subject_directory(nfactpp_diretory: str, seed: list) -> None:
             seed_location,
             os.path.join(nfactpp_diretory, "files", os.path.basename(seed_location)),
         )
+    if medial_wall:
+        for medial_wall_location in medial_wall:
+            shutil.copyfile(
+                medial_wall_location,
+                os.path.join(
+                    nfactpp_diretory, "files", os.path.basename(medial_wall_location)
+                ),
+            )
 
 
 def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str:
@@ -67,6 +78,7 @@ def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str
         string of seeds names
     """
     seed_names = rename_seed(seed)
+    breakpoint()
     for img in range(0, len(medial_wall)):
         seeds_to_gifti(
             seed[img],
@@ -158,13 +170,14 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
     # using this function not to return a file but check it is an imaging file
     get_file(arg["warps"], sub)
     nfactpp_diretory = os.path.join(arg["outdir"], "nfact_pp", sub_id)
-    setup_subject_directory(nfactpp_diretory, seed)
+    medial_wall = get_file(arg["medial_wall"], sub) if arg["surface"] else False
 
+    setup_subject_directory(nfactpp_diretory, seed, medial_wall)
+    create_files_for_decomp(nfactpp_diretory, seed, medial_wall)
     if arg["surface"]:
-        medial_wall = get_file(arg["medial_wall"], sub)
         seed_text = process_surface(nfactpp_diretory, seed, medial_wall)
 
-    error_and_exit(write_options_to_file(nfactpp_diretory, seed_text))
+    error_and_exit(write_options_to_file(nfactpp_diretory, seed_text, "seeds"))
 
     if not arg["target2"]:
         target_generation(arg, nfactpp_diretory, col)
@@ -244,7 +257,7 @@ def pre_processing(arg: dict, handler: object) -> None:
     subjects_commands = [
         process_subject(sub, arg, col) for sub in arg["list_of_subjects"]
     ]
-
+    breakpoint()
     # This supresses the signit kill message or else it prints it off multiple times for each core
     if arg["n_cores"]:
         handler.set_suppress_messages = True

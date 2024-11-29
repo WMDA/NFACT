@@ -143,7 +143,7 @@ def rename_seed(seeds: list) -> list:
     return [
         (
             "left_seed"
-            if "L" in (seed_extension := seed.split("."))
+            if "L" in (seed_extension := os.path.basename(seed).split("."))
             else "right_seed"
             if "R" in seed_extension
             else re.sub(r".gii|.surf", "", os.path.basename(seed))
@@ -266,3 +266,64 @@ def stop_masks(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str) -> dict:
         arg["ptx_options"] = stop_ptx
 
     return arg
+
+
+def create_files_for_decomp(
+    nfact_directory: str, seeds: list, medial_wall: list
+) -> None:
+    """
+    Function to write seeds and medial wall for
+    decomp.
+
+    Parameters
+    ----------
+    nfact_directory: str
+        subjects nfact_directory
+    seeds: list
+        list of seeds
+    medial_wall: list
+        list of medial wall files
+    """
+    seed_filename = "seeds_for_decomp"
+    medial_wall_filename = "mw_for_decomp"
+    base_nfact_dir = os.path.dirname(nfact_directory)
+    if not os.path.exists(os.path.join(base_nfact_dir, f"{seed_filename}.txt")):
+        seed_text = "\n".join(
+            [
+                os.path.join(nfact_directory, "files", os.path.basename(seed))
+                for seed in seeds
+            ]
+        )
+        write_options_to_file(base_nfact_dir, seed_text, seed_filename)
+
+    if medial_wall:
+        if not os.path.exists(
+            os.path.join(base_nfact_dir, f"{medial_wall_filename}.txt")
+        ):
+            mw_text = "\n".join(
+                [
+                    os.path.join(nfact_directory, "files", os.path.basename(mw))
+                    for mw in medial_wall
+                ]
+            )
+            write_options_to_file(base_nfact_dir, mw_text, medial_wall_filename)
+
+
+def write_options_to_file(file_path: str, text_to_save: str, name_of_file: str):
+    """
+    Function to write seeds
+    and ptx_options to file
+
+    Parmeters
+    ---------
+    file_path: str
+        file path for nfact_PP
+        directory
+    seed_txt: str
+        path of string to go into
+        seed directory
+    """
+    file_written = write_to_file(file_path, f"{name_of_file}.txt", text_to_save + "\n")
+    if not file_written:
+        return False
+    return True

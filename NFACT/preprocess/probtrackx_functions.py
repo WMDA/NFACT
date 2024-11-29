@@ -2,7 +2,7 @@ import os
 import subprocess
 import multiprocessing
 import signal
-from NFACT.base.filesystem import write_to_file, get_current_date
+from NFACT.base.filesystem import get_current_date
 from NFACT.base.utils import colours, error_and_exit
 
 
@@ -110,26 +110,6 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
     if ptx_options:
         command = command + ptx_options
     return command
-
-
-def write_options_to_file(file_path: str, seed_txt: str):
-    """
-    Function to write seeds
-    and ptx_options to file
-
-    Parmeters
-    ---------
-    file_path: str
-        file path for nfact_PP
-        directory
-    seed_txt: str
-        path of string to go into
-        seed directory
-    """
-    seeds = write_to_file(file_path, "seeds.txt", seed_txt + "\n")
-    if not seeds:
-        return False
-    return True
 
 
 def get_target2(
