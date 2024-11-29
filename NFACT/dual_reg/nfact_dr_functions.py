@@ -47,6 +47,7 @@ def save_dual_regression_images(
     dim: int,
     sub: str,
     ptx_directory: str,
+    medial_wall: list,
 ) -> None:
     """
     Function to save regression images
@@ -92,6 +93,7 @@ def save_dual_regression_images(
                 algo_path,
                 dim,
                 os.path.join(ptx_directory, "coords_for_fdt_matrix2"),
+                medial_wall,
                 grey_prefix,
             )
         if "white" in comp:

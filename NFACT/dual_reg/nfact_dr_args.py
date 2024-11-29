@@ -46,6 +46,16 @@ def nfactdr_args() -> dict:
         help=f"{col['red']}REQUIRED:{col['reset']} File of seeds used in NFACT_PP/probtrackx",
     )
     args.add_argument(
+        "--medial_wall",
+        "-m",
+        dest="medial_wall",
+        default=False,
+        help=f"""
+        {col['pink']}RECOMMENDED FOR SURFACE SEEDS:{col['reset']} Medial wall images if surface seeds given.
+        Masks out grey matter components that cross the medial wall.
+        """,
+    )
+    args.add_argument(
         "-n",
         "--nfact_decomp_dir",
         dest="nfact_decomp_dir",

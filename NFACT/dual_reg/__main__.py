@@ -10,8 +10,9 @@ from NFACT.base.setup import (
     check_algo,
     get_subjects,
     check_subject_exist,
-    process_seeds,
     check_arguments,
+    process_input_imgs,
+    check_seeds_surfaces,
 )
 from NFACT.base.utils import colours, nprint
 from NFACT.base.logging import NFACT_logs
@@ -60,8 +61,12 @@ def nfact_dr_main(args: dict = None) -> None:
     create_nfact_dr_folder_set_up(args["outdir"])
 
     # Process seeds
-    seeds = process_seeds(args["seeds"])
-
+    args["seeds"] = process_input_imgs(args["seeds"])
+    args["surface"] = check_seeds_surfaces(args["seeds"])
+    if args["surface"] and args["medial_wall"]:
+        args["medial_wall"] = process_input_imgs(args["medial_wall"])
+    else:
+        args["medial_wall"] = False
     # logging
     log = NFACT_logs(args["algo"], "DR", len(args["ptxdir"]))
     log.set_up_logging(os.path.join(args["outdir"], "nfact_dr", "logs"))
@@ -78,7 +83,7 @@ def nfact_dr_main(args: dict = None) -> None:
 
     nprint("Obtaining components\n")
     components = get_group_level_components(
-        paths["component_path"], paths["group_average_path"], seeds
+        paths["component_path"], paths["group_average_path"], args["seeds"]
     )
 
     dual_reg = Dual_regression(
@@ -87,7 +92,7 @@ def nfact_dr_main(args: dict = None) -> None:
         parallel=False,
         list_of_files=args["ptxdir"],
         component=components,
-        seeds=seeds,
+        seeds=args["seeds"],
         nfact_directory=os.path.join(args["outdir"], "nfact_dr"),
     )
     dual_reg.run()

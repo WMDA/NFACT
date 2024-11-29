@@ -43,6 +43,7 @@ class Dual_regression:
         component: dict,
         seeds: list,
         nfact_directory: str,
+        medial_wall: list,
     ) -> None:
         self.algo = algo
         self.normalise = normalise
@@ -51,6 +52,7 @@ class Dual_regression:
         self.component = component
         self.seeds = seeds
         self.nfact_directory = nfact_directory
+        self.medial_wall = medial_wall
 
     def run(self) -> None:
         """
@@ -168,6 +170,7 @@ class Dual_regression:
             self.component["white_components"].shape[0],
             subject_id,
             subject,
+            self.medial_wall,
         )
 
     def __get_subject_id(self, path: str, number: int) -> str:

@@ -39,8 +39,7 @@ def ica_decomp(parameters: dict, pca_matrix: np.array, fdt_matrix: np.array) -> 
     decomp = FastICA(**parameters)
 
     try:
-        decomp.fit(pca_matrix)
-        grey_matter = decomp.transform(pca_matrix)
+        grey_matter = decomp.fit_transform(pca_matrix)
     except Exception as e:
         error_and_exit(False, f"Unable to perform ICA due to {e}")
     return {
