@@ -196,7 +196,7 @@ def save_grey_matter_gifit(
     """
     surf = nib.load(seed)
     if medial_wall:
-        m_wall = nib.load(medial_wall).darrays[0].data != 0
+        m_wall = nib.load(medial_wall).darrays[0].data
         non_masked_indices = np.where(m_wall == 0)[0]
         grey_matter_component[non_masked_indices] = 0
     darrays = [
@@ -211,7 +211,6 @@ def save_grey_matter_gifit(
     nib.GiftiImage(darrays=darrays).to_filename(f"{file_name}.func.gii")
 
 
-# TODO: seprate getting seeds out from saving
 def save_grey_matter_components(
     grey_matter_components: np.array,
     nfact_path: str,
