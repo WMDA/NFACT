@@ -174,6 +174,7 @@ def nfact_decomp_main(args: dict = None) -> None:
             ),
             args["seeds"],
             args["dim"],
+            args["medial_wall"],
         )
     nprint(f"{col['darker_pink']}NFACT has finished{col['reset']}")
 
