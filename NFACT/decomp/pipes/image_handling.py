@@ -9,7 +9,12 @@ from NFACT.base.utils import colours, nprint, error_and_exit
 
 
 def save_images(
-    components: dict, nfact_path: str, seeds: list, algo: str, dim: int
+    components: dict,
+    nfact_path: str,
+    seeds: list,
+    algo: str,
+    dim: int,
+    medial_wall: list,
 ) -> None:
     """
     Function to save  grey and white
@@ -28,6 +33,9 @@ def save_images(
     dim: int
         number of dimensions
         used for naming output
+    medial_wall: list
+        medial wall. Needed
+        for surface
 
     Returns
     -------
@@ -56,6 +64,7 @@ def save_images(
                     os.path.join(
                         nfact_path, "group_averages", "coords_for_fdt_matrix2"
                     ),
+                    medial_wall,
                     grey_prefix,
                 )
         except Exception as e:
@@ -84,6 +93,7 @@ def winner_takes_all(
     nfact_path: str,
     seeds: list,
     dim: str,
+    medial_wall: str,
 ) -> None:
     """
     Wrapper function around creating WTA and saving
@@ -123,6 +133,7 @@ def winner_takes_all(
         os.path.join(nfact_path, "components", algo, "WTA"),
         dim,
         os.path.join(nfact_path, "group_averages", "coords_for_fdt_matrix2"),
+        medial_wall,
         "G_WTA",
     )
 

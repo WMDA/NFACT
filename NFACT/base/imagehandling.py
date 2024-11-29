@@ -195,6 +195,10 @@ def save_grey_matter_gifit(
     None
     """
     surf = nib.load(seed)
+    if medial_wall:
+        m_wall = nib.load(medial_wall).darrays[0].data != 0
+        non_masked_indices = np.where(m_wall == 0)[0]
+        grey_matter_component[non_masked_indices] = 0
     darrays = [
         nib.gifti.GiftiDataArray(
             data=np.array(col, dtype=float),
@@ -215,6 +219,7 @@ def save_grey_matter_components(
     directory: str,
     dim: int,
     coord_path: str,
+    medial_wall: list,
     prefix: str = "G",
 ) -> None:
     """
@@ -235,7 +240,8 @@ def save_grey_matter_components(
     dim: int
         number of dimensions
         used for naming output
-
+    medial_wall: list
+        list of medial path
     Returns
     -------
     None
@@ -255,7 +261,7 @@ def save_grey_matter_components(
 
         if save_type == "gifti":
             file_name = re.sub("_gii", "", file_name)
-            save_grey_matter_gifit(grey_matter_seed, file_name, seed)
+            save_grey_matter_gifit(grey_matter_seed, file_name, seed, medial_wall[idx])
 
         if save_type == "nifti":
             file_name = re.sub("_nii", "", file_name)

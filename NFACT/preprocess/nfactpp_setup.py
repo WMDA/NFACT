@@ -28,26 +28,6 @@ def check_fsl_is_installed():
     return True
 
 
-def check_seeds_surfaces(seed: list) -> bool:
-    """
-    Function to check that is seeds
-    are surfaces then ROIS are provided.
-
-    Parameters
-    ----------
-    seed: list
-        list of seeds
-
-    Returns
-    -------
-    None
-    """
-    surface = [file for file in seed if ".gii" in file]
-    if surface:
-        return True
-    return False
-
-
 def check_medial_wall_seed_len(seed: list, medial_wall: list):
     """
     Function to check that the same
