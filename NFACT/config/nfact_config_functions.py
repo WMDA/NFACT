@@ -168,7 +168,8 @@ def reorganise_args(args: dict) -> dict:
         key: {
             top_key: value
             for top_key, value in sub_dict.items()
-            if top_key not in ["list_of_subjects", "outdir", "seed", "overwrite"]
+            if top_key
+            not in ["list_of_subjects", "outdir", "seed", "overwrite", "verbose_help"]
             and not (
                 (key == "nfact_decomp" and top_key in ["seeds"])
                 or (
@@ -200,7 +201,7 @@ def process_config_file(args: dict) -> dict:
 
     args = reorganise_args(args)
     args = process_global_arguments(args)
-    args["nfact_pp"]["rois"] = []
+    args["nfact_pp"]["medial_wall"] = []
     args["nfact_pp"]["warps"] = []
     return {"global_input": args.pop("global_input"), **args}
 
@@ -209,7 +210,7 @@ def create_config() -> dict:
     """
     Function to create a config file.
 
-    Parameteres
+    Parameters
     -----------
     None
 
@@ -403,4 +404,3 @@ def create_subject_list(study_folder_path: str, ouput_dir: str) -> None:
         sub_list = [sub.rstrip("\n") + "/omatrix2\n" for sub in sub_list]
     sub_list = filter_sublist(sub_list)
     write_to_file(ouput_dir, "nfact_config_sublist", sub_list, text_is_list=True)
-    return None

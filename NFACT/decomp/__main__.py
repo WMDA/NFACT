@@ -5,8 +5,9 @@ from NFACT.base.setup import (
     check_subject_exist,
     check_algo,
     get_subjects,
-    process_seeds,
+    process_input_imgs,
     check_arguments,
+    check_seeds_surfaces,
 )
 
 from .setup.args import nfact_decomp_args, nfact_decomp_splash
@@ -68,8 +69,12 @@ def nfact_decomp_main(args: dict = None) -> None:
     group_mode = True if len(args["ptxdir"]) > 0 else False
 
     # process seeds
-    seeds = process_seeds(args["seeds"])
-
+    args["seeds"] = process_input_imgs(args["seeds"])
+    args["surface"] = check_seeds_surfaces(args["seeds"])
+    if args["surface"] and args["medial_wall"]:
+        args["medial_wall"] = process_input_imgs(args["medial_wall"])
+    else:
+        args["medial_wall"] = False
     if args["config"]:
         args["config"] = load_config_file(args["config"], args["algo"])
         check_config_file(args["config"], args["algo"])
@@ -150,9 +155,10 @@ def nfact_decomp_main(args: dict = None) -> None:
             args["outdir"],
             "nfact_decomp",
         ),
-        seeds,
+        args["seeds"],
         args["algo"].upper(),
         args["dim"],
+        args["medial_wall"],
     )
 
     if args["wta"]:
@@ -166,8 +172,9 @@ def nfact_decomp_main(args: dict = None) -> None:
                 args["outdir"],
                 "nfact_decomp",
             ),
-            seeds,
+            args["seeds"],
             args["dim"],
+            args["medial_wall"],
         )
     nprint(f"{col['darker_pink']}NFACT has finished{col['reset']}")
 

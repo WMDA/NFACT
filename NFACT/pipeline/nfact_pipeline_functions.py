@@ -290,6 +290,28 @@ def assign_nfact_dr_in_place(args: dict) -> None:
     args["nfact_dr"]["algo"] = args["nfact_decomp"]["algo"]
 
 
+def assign_medial_wall_in_place(args: dict):
+    """
+    Function to assign medial wall in
+    place for nfact_ecomp/nfact_dr
+
+    Parameters
+    ----------
+    args: dict
+        dict of command line arguments
+
+    Returns
+    -------
+    None
+    """
+
+    path = os.path.join(
+        args["global_input"]["outdir"], "nfact", "nfact_pp", "mw_for_decomp.txt"
+    )
+    args["nfact_decomp"]["medial_wall"] = path
+    args["nfact_dr"]["medial_wall"] = path
+
+
 def update_nfact_args_in_place(args: dict) -> None:
     """
     Function to update arguments
@@ -308,3 +330,5 @@ def update_nfact_args_in_place(args: dict) -> None:
     assign_nfactpp_in_place(args)
     assign_nfact_dr_in_place(args)
     assign_nfact_decomp_in_place(args)
+    if args["nfact_decomp"]["medial_wall"]:
+        assign_medial_wall_in_place(args)

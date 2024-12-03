@@ -1,8 +1,7 @@
 # NFACT functions
 from .nfactpp_setup import (
-    check_seeds_surfaces,
     nfact_pp_folder_setup,
-    check_roi_seed_len,
+    check_medial_wall_seed_len,
     load_file_tree,
 )
 from .nfactpp_functions import (
@@ -11,20 +10,24 @@ from .nfactpp_functions import (
     process_filetree_args,
     rename_seed,
     stop_masks,
+    create_files_for_decomp,
+    write_options_to_file,
 )
 from .probtrackx_functions import (
     build_probtrackx2_arguments,
-    write_options_to_file,
     Probtrackx,
     get_target2,
     seeds_to_gifti,
 )
 from NFACT.base.utils import colours, error_and_exit
+from NFACT.base.setup import check_seeds_surfaces
 import os
 import shutil
 
 
-def setup_subject_directory(nfactpp_diretory: str, seed: list) -> None:
+def setup_subject_directory(
+    nfactpp_diretory: str, seed: list, medial_wall: list
+) -> None:
     """
     Function to set up the subjects
     directory
@@ -46,9 +49,17 @@ def setup_subject_directory(nfactpp_diretory: str, seed: list) -> None:
             seed_location,
             os.path.join(nfactpp_diretory, "files", os.path.basename(seed_location)),
         )
+    if medial_wall:
+        for medial_wall_location in medial_wall:
+            shutil.copyfile(
+                medial_wall_location,
+                os.path.join(
+                    nfactpp_diretory, "files", os.path.basename(medial_wall_location)
+                ),
+            )
 
 
-def process_surface(nfactpp_diretory: str, seed: list, roi: list) -> str:
+def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str:
     """
     Function to process surface seeds
 
@@ -58,8 +69,8 @@ def process_surface(nfactpp_diretory: str, seed: list, roi: list) -> str:
         nfact_pp path
     seed: list
         list of seeds
-    roi: list
-        list of rois
+    medial_wall: list
+        list of medial_wall
 
     Returns
     -------
@@ -67,10 +78,10 @@ def process_surface(nfactpp_diretory: str, seed: list, roi: list) -> str:
         string of seeds names
     """
     seed_names = rename_seed(seed)
-    for img in range(0, len(roi)):
+    for img in range(0, len(medial_wall)):
         seeds_to_gifti(
             seed[img],
-            roi[img],
+            medial_wall[img],
             os.path.join(nfactpp_diretory, "files", f"{seed_names[img]}.surf.gii"),
         )
     asc_seeds = [
@@ -158,13 +169,14 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
     # using this function not to return a file but check it is an imaging file
     get_file(arg["warps"], sub)
     nfactpp_diretory = os.path.join(arg["outdir"], "nfact_pp", sub_id)
-    setup_subject_directory(nfactpp_diretory, seed)
+    medial_wall = get_file(arg["medial_wall"], sub) if arg["surface"] else False
 
+    setup_subject_directory(nfactpp_diretory, seed, medial_wall)
+    create_files_for_decomp(nfactpp_diretory, seed, medial_wall)
     if arg["surface"]:
-        roi = get_file(arg["rois"], sub)
-        seed_text = process_surface(nfactpp_diretory, seed, roi)
+        seed_text = process_surface(nfactpp_diretory, seed, medial_wall)
 
-    error_and_exit(write_options_to_file(nfactpp_diretory, seed_text))
+    error_and_exit(write_options_to_file(nfactpp_diretory, seed_text, "seeds"))
 
     if not arg["target2"]:
         target_generation(arg, nfactpp_diretory, col)
@@ -199,11 +211,11 @@ def set_up_filestree(arg: dict) -> dict:
 
     arg["file_tree"] = load_file_tree(f"{arg['file_tree'].lower()}.tree")
 
-    # load a random subjects seed and ROI to check its type
+    # load a random subjects seed to check its type
     arg["seed"] = [filetree_get_files(arg["file_tree"], "sub1", "L", "seed")]
 
     # Needed for checking if seed is surface
-    arg["rois"] = ["filestree"]
+    arg["medial_wall"] = ["filestree"]
     return arg
 
 
@@ -232,7 +244,7 @@ def pre_processing(arg: dict, handler: object) -> None:
 
     if arg["surface"]:
         print(f'{col["darker_pink"]}Mode:{col["reset"]} Surface')
-        check_roi_seed_len(arg["seed"], arg["rois"])
+        check_medial_wall_seed_len(arg["seed"], arg["medial_wall"])
     else:
         print(f'{col["darker_pink"]}Mode:{col["reset"]}Volume')
 

@@ -28,30 +28,10 @@ def check_fsl_is_installed():
     return True
 
 
-def check_seeds_surfaces(seed: list) -> bool:
-    """
-    Function to check that is seeds
-    are surfaces then ROIS are provided.
-
-    Parameters
-    ----------
-    seed: list
-        list of seeds
-
-    Returns
-    -------
-    None
-    """
-    surface = [file for file in seed if ".gii" in file]
-    if surface:
-        return True
-    return False
-
-
-def check_roi_seed_len(seed: list, roi: list):
+def check_medial_wall_seed_len(seed: list, medial_wall: list):
     """
     Function to check that the same
-    amount of seed(s) and roi(s)
+    amount of seed(s) and medial_wall
     are given.
     Parameters
     ----------
@@ -64,10 +44,12 @@ def check_roi_seed_len(seed: list, roi: list):
     None
     """
     error_and_exit(
-        roi, "Surfaces given as seeds but no medial wall. Please provide medial wall"
+        medial_wall,
+        "Surfaces given as seeds but no medial wall. Please provide medial wall",
     )
     error_and_exit(
-        len(seed) == len(roi), "Number of seeds and number of medial wall must match"
+        len(seed) == len(medial_wall),
+        "Number of seeds and number of medial wall must match",
     )
 
 

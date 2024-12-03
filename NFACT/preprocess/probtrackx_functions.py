@@ -2,7 +2,7 @@ import os
 import subprocess
 import multiprocessing
 import signal
-from NFACT.base.filesystem import write_to_file, get_current_date
+from NFACT.base.filesystem import get_current_date
 from NFACT.base.utils import colours, error_and_exit
 
 
@@ -19,6 +19,54 @@ def to_use_gpu():
         True if probtrack
     """
     return True if get_probtrack2_arguments(bin=True) else False
+
+
+def fail_safe_for_nfact_pp(warp: str, bpx: str):
+    """
+    Fail safe function to check that
+    warps and bedpostx directory given.
+
+    Parameters
+    ----------
+    warp: str
+        str og warp files
+    bpx: str
+        str of bedpostX directory
+
+    Returns
+    -------
+    None
+    """
+    arg_names = ["warps", "bedpostX directory"]
+    for idx, arg in enumerate([warp, bpx]):
+        error_and_exit(
+            arg,
+            f"{arg_names[idx]} not given. If using nfact pipeline check the json file",
+        )
+
+
+def check_bpx_dir(bpx_path: str, nodiff_mask: str) -> None:
+    """
+    Function to check bedpostX dir
+
+    Parameters
+    ----------
+    bpx_path: str
+        path to bedpost directory
+    nodiff_mask: str
+        path to nodiff mask
+
+    Returns
+    -------
+    None
+    """
+    error_and_exit(
+        os.path.exists(os.path.dirname(bpx_path)), "BedpostX directory does not exist."
+    )
+    error_and_exit(
+        os.path.isfile(nodiff_mask + ".nii.gz"),
+        "No diff mask in Bedpost X directory does not exist.",
+    )
 
 
 def process_command_arguments(arg: dict, sub: str) -> dict:
@@ -40,6 +88,10 @@ def process_command_arguments(arg: dict, sub: str) -> dict:
         dict of processed
         command line arguments
     """
+    fail_safe_for_nfact_pp(
+        arg["warps"],
+        arg["bpx_path"],
+    )
     return {
         "warps": [os.path.join(sub, warp) for warp in arg["warps"]],
         "seed": os.path.join(
@@ -83,6 +135,7 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
     )
 
     bpx = os.path.join(command_arguments["bpx_path"], "merged")
+    check_bpx_dir(bpx, mask)
     output_dir = os.path.join(
         arg["outdir"], "nfact_pp", os.path.basename(sub), "omatrix2"
     )
@@ -110,26 +163,6 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
     if ptx_options:
         command = command + ptx_options
     return command
-
-
-def write_options_to_file(file_path: str, seed_txt: str):
-    """
-    Function to write seeds
-    and ptx_options to file
-
-    Parmeters
-    ---------
-    file_path: str
-        file path for nfact_PP
-        directory
-    seed_txt: str
-        path of string to go into
-        seed directory
-    """
-    seeds = write_to_file(file_path, "seeds.txt", seed_txt + "\n")
-    if not seeds:
-        return False
-    return True
 
 
 def get_target2(
@@ -196,7 +229,7 @@ def get_target2(
         )
 
 
-def seeds_to_gifti(surfin: str, roi: str, surfout: str) -> None:
+def seeds_to_gifti(surfin: str, medial_wall: str, surfout: str) -> None:
     """
     Function to create seeds from
     surfaces.
@@ -205,7 +238,7 @@ def seeds_to_gifti(surfin: str, roi: str, surfout: str) -> None:
     ----------
     surfin: str
         input surface
-    roi: str,
+    medial_wall: str,
         medial wall surface
     surfout: str
         name of output surface.
@@ -223,7 +256,7 @@ def seeds_to_gifti(surfin: str, roi: str, surfout: str) -> None:
                 surfin,
                 "-o",
                 surfout,
-                f"--values={roi}",
+                f"--values={medial_wall}",
                 "--outputtype=GIFTI_BIN_GZ",
             ],
             capture_output=True,

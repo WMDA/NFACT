@@ -4,28 +4,28 @@ from .imagehandling import check_files_are_imaging_files
 import os
 
 
-def process_seeds(seeds: str) -> list:
+def process_input_imgs(list_of_img: str) -> list:
     """
     Function to read in seed file
 
     Parameters
     ----------
-    seeds: str
+    img_path: str
         str to file with
-        seeds in them.
+        img_path in them.
 
     Returns
     -------
-    list_of_seeds: list
+    list_of_img: list
         list of seed files
     """
     try:
-        list_of_seeds = read_file_to_list(seeds)
+        list_of_img = read_file_to_list(list_of_img)
     except Exception as e:
-        error_and_exit(False, f"Unable to read seeds text file due to {e}")
+        error_and_exit(False, f"Unable to read text file due to {e}")
 
-    [check_files_are_imaging_files(seed) for seed in list_of_seeds]
-    return list_of_seeds
+    [check_files_are_imaging_files(img_file) for img_file in list_of_img]
+    return list_of_img
 
 
 def does_list_of_subjects_exist(path_to_list: str) -> bool:
@@ -237,3 +237,23 @@ def check_arguments(arg: dict, comp_args: list) -> None:
         error_and_exit(
             arg[key], f"Missing {key} argument. Please specify with --{key}."
         )
+
+
+def check_seeds_surfaces(seed: list) -> bool:
+    """
+    Function to check that is seeds
+    are surfaces then ROIS are provided.
+
+    Parameters
+    ----------
+    seed: list
+        list of seeds
+
+    Returns
+    -------
+    None
+    """
+    surface = [file for file in seed if ".gii" in file]
+    if surface:
+        return True
+    return False

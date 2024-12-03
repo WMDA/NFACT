@@ -41,7 +41,7 @@ def nfact_pipeline_main() -> None:
 
     # Build out command line argument input
     if not args["input"]["config"]:
-        print("Building out NFACT arguments. Check logs for specifics")
+        print(f"{col['plum']}NFACT input:{col['reset']} Command line")
 
         pipeline_args_check(args)
 
@@ -58,7 +58,7 @@ def nfact_pipeline_main() -> None:
 
     # Build out arguments from config file
     if args["input"]["config"]:
-        print("Arguments taken from config file rather than command line")
+        print(f"{col['plum']}NFACT input:{col['reset']}: Config File")
         global_arguments = load_json(args["input"]["config"])
         nfact_pp_args = global_arguments["nfact_pp"]
         nfact_decomp_args = global_arguments["nfact_decomp"]
@@ -66,7 +66,7 @@ def nfact_pipeline_main() -> None:
         compulsory_args_for_config(global_arguments)
 
     update_nfact_args_in_place(global_arguments)
-    print(f'NFACT directory is at {nfact_pp_args["outdir"]}')
+    print(f'{col["plum"]}NFACT directory{col["reset"]}: {nfact_pp_args["outdir"]}')
     make_directory(nfact_pp_args["outdir"], ignore_errors=True)
 
     # Build out temporary locations of arguments
@@ -75,10 +75,12 @@ def nfact_pipeline_main() -> None:
         nfact_tmp_location,
         "nfact_decomp_sub_list",
     )
-    nfact_decomp_args["seeds"] = os.path.join(nfact_tmp_location, "seeds.txt")
+    nfact_decomp_args["seeds"] = os.path.join(
+        nfact_tmp_location, "seeds_for_decomp.txt"
+    )
 
     nfact_dr_args["seeds"] = os.path.join(
-        nfact_dr_args["outdir"], "nfact_decomp", "files", "seeds.txt"
+        nfact_dr_args["outdir"], "nfact_decomp", "files", "seeds_for_decomp.txt"
     )
     nfact_dr_args["list_of_subjects"] = os.path.join(
         nfact_dr_args["outdir"], "nfact_decomp", "files", "nfact_decomp_sub_list"
@@ -103,12 +105,13 @@ def nfact_pipeline_main() -> None:
 
     # Run NFACT_PP
     if not global_arguments["global_input"]["pp_skip"]:
-        print(f'{col["plum"]}Running NFACT PP{col["reset"]}')
+        print(f'{col["plum"]}Running:{col["reset"]} NFACT PP')
+        print("-" * 100)
         print(nfact_pp_splash())
         nfact_pp_main(nfact_pp_args)
 
         print(f'{col["pink"]}\nFinished running NFACT_PP{col["reset"]}')
-        print("-" * 70)
+        print("-" * 100)
     else:
         print("Skipping NFACT_PP")
         nfact_pp_args["list_of_subjects"] = read_file_to_list(
@@ -116,15 +119,11 @@ def nfact_pipeline_main() -> None:
         )
 
     # Run NFACT_decomp
-    print(f'{col["plum"]}\nSetting up and running NFACT Decomp{col["reset"]}')
+    print(f'{col["plum"]}Running:{col["reset"]} NFACT Decomp')
+    print("-" * 100)
     try:
         shutil.copy(
-            os.path.join(
-                nfact_pp_args["outdir"],
-                "nfact_pp",
-                os.path.basename(nfact_pp_args["list_of_subjects"][0]),
-                "seeds.txt",
-            ),
+            os.path.join(nfact_pp_args["outdir"], "nfact_pp", "seeds_for_decomp.txt"),
             nfact_tmp_location,
         )
     except FileNotFoundError:
@@ -136,7 +135,7 @@ def nfact_pipeline_main() -> None:
     print(nfact_decomp_splash())
     nfact_decomp_main(nfact_decomp_args)
     print(f'{col["pink"]}\nFinished running NFACT_decomp{col["reset"]}')
-    print("-" * 70)
+    print("-" * 100)
 
     # Clean up
     try:
@@ -156,13 +155,14 @@ def nfact_pipeline_main() -> None:
     if (len(nfact_pp_args["list_of_subjects"]) > 1) and (
         not global_arguments["global_input"]["dr_skip"]
     ):
-        print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
+        print(f'{col["plum"]}Running: {col["reset"]} NFACT DR')
+        print("-" * 100)
         print(nfact_dr_splash())
         nfact_dr_main(nfact_dr_args)
         print(f'{col["pink"]}\nFinished running NFACT_DR{col["reset"]}')
-        print("-" * 70)
+        print("-" * 100)
     else:
-        print("Skipping dual regression")
+        print(f'{col["plum"]}Skipping: {col["reset"]} NFACT DR')
 
     # Exit
     print(f"Decomposition pipeline took {time.toc()} seconds")
