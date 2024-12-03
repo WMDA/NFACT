@@ -94,6 +94,7 @@ def nfact_dr_main(args: dict = None) -> None:
         component=components,
         seeds=args["seeds"],
         nfact_directory=os.path.join(args["outdir"], "nfact_dr"),
+        medial_wall=args["medial_wall"],
     )
     dual_reg.run()
 
