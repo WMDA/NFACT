@@ -31,7 +31,7 @@ def check_fsl_is_installed():
 def check_medial_wall_seed_len(seed: list, medial_wall: list):
     """
     Function to check that the same
-    amount of seed(s) and rmedial_wall
+    amount of seed(s) and medial_wall
     are given.
     Parameters
     ----------
