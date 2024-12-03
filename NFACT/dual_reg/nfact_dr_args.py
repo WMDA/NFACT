@@ -118,7 +118,20 @@ def nfact_dr_splash() -> str:
 """
 
 
-def nfact_dr_usage():
+def nfact_dr_usage() -> str:
+    """
+    Function to print examples on how to use
+    nfact_dr.
+
+    Parameteres
+    -----------
+    None
+
+    Returns
+    -------
+    str: str
+        string of help message
+    """
     col = colours()
     return f"""
 {col['darker_pink']}Dual regression usage:{col['reset']}
