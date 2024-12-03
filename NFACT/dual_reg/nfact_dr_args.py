@@ -1,5 +1,5 @@
 import argparse
-from NFACT.base.utils import colours, no_args
+from NFACT.base.utils import colours, no_args, verbose_help_message
 
 
 def nfactdr_args() -> dict:
@@ -76,8 +76,21 @@ def nfactdr_args() -> dict:
         default=False,
         help="normalise components by scaling",
     )
+    args.add_argument(
+        "-hh",
+        "--verbose_help",
+        dest="verbose_help",
+        default=False,
+        action="store_true",
+        help="""
+        Prints help message and example usages
+      """,
+    )
     no_args(args)
-    return vars(args.parse_args())
+    options = args.parse_args()
+    if options.verbose_help:
+        verbose_help_message(args, nfact_dr_usage())
+    return vars(options)
 
 
 def nfact_dr_splash() -> str:
@@ -102,4 +115,31 @@ def nfact_dr_splash() -> str:
 | |\  || |    | | | || \__/\  | |   | |/ / | |\ \ 
 \_| \_/\_|    \_| |_/ \____/  \_/   |___/  \_| \_|
 {col['reset']}                                                                              
+"""
+
+
+def nfact_dr_usage():
+    col = colours()
+    return f"""
+{col['darker_pink']}Dual regression usage:{col['reset']}
+    nfact_dr --list_of_subjects /path/to/nfact_config_sublist \\
+        --seeds /path/to//seeds.txt \\
+        --nfact_decomp_dir /path/to/nfact_decomp \\
+        --outdir /path/to/output_directory \\
+        --algo NMF 
+
+{col['darker_pink']}ICA Dual regression usage:{col['reset']}
+    nfact_dr --list_of_subjects /path/to/nfact_config_sublist \\
+        --seeds /path/to//seeds.txt \\
+        --nfact_decomp_dir /path/to/nfact_decomp \\
+        --outdir /path/to/output_directory \\
+        --algo ICA 
+
+{col['darker_pink']}Dual regression with medial wall seeds usage:{col['reset']}
+    nfact_dr --list_of_subjects /path/to/nfact_config_sublist \\
+        --seeds /path/to/seeds.txt \\
+        --nfact_decomp_dir /path/to/nfact_decomp \\
+        --outdir /path/to/output_directory \\
+        --medial_wall /path/to/medial_wall.txt \\
+        --algo NMF 
 """
