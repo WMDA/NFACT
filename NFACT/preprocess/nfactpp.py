@@ -78,7 +78,6 @@ def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str
         string of seeds names
     """
     seed_names = rename_seed(seed)
-    breakpoint()
     for img in range(0, len(medial_wall)):
         seeds_to_gifti(
             seed[img],
@@ -257,7 +256,7 @@ def pre_processing(arg: dict, handler: object) -> None:
     subjects_commands = [
         process_subject(sub, arg, col) for sub in arg["list_of_subjects"]
     ]
-    breakpoint()
+
     # This supresses the signit kill message or else it prints it off multiple times for each core
     if arg["n_cores"]:
         handler.set_suppress_messages = True

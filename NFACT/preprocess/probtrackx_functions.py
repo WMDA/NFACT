@@ -21,6 +21,54 @@ def to_use_gpu():
     return True if get_probtrack2_arguments(bin=True) else False
 
 
+def fail_safe_for_nfact_pp(warp: str, bpx: str):
+    """
+    Fail safe function to check that
+    warps and bedpostx directory given.
+
+    Parameters
+    ----------
+    warp: str
+        str og warp files
+    bpx: str
+        str of bedpostX directory
+
+    Returns
+    -------
+    None
+    """
+    arg_names = ["warps", "bedpostX directory"]
+    for idx, arg in enumerate([warp, bpx]):
+        error_and_exit(
+            arg,
+            f"{arg_names[idx]} not given. If using nfact pipeline check the json file",
+        )
+
+
+def check_bpx_dir(bpx_path: str, nodiff_mask: str) -> None:
+    """
+    Function to check bedpostX dir
+
+    Parameters
+    ----------
+    bpx_path: str
+        path to bedpost directory
+    nodiff_mask: str
+        path to nodiff mask
+
+    Returns
+    -------
+    None
+    """
+    error_and_exit(
+        os.path.exists(os.path.dirname(bpx_path)), "BedpostX directory does not exist."
+    )
+    error_and_exit(
+        os.path.isfile(nodiff_mask + ".nii.gz"),
+        "No diff mask in Bedpost X directory does not exist.",
+    )
+
+
 def process_command_arguments(arg: dict, sub: str) -> dict:
     """
     Function to process command line
@@ -40,6 +88,10 @@ def process_command_arguments(arg: dict, sub: str) -> dict:
         dict of processed
         command line arguments
     """
+    fail_safe_for_nfact_pp(
+        arg["warps"],
+        arg["bpx_path"],
+    )
     return {
         "warps": [os.path.join(sub, warp) for warp in arg["warps"]],
         "seed": os.path.join(
@@ -83,6 +135,7 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
     )
 
     bpx = os.path.join(command_arguments["bpx_path"], "merged")
+    check_bpx_dir(bpx, mask)
     output_dir = os.path.join(
         arg["outdir"], "nfact_pp", os.path.basename(sub), "omatrix2"
     )
