@@ -1,5 +1,5 @@
 from NFACT.base.setup import creat_subfolder_setup
-from NFACT.base.utils import colours, error_and_exit
+from NFACT.base.utils import error_and_exit
 import os
 import shutil
 
@@ -22,8 +22,7 @@ def create_folder_set_up(directory: str) -> None:
         os.path.exists(directory),
         "Output directory does not exist. Please provide actual directory",
     )
-    col = colours()
-    print(f"{col['purple']}nfact folder is in {directory}{col['reset']}\n")
+
     nfact_directory = os.path.join(directory, "nfact_decomp")
 
     sub_folders = [

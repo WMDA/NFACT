@@ -43,6 +43,8 @@ def save_images(
     """
 
     col = colours()
+    nprint("SAVING IMAGES")
+    nprint("-" * 100)
     for comp, _ in components.items():
         algo_path = os.path.join("components", algo, "decomp")
         w_file_name = f"W_dim{dim}"
@@ -54,7 +56,7 @@ def save_images(
             grey_prefix = "G_norm"
         try:
             if "grey" in comp:
-                nprint(f"{col['pink']}Saving {comp}{col['reset']}")
+                nprint(f"{col['pink']}Image:{col['reset']} {comp}")
                 save_grey_matter_components(
                     components[comp],
                     nfact_path,
@@ -72,7 +74,7 @@ def save_images(
             nprint("Continuing however dual regression not possbile.{col['reset']}")
         try:
             if "white" in comp:
-                nprint(f"{col['purple']}Saving {comp}{col['reset']}")
+                nprint(f"{col['pink']}Image:{col['reset']} {comp}")
                 save_white_matter(
                     components[comp],
                     os.path.join(

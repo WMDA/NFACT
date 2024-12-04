@@ -64,7 +64,7 @@ def nfact_decomp_main(args: dict = None) -> None:
     # check subjects exist
     args = get_subjects(args)
     check_subject_exist(args["ptxdir"])
-    print("Number of Subjects:", len(args["ptxdir"]), "\n")
+    print(f"{col['plum']}Number of Subjects:{col['reset']}", len(args["ptxdir"]))
 
     group_mode = True if len(args["ptxdir"]) > 0 else False
 
@@ -90,6 +90,7 @@ def nfact_decomp_main(args: dict = None) -> None:
             )
 
     create_folder_set_up(args["outdir"])
+    print(f"{col['plum']}NFACT folder:{col['reset']} {args["outdir"]}")
 
     # Get hyperparameters
     parameters = get_parameters(args["config"], args["algo"], args["dim"])
@@ -103,7 +104,7 @@ def nfact_decomp_main(args: dict = None) -> None:
     log.log_parameters(parameters)
     log.log_break("nfact decomp workflow")
     print(
-        f'Log file is located at {os.path.join(args["outdir"], "nfact_decomp", "logs")}'
+        f'{col["plum"]}Log file:{col["reset"]} {os.path.join(args["outdir"], "nfact_decomp", "logs")}'
     )
 
     get_group_average_files(
@@ -112,7 +113,8 @@ def nfact_decomp_main(args: dict = None) -> None:
     )
 
     # load matrix
-    nprint(f"{col['darker_pink']}\nLoading matrix{col['reset']}\n")
+    nprint("\nLOADING MATRIX")
+    nprint("-" * 100)
     matrix_time = Timer()
     matrix_time.tic()
 
@@ -133,8 +135,10 @@ def nfact_decomp_main(args: dict = None) -> None:
     decomposition_timer = Timer()
     decomposition_timer.tic()
 
-    print(f"Decomposing fdt matrix using {args['algo'].upper()}")
-    log.log("Decomposing matrix")
+    nprint("DECOMPOSING MATRIX")
+    nprint("-" * 100)
+    nprint(f"{col['pink']}NFACT method:{col['reset']} {args['algo'].upper()}")
+
     components = matrix_decomposition(
         fdt_2_conn,
         algo=args["algo"],
@@ -145,7 +149,7 @@ def nfact_decomp_main(args: dict = None) -> None:
         pca_type=args["pca_type"],
     )
     nprint(
-        f'{col["darker_pink"]}Decomposition took {decomposition_timer.toc()} secs{col["reset"]}\n'
+        f'{col["pink"]}Decomposition time:{col["reset"]} {decomposition_timer.toc()} secs\n'
     )
 
     # Save the results
@@ -176,7 +180,7 @@ def nfact_decomp_main(args: dict = None) -> None:
             args["dim"],
             args["medial_wall"],
         )
-    nprint(f"{col['darker_pink']}NFACT has finished{col['reset']}")
+    nprint(f"{col['darker_pink']}NFACT decomp has finished{col['reset']}")
 
     log.clear_logging()
 

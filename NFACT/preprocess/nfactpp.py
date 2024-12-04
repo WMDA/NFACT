@@ -17,7 +17,7 @@ from .probtrackx_functions import (
     build_probtrackx2_arguments,
     Probtrackx,
     get_target2,
-    seeds_to_gifti,
+    seeds_to_ascii,
 )
 from NFACT.base.utils import colours, error_and_exit
 from NFACT.base.setup import check_seeds_surfaces
@@ -79,13 +79,13 @@ def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str
     """
     seed_names = rename_seed(seed)
     for img in range(0, len(medial_wall)):
-        seeds_to_gifti(
+        seeds_to_ascii(
             seed[img],
             medial_wall[img],
-            os.path.join(nfactpp_diretory, "files", f"{seed_names[img]}.surf.gii"),
+            os.path.join(nfactpp_diretory, "files", f"{seed_names[img]}_surf"),
         )
     asc_seeds = [
-        os.path.join(nfactpp_diretory, "files", f"{seed}.surf.gii")
+        os.path.join(nfactpp_diretory, "files", f"{seed}_surf.asc")
         for seed in seed_names
     ]
     return "\n".join(asc_seeds)
