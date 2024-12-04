@@ -165,7 +165,7 @@ def nfact_pipeline_main() -> None:
         print(f'{col["plum"]}Skipping: {col["reset"]} NFACT DR')
 
     # Exit
-    print(f"Decomposition pipeline took {time.toc()} seconds")
+    print(f"Decomposition pipeline took {time.how_long()}")
     print("Finished")
     exit(0)
 

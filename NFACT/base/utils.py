@@ -12,13 +12,28 @@ class Timer:
     """
 
     def __init__(self):
-        self._t = time.time()
+        self._t = None
 
     def tic(self):
         self._t = time.time()
 
     def toc(self):
         return f"{time.time()-self._t:.2f}"
+
+    def format_time(self, seconds):
+        if seconds < 60:
+            return f"{seconds} seconds"
+        elif seconds < 3600:
+            minutes, remaining_seconds = divmod(seconds, 60)
+            return f"{minutes} minutes: {remaining_seconds} seconds"
+        else:
+            hours, remaining_seconds = divmod(seconds, 3600)
+            minutes, remaining_seconds = divmod(remaining_seconds, 60)
+            return f"{hours} hours: {minutes} minutes: {remaining_seconds} seconds"
+
+    def how_long(self):
+        seconds = self.toc()
+        return self.format_time(seconds)
 
 
 def colours():

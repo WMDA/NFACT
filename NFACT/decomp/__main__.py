@@ -128,7 +128,7 @@ def nfact_decomp_main(args: dict = None) -> None:
         fdt_2_conn = process_fdt_matrix2(args["ptxdir"], group_mode)
         save_avg_matrix(fdt_2_conn, os.path.join(args["outdir"], "nfact_decomp"))
     nprint(
-        f"{col['darker_pink']}loaded matrix in {matrix_time.toc()} secs.{col['reset']}\n"
+        f"{col['darker_pink']}loaded matrix in {matrix_time.how_long()} secs.{col['reset']}\n"
     )
 
     # Run the decomposition
@@ -149,7 +149,7 @@ def nfact_decomp_main(args: dict = None) -> None:
         pca_type=args["pca_type"],
     )
     nprint(
-        f'{col["pink"]}Decomposition time:{col["reset"]} {decomposition_timer.toc()} secs\n'
+        f'{col["pink"]}Decomposition time:{col["reset"]} {decomposition_timer.how_long()}\n'
     )
 
     # Save the results
