@@ -61,6 +61,7 @@ def get_group_average_files(file_directory: str, nfact_directory: str) -> None:
     """
     lookup_space = os.path.join(file_directory, "lookup_tractspace_fdt_matrix2.nii.gz")
     coords_for_fdt_matrix2 = os.path.join(file_directory, "coords_for_fdt_matrix2")
+
     [
         error_and_exit(
             os.path.exists(file), f"{file} does not exist. Please check pre-processing"

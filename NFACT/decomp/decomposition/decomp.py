@@ -92,7 +92,7 @@ def pca_reduction(n_components: int, fdt_matrix: np.array) -> np.ndarray:
     pca_matrix = PCA(n_components).fit_transform(fdt_matrix)
     nprint(f"Old matrix size {fdt_matrix.shape[0]}x{fdt_matrix.shape[1]}")
     nprint(f"New matrix size now {pca_matrix.shape[0]}x{pca_matrix.shape[1]}")
-    nprint(f"PCA finished in {timer.toc()} secs.\n")
+    nprint(f"PCA finished in {timer.how_long()}\n")
     return pca_matrix
 
 

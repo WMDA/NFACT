@@ -90,7 +90,7 @@ def nfact_decomp_main(args: dict = None) -> None:
             )
 
     create_folder_set_up(args["outdir"])
-    print(f"{col['plum']}NFACT folder:{col['reset']} {args["outdir"]}")
+    print(f"{col['plum']}NFACT folder:{col['reset']} {args['outdir']}")
 
     # Get hyperparameters
     parameters = get_parameters(args["config"], args["algo"], args["dim"])
@@ -123,12 +123,15 @@ def nfact_decomp_main(args: dict = None) -> None:
             args["outdir"], "nfact_decomp", "group_averages", "average_matrix2.npy"
         )
     )
-
+    print_str = "Loading previously saved" if fdt_2_conn is not None else "Averaging"
+    nprint(f"{col['pink']}NFACT Matrix:{col['reset']} {print_str}")
     if fdt_2_conn is None:
+        save_directory = os.path.join(args["outdir"], "nfact_decomp", "group_averages")
         fdt_2_conn = process_fdt_matrix2(args["ptxdir"], group_mode)
-        save_avg_matrix(fdt_2_conn, os.path.join(args["outdir"], "nfact_decomp"))
+        save_avg_matrix(fdt_2_conn, save_directory)
+        nprint(f'{col["pink"]}Saving Matrix:{col["reset"]} {save_directory}')
     nprint(
-        f"{col['darker_pink']}loaded matrix in {matrix_time.how_long()} secs.{col['reset']}\n"
+        f"{col['pink']}Matrix Loading Time:{col['reset']} {matrix_time.how_long()} \n"
     )
 
     # Run the decomposition

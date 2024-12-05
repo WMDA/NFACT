@@ -52,7 +52,6 @@ def load_previous_matrix(path: str) -> np.ndarray:
         fdt2 matrix.
     """
     if os.path.exists(path):
-        nprint("Loading previously saved matrix")
         return np.load(os.path.join(path))
     return None
 
@@ -74,8 +73,7 @@ def save_avg_matrix(matrix: np.array, directory: str) -> None:
     None
     """
     try:
-        nprint(f'Saving matrix to {os.path.join(directory, "group_averages")}')
-        np.save(os.path.join(directory, "group_averages", "average_matrix2"), matrix)
+        np.save(os.path.join(directory, "average_matrix2"), matrix)
     except Exception as e:
         error_and_exit(False, f"Unable to save matrix due to {e}")
 
@@ -90,6 +88,8 @@ def avg_fdt(list_of_matfiles: list) -> np.ndarray:
     list_of_matfiles: list
         list of matricies
         for the group.
+    waytotal_path: str
+        waytotal path
 
     Returns
     -------
@@ -97,7 +97,6 @@ def avg_fdt(list_of_matfiles: list) -> np.ndarray:
         np.array of sparse matrix.
     """
     sparse_matrix = 0.0
-
     for matrix in tqdm(list_of_matfiles, colour="magenta"):
         sparse_matrix += load_fdt_matrix(matrix)
 

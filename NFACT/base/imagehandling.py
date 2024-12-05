@@ -245,7 +245,6 @@ def save_grey_matter_components(
     -------
     None
     """
-
     coord_mat2 = np.loadtxt(coord_path, dtype=int)
     seeds_id = coord_mat2[:, -2]
     for idx, seed in enumerate(seeds):
@@ -260,7 +259,10 @@ def save_grey_matter_components(
 
         if save_type == "gifti":
             file_name = re.sub("_gii", "", file_name)
-            save_grey_matter_gifit(grey_matter_seed, file_name, seed, medial_wall[idx])
+            mw = False
+            if medial_wall:
+                mw = medial_wall[idx]
+            save_grey_matter_gifit(grey_matter_seed, file_name, seed, mw)
 
         if save_type == "nifti":
             file_name = re.sub("_nii", "", file_name)

@@ -252,6 +252,7 @@ def seeds_to_ascii(surfin: str, medial_wall: str, surfout: str) -> None:
     print(
         f"{col['pink']}Working on seed surface:{col['reset']} {os.path.basename(surfin)}"
     )
+
     try:
         run = subprocess.run(
             [

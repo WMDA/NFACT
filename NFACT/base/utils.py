@@ -20,7 +20,8 @@ class Timer:
     def toc(self):
         return f"{time.time()-self._t:.2f}"
 
-    def format_time(self, seconds):
+    def format_time(self, seconds: float):
+        seconds = int(round(seconds))
         if seconds < 60:
             return f"{seconds} seconds"
         elif seconds < 3600:
@@ -33,7 +34,7 @@ class Timer:
 
     def how_long(self):
         seconds = self.toc()
-        return self.format_time(seconds)
+        return self.format_time(float(seconds))
 
 
 def colours():
