@@ -51,8 +51,7 @@ def nfact_decomp_args() -> dict:
         dest="medial_wall",
         default=False,
         help=f"""
-        {col['pink']}RECOMMENDED FOR SURFACE SEEDS:{col['reset']} Medial wall images if surface seeds given.
-        Masks out grey matter components that cross the medial wall.
+        {col['red']}REQUIRED FOR SURFACE SEEDS:{col['reset']} Medial wall images if surface seeds given.
         """,
     )
     args.add_argument(

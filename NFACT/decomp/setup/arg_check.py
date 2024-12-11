@@ -134,4 +134,5 @@ def process_command_args(args: dict) -> dict:
         return args
     args["components"] = process_components(args["components"], args["algo"])
     args["pca_type"] = check_pca(args["pca_type"])
+
     return args

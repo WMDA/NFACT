@@ -71,7 +71,7 @@ def save_images(
                 )
         except Exception as e:
             nprint(f"{col['red']}Unable to save grey matter due to: {e}")
-            nprint("Continuing however dual regression not possbile.{col['reset']}")
+            nprint(f"Continuing however dual regression not possbile.{col['reset']}")
         try:
             if "white" in comp:
                 nprint(f"{col['pink']}Image:{col['reset']} {comp}")
