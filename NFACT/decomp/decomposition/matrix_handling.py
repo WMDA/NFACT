@@ -78,20 +78,6 @@ def save_avg_matrix(matrix: np.array, directory: str) -> None:
         error_and_exit(False, f"Unable to save matrix due to {e}")
 
 
-def normalise(M):
-    mean_val = np.mean(M)
-    std_val = np.std(M)
-    if std_val > 0:  # Avoid division by zero
-        M = (M - mean_val) / std_val
-        M = M - np.min(M)  # Shift to ensure non-negativity
-    return M
-
-    # max_val = np.max(M)  # Find the global maximum
-    # if max_val > 0:  # Avoid division by zero
-    #    M = M / max_val
-    # return M
-
-
 def avg_fdt(list_of_matfiles: list) -> np.ndarray:
     """
     Function to create and create
@@ -112,9 +98,7 @@ def avg_fdt(list_of_matfiles: list) -> np.ndarray:
     """
     sparse_matrix = 0.0
     for matrix in tqdm(list_of_matfiles, colour="magenta"):
-        mat = load_fdt_matrix(matrix)
-        mat = normalise(mat)
-        sparse_matrix += mat
+        sparse_matrix += load_fdt_matrix(matrix)
 
     sparse_matrix /= len(list_of_matfiles)
     return sparse_matrix
