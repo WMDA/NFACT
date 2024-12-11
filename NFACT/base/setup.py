@@ -257,3 +257,27 @@ def check_seeds_surfaces(seed: list) -> bool:
     if surface:
         return True
     return False
+
+
+def check_medial_wall(args) -> dict:
+    """
+    Function to check medial wall and
+    process if given.
+
+    Parameters
+    ----------
+    arg: dict
+        cmd arguements
+
+    Returns
+    -------
+    arg: dict
+        cmd arguments if processed
+        medial wall
+    """
+
+    if args["surface"] and args["medial_wall"]:
+        args["medial_wall"] = process_input_imgs(args["medial_wall"])
+        return args
+    if args["surface"] and not args["medial_wall"]:
+        error_and_exit(False, "Seeds are surface files but no medial wall given.")

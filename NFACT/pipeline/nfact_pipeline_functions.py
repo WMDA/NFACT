@@ -290,7 +290,7 @@ def assign_nfact_dr_in_place(args: dict) -> None:
     args["nfact_dr"]["algo"] = args["nfact_decomp"]["algo"]
 
 
-def assign_medial_wall_in_place(args: dict):
+def medial_wall_file(args: dict) -> None:
     """
     Function to assign medial wall in
     place for nfact_ecomp/nfact_dr
@@ -304,12 +304,16 @@ def assign_medial_wall_in_place(args: dict):
     -------
     None
     """
-
-    path = os.path.join(
-        args["global_input"]["outdir"], "nfact", "nfact_pp", "mw_for_decomp.txt"
-    )
-    args["nfact_decomp"]["medial_wall"] = path
-    args["nfact_dr"]["medial_wall"] = path
+    if args["nfact_pp"]["medial_wall"]:
+        path = os.path.join(
+            args["global_input"]["outdir"], "nfact", "nfact_pp", "mw_for_decomp.txt"
+        )
+        args["nfact_decomp"]["medial_wall"] = path
+        args["nfact_dr"]["medial_wall"] = path
+        return None
+    if args["nfact_decomp"]["medial_wall"]:
+        args["nfact_dr"]["medial_wall"] = args["nfact_decomp"]["medial_wall"]
+        return None
 
 
 def update_nfact_args_in_place(args: dict) -> None:
@@ -330,5 +334,3 @@ def update_nfact_args_in_place(args: dict) -> None:
     assign_nfactpp_in_place(args)
     assign_nfact_dr_in_place(args)
     assign_nfact_decomp_in_place(args)
-    if args["nfact_decomp"]["medial_wall"]:
-        assign_medial_wall_in_place(args)

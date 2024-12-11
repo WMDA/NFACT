@@ -13,6 +13,7 @@ from NFACT.base.setup import (
     check_arguments,
     process_input_imgs,
     check_seeds_surfaces,
+    check_medial_wall,
 )
 from NFACT.base.utils import colours, nprint
 from NFACT.base.logging import NFACT_logs
@@ -63,10 +64,7 @@ def nfact_dr_main(args: dict = None) -> None:
     # Process seeds
     args["seeds"] = process_input_imgs(args["seeds"])
     args["surface"] = check_seeds_surfaces(args["seeds"])
-    if args["surface"] and args["medial_wall"]:
-        args["medial_wall"] = process_input_imgs(args["medial_wall"])
-    else:
-        args["medial_wall"] = False
+    args = check_medial_wall(args)
     # logging
     log = NFACT_logs(args["algo"], "DR", len(args["ptxdir"]))
     log.set_up_logging(os.path.join(args["outdir"], "nfact_dr", "logs"))

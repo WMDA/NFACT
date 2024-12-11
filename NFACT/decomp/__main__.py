@@ -1,5 +1,5 @@
 from NFACT.base.logging import NFACT_logs
-from NFACT.base.utils import Timer, colours, nprint, error_and_exit
+from NFACT.base.utils import Timer, colours, nprint
 from NFACT.base.signithandler import Signit_handler
 from NFACT.base.setup import (
     check_subject_exist,
@@ -8,6 +8,7 @@ from NFACT.base.setup import (
     process_input_imgs,
     check_arguments,
     check_seeds_surfaces,
+    check_medial_wall,
 )
 
 from .setup.args import nfact_decomp_args, nfact_decomp_splash
@@ -71,10 +72,7 @@ def nfact_decomp_main(args: dict = None) -> None:
     # process seeds
     args["seeds"] = process_input_imgs(args["seeds"])
     args["surface"] = check_seeds_surfaces(args["seeds"])
-    if args["surface"] and args["medial_wall"]:
-        args["medial_wall"] = process_input_imgs(args["medial_wall"])
-    else:
-        error_and_exit(False, "Surface provided but no medial walls.")
+    args = check_medial_wall(args)
     if args["config"]:
         args["config"] = load_config_file(args["config"], args["algo"])
         check_config_file(args["config"], args["algo"])

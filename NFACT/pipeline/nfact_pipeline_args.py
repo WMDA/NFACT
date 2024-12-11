@@ -135,6 +135,12 @@ def nfact_parser() -> dict:
         default="ICA",
         help="What algorithm to run. Options are: ICA (default), or NMF.",
     )
+    nfact_decomp_args.add_argument(
+        "-dm",
+        "--decomp_medial_wall",
+        default="medial_wall",
+        help="File containing medial wall. Needed if seeds are .gii",
+    )
     no_args(args)
     return {
         "args": vars(args.parse_args()),

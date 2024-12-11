@@ -1,7 +1,7 @@
 from .nfact_dr_functions import save_dual_regression_images
 from NFACT.base.matrix_handling import normalise_components
 from NFACT.base.matrix_handling import load_fdt_matrix
-from NFACT.base.utils import error_and_exit, nprint
+from NFACT.base.utils import error_and_exit, nprint, colours
 
 import numpy as np
 from scipy.optimize import nnls
@@ -85,10 +85,10 @@ class Dual_regression:
         None
         """
         decomp = self.__decomp_method()
-
+        col = colours()
         for idx, subject in enumerate(self.list_of_file):
             subject_id = self.__get_subject_id(subject, idx)
-            nprint(f"Dual regressing on {subject_id}:")
+            nprint(f"{col['pink']}Dual regressing on:{col['reset']} {subject_id}:")
             connectivity_matrix = self.__connecitivity_matrix(subject)
 
             try:
