@@ -115,15 +115,23 @@ def nfact_decomp_main(args: dict = None) -> None:
     nprint("-" * 100)
     matrix_time = Timer()
     matrix_time.tic()
-
-    fdt_2_conn = load_previous_matrix(
+    print_str = f"{col['pink']}NFACT Matrix:{col['reset']}"
+    fdt_2_conn = None
+    if os.path.exists(
         os.path.join(
             args["outdir"], "nfact_decomp", "group_averages", "average_matrix2.npy"
         )
-    )
-    print_str = "Loading previously saved" if fdt_2_conn is not None else "Averaging"
-    nprint(f"{col['pink']}NFACT Matrix:{col['reset']} {print_str}")
+    ):
+        nprint(f"{print_str} Loading previously saved")
+
+        fdt_2_conn = load_previous_matrix(
+            os.path.join(
+                args["outdir"], "nfact_decomp", "group_averages", "average_matrix2.npy"
+            )
+        )
+
     if fdt_2_conn is None:
+        nprint(f"{print_str} Averaging")
         save_directory = os.path.join(args["outdir"], "nfact_decomp", "group_averages")
         fdt_2_conn = process_fdt_matrix2(args["ptxdir"], group_mode)
         save_avg_matrix(fdt_2_conn, save_directory)

@@ -51,9 +51,16 @@ def load_previous_matrix(path: str) -> np.ndarray:
     array: np.array
         fdt2 matrix.
     """
-    if os.path.exists(path):
-        return np.load(os.path.join(path))
-    return None
+
+    try:
+        fdt = np.load(os.path.join(path))
+        return fdt
+    except Exception:
+        col = colours()
+        nprint(
+            f"{col['pink']}Error:{col['reset']} Unable to read previous matrix. Averaging"
+        )
+        return None
 
 
 def save_avg_matrix(matrix: np.array, directory: str) -> None:

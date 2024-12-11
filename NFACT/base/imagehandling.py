@@ -211,6 +211,65 @@ def save_grey_matter_gifit(
     nib.GiftiImage(darrays=darrays).to_filename(f"{file_name}.func.gii")
 
 
+def rename_seed(seeds: list) -> list:
+    """
+    Function to renmae seed. Either
+    will rename it as left_seed or
+    right_seed. Or removes unecessary extensions
+
+    Parameters
+    ----------
+    seed: list
+        list of seed names
+
+    Returns
+    -------
+    seed: list
+        list of processed seed names.
+    """
+
+    return [
+        (
+            "left_seed"
+            if "L" in (seed_extension := os.path.basename(seed).split("."))
+            else "right_seed"
+            if "R" in seed_extension
+            else re.sub(r".gii|.surf", "", os.path.basename(seed))
+        )
+        for seed in seeds
+        if (seed_extension := seed.split("."))
+    ]
+
+
+def name_seed(seed: str, nfact_path: str, directory: str, prefix: str, dim: int) -> str:
+    """
+    Function to return file path of seed.
+    Correctly names seed
+
+    Parameters
+    -----------
+    seed: str
+        name of seed
+    nfact_path: str
+        path to nfact directory
+    directory: str
+        path to directory to save
+        file
+    prefix:
+        prefix of seed
+    dim: int
+        number of dimensions from
+        decomp
+    """
+    seed_name = rename_seed([seed])[0]
+    file_name = f"{prefix}_dim{dim}_{seed_name}"
+    return os.path.join(
+        nfact_path,
+        directory,
+        file_name,
+    )
+
+
 def save_grey_matter_components(
     grey_matter_components: np.array,
     nfact_path: str,
@@ -251,11 +310,7 @@ def save_grey_matter_components(
         save_type = imaging_type(seed)
         mask_to_get_seed = seeds_id == idx
         grey_matter_seed = grey_matter_components[mask_to_get_seed, :]
-        file_name = os.path.join(
-            nfact_path,
-            directory,
-            f"{prefix}_dim{dim}_{os.path.basename(seed).replace('.', '_')}",
-        )
+        file_name = name_seed(seed, nfact_path, directory, prefix, dim)
 
         if save_type == "gifti":
             file_name = re.sub("_gii", "", file_name)

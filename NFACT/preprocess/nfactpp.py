@@ -8,7 +8,6 @@ from .nfactpp_functions import (
     get_file,
     filetree_get_files,
     process_filetree_args,
-    rename_seed,
     stop_masks,
     create_files_for_decomp,
     write_options_to_file,
@@ -21,6 +20,7 @@ from .probtrackx_functions import (
 )
 from NFACT.base.utils import colours, error_and_exit
 from NFACT.base.setup import check_seeds_surfaces
+from NFACT.base.imagehandling import rename_seed
 import os
 import shutil
 
@@ -77,7 +77,7 @@ def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str
     str: str
         string of seeds names
     """
-    seed_names = rename_seed(seed)
+    seed_names = rename_seed(os.path.basename(seed))
     for img in range(0, len(medial_wall)):
         seeds_to_ascii(
             seed[img],
