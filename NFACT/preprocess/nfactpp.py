@@ -208,11 +208,16 @@ def set_up_filestree(arg: dict) -> dict:
     arg: dict
         dict of processed cmd line args
     """
-
-    arg["file_tree"] = load_file_tree(f"{arg['file_tree'].lower()}.tree")
+    try:
+        arg["file_tree"] = load_file_tree(f"{arg['file_tree'].lower()}.tree")
+    except Exception as e:
+        error_and_exit(False, f"Unable to load filetree due to {e}")
 
     # load a random subjects seed to check its type
-    arg["seed"] = [filetree_get_files(arg["file_tree"], "sub1", "L", "seed")]
+    try:
+        arg["seed"] = [filetree_get_files(arg["file_tree"], "sub1", "L", "seed")]
+    except Exception as e:
+        error_and_exit(False, f"Badly defined filetree. Error due to {e}")
 
     # Needed for checking if seed is surface
     arg["medial_wall"] = ["filestree"]
@@ -236,7 +241,6 @@ def pre_processing(arg: dict, handler: object) -> None:
     None
     """
     col = colours()
-
     if arg["file_tree"]:
         arg = set_up_filestree(arg)
 
