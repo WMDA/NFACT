@@ -269,7 +269,7 @@ def avoid(arg: dict) -> dict:
         dict of cmd args with avoid
     """
     avoid_command = [f"--avoid={arg['exclusion']}"]
-    arg["ptx_options"] = add_to_ptx_options(avoid_command)
+    arg["ptx_options"] = add_to_ptx_options(avoid_command, arg["ptx_options"])
     return arg
 
 

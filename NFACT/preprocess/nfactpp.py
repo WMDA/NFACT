@@ -78,7 +78,7 @@ def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str
     str: str
         string of seeds names
     """
-    seed_names = rename_seed(os.path.basename(seed))
+    seed_names = rename_seed(seed)
     for img in range(0, len(medial_wall)):
         seeds_to_ascii(
             seed[img],
@@ -185,7 +185,7 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
         print(
             f"{col['pink']}Processing:{col['reset']} Exclusion mask {arg['exclusion']}"
         )
-        arg = avoid()
+        arg = avoid(arg)
     if arg["stop"]:
         print(f"{col['pink']}Processing:{col['reset']} stop and wtstop files")
         arg = stop_masks(arg, nfactpp_diretory, sub, sub_id)
@@ -271,4 +271,5 @@ def pre_processing(arg: dict, handler: object) -> None:
         handler.set_suppress_messages = True
 
     print_to_screen("TRACTOGRAPHY")
+    breakpoint()
     Probtrackx(subjects_commands, arg["n_cores"])
