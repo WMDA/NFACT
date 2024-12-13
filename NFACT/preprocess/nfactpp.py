@@ -11,6 +11,7 @@ from .nfactpp_functions import (
     stop_masks,
     create_files_for_decomp,
     write_options_to_file,
+    avoid,
 )
 from .probtrackx_functions import (
     build_probtrackx2_arguments,
@@ -180,7 +181,11 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
 
     if not arg["target2"]:
         target_generation(arg, nfactpp_diretory, col)
-
+    if arg["exclusion"]:
+        print(
+            f"{col['pink']}Processing:{col['reset']} Exclusion mask {arg['exclusion']}"
+        )
+        arg = avoid()
     if arg["stop"]:
         print(f"{col['pink']}Processing:{col['reset']} stop and wtstop files")
         arg = stop_masks(arg, nfactpp_diretory, sub, sub_id)

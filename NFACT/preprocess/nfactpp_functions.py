@@ -224,11 +224,52 @@ def stop_masks(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str) -> dict:
     else:
         stop_files = load_json(arg["stop"])
     stop_ptx = stoppage(sub, os.path.join(nfactpp_diretory, "files"), stop_files)
-    if arg["ptx_options"]:
-        [arg["ptx_options"].append(command) for command in stop_ptx]
-    else:
-        arg["ptx_options"] = stop_ptx
+    arg["ptx_options"] = add_to_ptx_options(stop_ptx, arg["ptx_options"])
+    return arg
 
+
+def add_to_ptx_options(commands: list, ptx_options: list) -> list:
+    """
+    Function to append to ptx options
+
+    Parameters
+    ----------
+    commands: list
+        list of commands to add to
+        ptx file
+    ptx_options: list
+        list of ptx_options. Can be
+        False.
+
+    Returns
+    -------
+    ptx_options: list
+        ptx options
+    """
+    if ptx_options:
+        [ptx_options.append(command) for command in commands]
+        return ptx_options
+    ptx_options = commands
+    return ptx_options
+
+
+def avoid(arg: dict) -> dict:
+    """
+    Function to add avoid file to
+    probtrackx command
+
+    Parameters
+    ----------
+    arg: dict
+        cmd args
+
+    Returns
+    -------
+    args: dict
+        dict of cmd args with avoid
+    """
+    avoid_command = [f"--avoid={arg['exclusion']}"]
+    arg["ptx_options"] = add_to_ptx_options(avoid_command)
     return arg
 
 

@@ -4,6 +4,7 @@ from .nfactpp_args import nfact_pp_args
 from .nfactpp_setup import (
     check_fsl_is_installed,
     check_ptx_options_are_valid,
+    check_exclusion_mask,
 )
 from NFACT.base.utils import error_and_exit, colours
 from NFACT.base.signithandler import Signit_handler
@@ -78,6 +79,9 @@ def nfact_pp_main(arg: dict = None):
         arg["stop"] = True
     if type(arg["stop"]) is list:
         arg["stop"] = arg["stop"][0]
+
+    if arg["exclusion"]:
+        check_exclusion_mask(arg["exclusion"])
 
     if arg["ptx_options"]:
         try:

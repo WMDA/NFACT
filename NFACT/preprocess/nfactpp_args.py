@@ -60,7 +60,7 @@ def nfact_pp_args() -> dict:
         "--medial_wall",
         dest="medial_wall",
         nargs="+",
-        help=f"""{col['purple']}REQUIRED FOR SURFACE MODE: {col['reset']}Medial wall file . 
+        help=f"""{col['purple']}REQUIRED FOR SURFACE MODE: {col['reset']}Medial wall file. 
         Use when doing whole brain surface tractography to provide medial wall.""",
     )
     option.add_argument(
@@ -111,6 +111,15 @@ def nfact_pp_args() -> dict:
         dest="n_cores",
         help="If should parallel process and with how many cores",
         default=False,
+    )
+    option.add_argument(
+        "-e",
+        "--exclusion",
+        dest="exclusion",
+        default=False,
+        help="""
+        Path to an exclusion mask. Will reject pathways passing through locations given by this mask
+      """,
     )
     option.add_argument(
         "-O",
