@@ -56,6 +56,7 @@ def nfact_pipeline_main() -> None:
         nfact_dr_args = build_module_arguments(
             global_arguments["nfact_dr"], args, "decomp"
         )
+        
 
     # Build out arguments from config file
     if args["input"]["config"]:
@@ -68,6 +69,7 @@ def nfact_pipeline_main() -> None:
 
     update_nfact_args_in_place(global_arguments)
     medial_wall_file(global_arguments)
+
     print(f'{col["plum"]}NFACT directory{col["reset"]}: {nfact_pp_args["outdir"]}')
     make_directory(nfact_pp_args["outdir"], ignore_errors=True)
 
