@@ -8,7 +8,6 @@ from .nfactpp_functions import (
     get_file,
     filetree_get_files,
     process_filetree_args,
-    rename_seed,
     stop_masks,
     create_files_for_decomp,
     write_options_to_file,
@@ -17,10 +16,11 @@ from .probtrackx_functions import (
     build_probtrackx2_arguments,
     Probtrackx,
     get_target2,
-    seeds_to_gifti,
+    seeds_to_ascii,
 )
 from NFACT.base.utils import colours, error_and_exit
 from NFACT.base.setup import check_seeds_surfaces
+from NFACT.base.imagehandling import rename_seed
 import os
 import shutil
 
@@ -77,15 +77,15 @@ def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str
     str: str
         string of seeds names
     """
-    seed_names = rename_seed(seed)
+    seed_names = rename_seed(os.path.basename(seed))
     for img in range(0, len(medial_wall)):
-        seeds_to_gifti(
+        seeds_to_ascii(
             seed[img],
             medial_wall[img],
-            os.path.join(nfactpp_diretory, "files", f"{seed_names[img]}.surf.gii"),
+            os.path.join(nfactpp_diretory, "files", f"{seed_names[img]}_surf"),
         )
     asc_seeds = [
-        os.path.join(nfactpp_diretory, "files", f"{seed}.surf.gii")
+        os.path.join(nfactpp_diretory, "files", f"{seed}_surf.asc")
         for seed in seed_names
     ]
     return "\n".join(asc_seeds)
@@ -165,12 +165,12 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
         arg = process_filetree_args(arg, sub_id)
 
     seed = get_file(arg["seed"], sub)
+
     seed_text = "\n".join(seed)
     # using this function not to return a file but check it is an imaging file
     get_file(arg["warps"], sub)
     nfactpp_diretory = os.path.join(arg["outdir"], "nfact_pp", sub_id)
     medial_wall = get_file(arg["medial_wall"], sub) if arg["surface"] else False
-
     setup_subject_directory(nfactpp_diretory, seed, medial_wall)
     create_files_for_decomp(nfactpp_diretory, seed, medial_wall)
     if arg["surface"]:
@@ -208,11 +208,16 @@ def set_up_filestree(arg: dict) -> dict:
     arg: dict
         dict of processed cmd line args
     """
-
-    arg["file_tree"] = load_file_tree(f"{arg['file_tree'].lower()}.tree")
+    try:
+        arg["file_tree"] = load_file_tree(f"{arg['file_tree'].lower()}.tree")
+    except Exception as e:
+        error_and_exit(False, f"Unable to load filetree due to {e}")
 
     # load a random subjects seed to check its type
-    arg["seed"] = [filetree_get_files(arg["file_tree"], "sub1", "L", "seed")]
+    try:
+        arg["seed"] = [filetree_get_files(arg["file_tree"], "sub1", "L", "seed")]
+    except Exception as e:
+        error_and_exit(False, f"Badly defined filetree. Error due to {e}")
 
     # Needed for checking if seed is surface
     arg["medial_wall"] = ["filestree"]
@@ -236,7 +241,6 @@ def pre_processing(arg: dict, handler: object) -> None:
     None
     """
     col = colours()
-
     if arg["file_tree"]:
         arg = set_up_filestree(arg)
 

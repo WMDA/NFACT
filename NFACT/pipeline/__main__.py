@@ -5,6 +5,7 @@ from .nfact_pipeline_functions import (
     write_decomp_list,
     compulsory_args_for_config,
     update_nfact_args_in_place,
+    medial_wall_file,
 )
 from NFACT.base.config import get_nfact_arguments, process_dictionary_arguments
 from NFACT.base.utils import error_and_exit, colours, Timer
@@ -66,6 +67,7 @@ def nfact_pipeline_main() -> None:
         compulsory_args_for_config(global_arguments)
 
     update_nfact_args_in_place(global_arguments)
+    medial_wall_file(global_arguments)
     print(f'{col["plum"]}NFACT directory{col["reset"]}: {nfact_pp_args["outdir"]}')
     make_directory(nfact_pp_args["outdir"], ignore_errors=True)
 
@@ -113,7 +115,7 @@ def nfact_pipeline_main() -> None:
         print(f'{col["pink"]}\nFinished running NFACT_PP{col["reset"]}')
         print("-" * 100)
     else:
-        print("Skipping NFACT_PP")
+        print(f"\n{col['plum']}Skipping:{col['reset']} NFACT_PP")
         nfact_pp_args["list_of_subjects"] = read_file_to_list(
             nfact_pp_args["list_of_subjects"]
         )
@@ -165,7 +167,7 @@ def nfact_pipeline_main() -> None:
         print(f'{col["plum"]}Skipping: {col["reset"]} NFACT DR')
 
     # Exit
-    print(f"Decomposition pipeline took {time.toc()} seconds")
+    print(f"Decomposition pipeline took {time.how_long()}")
     print("Finished")
     exit(0)
 

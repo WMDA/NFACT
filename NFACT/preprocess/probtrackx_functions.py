@@ -229,7 +229,7 @@ def get_target2(
         )
 
 
-def seeds_to_gifti(surfin: str, medial_wall: str, surfout: str) -> None:
+def seeds_to_ascii(surfin: str, medial_wall: str, surfout: str) -> None:
     """
     Function to create seeds from
     surfaces.
@@ -243,11 +243,16 @@ def seeds_to_gifti(surfin: str, medial_wall: str, surfout: str) -> None:
     surfout: str
         name of output surface.
         Needs to be full path
+
+    Returns
+    -------
+    None
     """
     col = colours()
     print(
         f"{col['pink']}Working on seed surface:{col['reset']} {os.path.basename(surfin)}"
     )
+
     try:
         run = subprocess.run(
             [
@@ -257,7 +262,7 @@ def seeds_to_gifti(surfin: str, medial_wall: str, surfout: str) -> None:
                 "-o",
                 surfout,
                 f"--values={medial_wall}",
-                "--outputtype=GIFTI_BIN_GZ",
+                "--outputtype=ASCII",
             ],
             capture_output=True,
         )

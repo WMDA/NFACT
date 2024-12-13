@@ -43,18 +43,20 @@ def save_images(
     """
 
     col = colours()
+    nprint("SAVING IMAGES")
+    nprint("-" * 100)
     for comp, _ in components.items():
         algo_path = os.path.join("components", algo, "decomp")
-        w_file_name = f"W_dim{dim}"
-        grey_prefix = "G"
+        w_file_name = f"W_{algo.upper()}_dim{dim}"
+        grey_prefix = f"G_{algo.upper()}"
 
         if "normalised" in comp:
             algo_path = os.path.join("components", algo, "normalised")
-            w_file_name = f"W_norm_dim{dim}"
-            grey_prefix = "G_norm"
+            w_file_name = f"W_{algo.upper()}_norm_dim{dim}"
+            grey_prefix = f"G_{algo.upper()}_norm"
         try:
             if "grey" in comp:
-                nprint(f"{col['pink']}Saving {comp}{col['reset']}")
+                nprint(f"{col['pink']}Image:{col['reset']} {comp}")
                 save_grey_matter_components(
                     components[comp],
                     nfact_path,
@@ -69,10 +71,10 @@ def save_images(
                 )
         except Exception as e:
             nprint(f"{col['red']}Unable to save grey matter due to: {e}")
-            nprint("Continuing however dual regression not possbile.{col['reset']}")
+            nprint(f"Continuing however dual regression not possbile.{col['reset']}")
         try:
             if "white" in comp:
-                nprint(f"{col['purple']}Saving {comp}{col['reset']}")
+                nprint(f"{col['pink']}Image:{col['reset']} {comp}")
                 save_white_matter(
                     components[comp],
                     os.path.join(
@@ -124,7 +126,9 @@ def winner_takes_all(
         os.path.join(
             nfact_path, "group_averages", "lookup_tractspace_fdt_matrix2.nii.gz"
         ),
-        os.path.join(nfact_path, "components", algo, "WTA", f"W_WTA_dim{dim}"),
+        os.path.join(
+            nfact_path, "components", algo, "WTA", f"W_{algo.upper()}_WTA_dim{dim}"
+        ),
     )
     save_grey_matter_components(
         grey_wta_map,
@@ -134,7 +138,7 @@ def winner_takes_all(
         dim,
         os.path.join(nfact_path, "group_averages", "coords_for_fdt_matrix2"),
         medial_wall,
-        "G_WTA",
+        f"G_{algo.upper()}_WTA",
     )
 
 

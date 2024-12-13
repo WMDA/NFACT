@@ -2,7 +2,6 @@ from NFACT.base.utils import error_and_exit
 from NFACT.base.imagehandling import check_files_are_imaging_files
 from NFACT.base.filesystem import write_to_file, load_json
 import os
-import re
 
 
 def get_file(img_file: list, sub: str) -> list:
@@ -77,14 +76,9 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
     """
     del arg["seed"]
     del arg["medial_wall"]
-    arg["seed"] = list(
-        set(
-            [
-                filetree_get_files(arg["file_tree"], sub, hemi, "seed")
-                for hemi in ["L", "R"]
-            ]
-        )
-    )
+    arg["seed"] = [
+        filetree_get_files(arg["file_tree"], sub, hemi, "seed") for hemi in ["L", "R"]
+    ]
     arg["warps"] = [
         filetree_get_files(arg["file_tree"], sub, "L", "std2diff"),
         filetree_get_files(arg["file_tree"], sub, "L", "diff2std"),
@@ -121,36 +115,6 @@ def update_seeds_file(file_path: str) -> None:
             file.write(update_extensions)
     except Exception as e:
         error_and_exit(False, f"Unable to change seeds file due to {e}")
-
-
-def rename_seed(seeds: list) -> list:
-    """
-    Function to renmae seed. Either
-    will rename it as left_seed or
-    right_seed. Or removes unecessary extensions
-
-    Parameters
-    ----------
-    seed: list
-        list of seed names
-
-    Returns
-    -------
-    seed: list
-        list of processed seed names.
-    """
-
-    return [
-        (
-            "left_seed"
-            if "L" in (seed_extension := os.path.basename(seed).split("."))
-            else "right_seed"
-            if "R" in seed_extension
-            else re.sub(r".gii|.surf", "", os.path.basename(seed))
-        )
-        for seed in seeds
-        if (seed_extension := seed.split("."))
-    ]
 
 
 def get_stop_files_filestree(files_tree: object, subject: str) -> dict:

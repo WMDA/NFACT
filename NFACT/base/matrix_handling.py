@@ -4,9 +4,7 @@ import scipy.sparse as sps
 import numpy as np
 
 
-def normalise_components(
-    grey_matter: np.array, white_matter: np.array
-) -> dict:
+def normalise_components(grey_matter: np.array, white_matter: np.array) -> dict:
     """
     Normalise components.
     Useful for visulaization
@@ -24,13 +22,11 @@ def normalise_components(
         dictionary of normalised components
     """
     col = colours()
-    nprint(f"{col['plum']}Normalising components{col['reset']}")
+    nprint(f"{col['pink']}Normalising:{col['reset']} Components")
 
     return {
         "grey_matter": StandardScaler().fit_transform(grey_matter),
-        "white_matter": StandardScaler()
-        .fit_transform(white_matter.T)
-        .T,
+        "white_matter": StandardScaler().fit_transform(white_matter.T).T,
     }
 
 

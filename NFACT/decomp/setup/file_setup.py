@@ -1,5 +1,5 @@
 from NFACT.base.setup import creat_subfolder_setup
-from NFACT.base.utils import colours, error_and_exit
+from NFACT.base.utils import error_and_exit
 import os
 import shutil
 
@@ -22,8 +22,7 @@ def create_folder_set_up(directory: str) -> None:
         os.path.exists(directory),
         "Output directory does not exist. Please provide actual directory",
     )
-    col = colours()
-    print(f"{col['purple']}nfact folder is in {directory}{col['reset']}\n")
+
     nfact_directory = os.path.join(directory, "nfact_decomp")
 
     sub_folders = [
@@ -62,6 +61,7 @@ def get_group_average_files(file_directory: str, nfact_directory: str) -> None:
     """
     lookup_space = os.path.join(file_directory, "lookup_tractspace_fdt_matrix2.nii.gz")
     coords_for_fdt_matrix2 = os.path.join(file_directory, "coords_for_fdt_matrix2")
+
     [
         error_and_exit(
             os.path.exists(file), f"{file} does not exist. Please check pre-processing"
