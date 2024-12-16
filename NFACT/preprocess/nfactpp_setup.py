@@ -1,6 +1,7 @@
 from .probtrackx_functions import get_probtrack2_arguments
 from NFACT.base.utils import colours, error_and_exit
 from NFACT.base.filesystem import make_directory
+from NFACT.base.imagehandling import check_files_are_imaging_files
 import os
 import re
 from file_tree import FileTree
@@ -124,3 +125,13 @@ def load_file_tree(tree_name: str) -> object:
         return tree
     except Exception as e:
         error_and_exit(False, f"Unable to load tree file, due to {e}")
+
+
+def check_exclusion_mask(exclusion_mask: str) -> None:
+    """
+    Wrapper around function to
+    check exclusion masks is a file
+    and exists.
+    """
+    error_and_exit(os.path.isfile(exclusion_mask), "Exclusion mask does not exists")
+    check_files_are_imaging_files(exclusion_mask)

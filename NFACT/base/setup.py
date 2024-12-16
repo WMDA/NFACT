@@ -23,7 +23,6 @@ def process_input_imgs(list_of_img: str) -> list:
         list_of_img = read_file_to_list(list_of_img)
     except Exception as e:
         error_and_exit(False, f"Unable to read text file due to {e}")
-
     [check_files_are_imaging_files(img_file) for img_file in list_of_img]
     return list_of_img
 
@@ -281,3 +280,4 @@ def check_medial_wall(args) -> dict:
         return args
     if args["surface"] and not args["medial_wall"]:
         error_and_exit(False, "Seeds are surface files but no medial wall given.")
+    

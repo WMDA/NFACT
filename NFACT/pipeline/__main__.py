@@ -13,7 +13,6 @@ from NFACT.base.filesystem import make_directory, load_json, read_file_to_list
 from NFACT.base.setup import does_list_of_subjects_exist
 from NFACT.preprocess.__main__ import nfact_pp_main
 from NFACT.preprocess.nfactpp_args import nfact_pp_splash
-from NFACT.decomp.__main__ import nfact_decomp_main
 from NFACT.decomp.setup.args import nfact_decomp_splash
 from NFACT.dual_reg.nfact_dr_args import nfact_dr_splash
 from NFACT.dual_reg.__main__ import nfact_dr_main
@@ -68,6 +67,7 @@ def nfact_pipeline_main() -> None:
 
     update_nfact_args_in_place(global_arguments)
     medial_wall_file(global_arguments)
+
     print(f'{col["plum"]}NFACT directory{col["reset"]}: {nfact_pp_args["outdir"]}')
     make_directory(nfact_pp_args["outdir"], ignore_errors=True)
 
@@ -135,8 +135,8 @@ def nfact_pipeline_main() -> None:
         )
 
     print(nfact_decomp_splash())
-    nfact_decomp_main(nfact_decomp_args)
-    print(f'{col["pink"]}\nFinished running NFACT_decomp{col["reset"]}')
+    # nfact_decomp_main(nfact_decomp_args)
+    print(f'{col["plum"]}\nFinished:{col["reset"]} NFACT Decomp')
     print("-" * 100)
 
     # Clean up
@@ -157,11 +157,11 @@ def nfact_pipeline_main() -> None:
     if (len(nfact_pp_args["list_of_subjects"]) > 1) and (
         not global_arguments["global_input"]["dr_skip"]
     ):
-        print(f'{col["plum"]}Running: {col["reset"]} NFACT DR')
+        print(f'\n\n{col["plum"]}Running: {col["reset"]} NFACT DR')
         print("-" * 100)
         print(nfact_dr_splash())
         nfact_dr_main(nfact_dr_args)
-        print(f'{col["pink"]}\nFinished running NFACT_DR{col["reset"]}')
+        print(f'{col["plum"]}\nFinished:{col["reset"]} NFACT_DR')
         print("-" * 100)
     else:
         print(f'{col["plum"]}Skipping: {col["reset"]} NFACT DR')

@@ -125,7 +125,7 @@ def white_component(component_dir: str, group_averages_dir: str) -> np.ndarray:
     lookup_vol = Image(
         os.path.join(group_averages_dir, "lookup_tractspace_fdt_matrix2.nii.gz")
     )
-    white_matter = nb.load(glob(os.path.join(component_dir, "W_dim*"))[0])
+    white_matter = nb.load(glob(os.path.join(component_dir, "W_*_dim*"))[0])
     return vol2mat(white_matter.get_fdata(), lookup_vol)
 
 
@@ -159,7 +159,7 @@ def load_grey_matter_volume(nifti_file: str, x_y_z_coordinates: np.array) -> np.
     return flattened_data[xyz_idx, :]
 
 
-def load_grey_matter_gifti_seed(file_name: str) -> np.array:
+def load_grey_matter_gifti_seed(file_name: str, medial_wall: str) -> np.array:
     """
     Load grey matter component from a GIFTI file.
 
@@ -167,6 +167,8 @@ def load_grey_matter_gifti_seed(file_name: str) -> np.array:
     ----------
     file_name: str
         Path to the GIFTI file.
+    medial_wall: str
+        str to medial wall path
 
     Returns
     -------
@@ -175,10 +177,18 @@ def load_grey_matter_gifti_seed(file_name: str) -> np.array:
     """
 
     gifti_img = nb.load(file_name)
-    return np.column_stack([darray.data for darray in gifti_img.darrays])
+    m_wall = nb.load(medial_wall).darrays[0].data
+    non_masked_indices = np.where(m_wall == 1)[0]
+    grey_matter_component = np.column_stack(
+        [darray.data for darray in gifti_img.darrays]
+    )
+    grey_matter_component = grey_matter_component[non_masked_indices]
+    return grey_matter_component
 
 
-def grey_components(seeds: list, decomp_dir: str, group_averages: str) -> np.ndarray:
+def grey_components(
+    seeds: list, decomp_dir: str, group_averages: str, mw: list
+) -> np.ndarray:
     """
     Function to get grey components.
 
@@ -190,13 +200,15 @@ def grey_components(seeds: list, decomp_dir: str, group_averages: str) -> np.nda
         str of absolute path to nfact directory
     group_averages_dir: str
         str to group averages directory
+    mw: list
+        list of wedial wall files
 
     Returns
     -------
     np.ndarray: np.array
         grey matter components array
     """
-    grey_matter = glob(os.path.join(decomp_dir, "G_dim*"))
+    grey_matter = glob(os.path.join(decomp_dir, "G_*dim*"))
     sorted_components = [
         seed for _, seed in sorted(zip(seeds, grey_matter), key=lambda pair: pair[0])
     ]
@@ -217,12 +229,15 @@ def grey_components(seeds: list, decomp_dir: str, group_averages: str) -> np.nda
         )
     if save_type == "gii":
         return np.vstack(
-            [load_grey_matter_gifti_seed(seed) for seed in sorted_components]
+            [
+                load_grey_matter_gifti_seed(seed, mw[idx])
+                for idx, seed in enumerate(sorted_components)
+            ]
         )
 
 
 def get_group_level_components(
-    component_dir: str, group_averages_dir: str, seeds: list
+    component_dir: str, group_averages_dir: str, seeds: list, mw: list
 ):
     """
     Function to get group level components
@@ -235,6 +250,8 @@ def get_group_level_components(
         path to group averages directory
     seeds: list
         A list of seeds
+    mw: list
+        list of wedial wall files
 
     Returns
     -------
@@ -244,7 +261,9 @@ def get_group_level_components(
 
     return {
         "white_components": white_component(component_dir, group_averages_dir),
-        "grey_components": grey_components(seeds, component_dir, group_averages_dir),
+        "grey_components": grey_components(
+            seeds, component_dir, group_averages_dir, mw
+        ),
     }
 
 

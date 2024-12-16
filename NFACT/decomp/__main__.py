@@ -68,7 +68,6 @@ def nfact_decomp_main(args: dict = None) -> None:
     print(f"{col['plum']}Number of Subjects:{col['reset']}", len(args["ptxdir"]))
 
     group_mode = True if len(args["ptxdir"]) > 0 else False
-
     # process seeds
     args["seeds"] = process_input_imgs(args["seeds"])
     args["surface"] = check_seeds_surfaces(args["seeds"])
@@ -86,7 +85,6 @@ def nfact_decomp_main(args: dict = None) -> None:
             shutil.rmtree(
                 os.path.join(args["outdir"], "nfact_decomp"), ignore_errors=True
             )
-
     create_folder_set_up(args["outdir"])
     print(f"{col['plum']}NFACT folder:{col['reset']} {args['outdir']}")
 

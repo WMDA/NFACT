@@ -75,14 +75,20 @@ def nfact_dr_main(args: dict = None) -> None:
     log.log_break("input")
     log.log_arguments(args)
     log.log_break("nfact decomp workflow")
-    nprint(
-        f"{col['plum']}Performing dual regression on {len(args['ptxdir'])} subjects{col['reset']}\n"
-    )
+    nprint(f"{col['plum']}Number of subject:{col['reset']} {len(args['ptxdir'])} \n")
 
     nprint("Obtaining components\n")
+    nprint("-" * 100)
     components = get_group_level_components(
-        paths["component_path"], paths["group_average_path"], args["seeds"]
+        paths["component_path"],
+        paths["group_average_path"],
+        args["seeds"],
+        args["medial_wall"],
     )
+    nprint("Dual Regression\n")
+    nprint("-" * 100)
+    method = "Regression" if args["algo"] == "ica" else "Non-negative Regression"
+    nprint(f"{col['pink']}DR Method:{col['reset']} {method}")
 
     dual_reg = Dual_regression(
         algo=args["algo"],

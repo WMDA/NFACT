@@ -196,8 +196,7 @@ def get_target2(
     -------
     None
     """
-    col = colours()
-    print(f"{col['pink']}Creating:{col['reset']} Target2 Image")
+
     try:
         run = subprocess.run(
             [

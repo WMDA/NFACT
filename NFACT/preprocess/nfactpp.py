@@ -11,6 +11,7 @@ from .nfactpp_functions import (
     stop_masks,
     create_files_for_decomp,
     write_options_to_file,
+    avoid,
 )
 from .probtrackx_functions import (
     build_probtrackx2_arguments,
@@ -77,7 +78,7 @@ def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str
     str: str
         string of seeds names
     """
-    seed_names = rename_seed(os.path.basename(seed))
+    seed_names = rename_seed(seed)
     for img in range(0, len(medial_wall)):
         seeds_to_ascii(
             seed[img],
@@ -108,9 +109,8 @@ def target_generation(arg: dict, nfactpp_diretory: str, col: dict) -> None:
     -------
     None
     """
-    print(
-        f'{col["purple"]}No target given. Creating a whole brain target.{col["reset"]}'
-    )
+
+    print(f"{col['pink']}Creating:{col['reset']} Target2 Image")
     get_target2(
         arg["ref"],
         os.path.join(nfactpp_diretory, "files", "target2"),
@@ -173,6 +173,7 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
     medial_wall = get_file(arg["medial_wall"], sub) if arg["surface"] else False
     setup_subject_directory(nfactpp_diretory, seed, medial_wall)
     create_files_for_decomp(nfactpp_diretory, seed, medial_wall)
+    
     if arg["surface"]:
         seed_text = process_surface(nfactpp_diretory, seed, medial_wall)
 
@@ -180,7 +181,13 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
 
     if not arg["target2"]:
         target_generation(arg, nfactpp_diretory, col)
-
+    else:
+        print(f"{col['pink']}Target2 img:{col['reset']} {arg['target2']}")
+    if arg["exclusion"]:
+        print(
+            f"{col['pink']}Processing:{col['reset']} Exclusion mask {arg['exclusion']}"
+        )
+        arg = avoid(arg)
     if arg["stop"]:
         print(f"{col['pink']}Processing:{col['reset']} stop and wtstop files")
         arg = stop_masks(arg, nfactpp_diretory, sub, sub_id)
