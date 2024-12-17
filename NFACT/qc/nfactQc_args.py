@@ -46,7 +46,13 @@ def nfact_qc_args() -> dict:
         dest="threshold",
         default=2,
         help="Threshold value for z scoring the normalised image",
-        type=int,
+    )
+    args.add_argument(
+        "-O",
+        "--overwrite",
+        dest="overwrite",
+        action="store_true",
+        help="Overwite previous QC",
     )
     no_args(args)
     return vars(args.parse_args())
@@ -67,9 +73,9 @@ def nfact_Qc_splash() -> str:
     col = colours()
     return f"""
 {col['pink']} 
- _   _ ______   ___   _____  _____  
-| \ | ||  ___| / _ \ /  __ \|_   _|    ___     ____ 
-|  \| || |_   / /_\ \| /  \/  | |     / _ \   / ___|
+ _   _ ______   ___   _____  _____     ___     ____ 
+| \ | ||  ___| / _ \ /  __ \|_   _|   / _ \   / ___|
+|  \| || |_   / /_\ \| /  \/  | |    | | | | | | 
 | . ` ||  _|  |  _  || |      | |    | | | | | |    
 | |\  || |    | | | || \__/\  | |    | |_| | | |___ 
 \_| \_/\_|    \_| |_/ \____/  \_/     \__\_\  \____|

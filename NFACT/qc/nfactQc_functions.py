@@ -3,7 +3,8 @@ import numpy as np
 import nibabel as nib
 from sklearn.preprocessing import StandardScaler
 from glob import glob
-from NFACT.base.utils import colours
+from NFACT.base.utils import colours, error_and_exit
+from NFACT.base.setup import make_directory
 
 
 def save_nifti(data: np.array, affine: np.array, filename: str) -> None:
@@ -181,3 +182,33 @@ def get_images(nfact_directory: str, dim: str, algo: str) -> dict:
             nfact_directory, "components", algo, "decomp" f"W_{algo}_dim{dim}.nii.gz"
         ),
     }
+
+
+def nfactQc_dir(nfactQc_directory: str, overwrite: bool = False) -> None:
+    """
+    Function to create nfactQc directory.
+
+    Parameters
+    -----------
+    nfact_directory: str
+        path to nfact directory
+    dim: str
+        str of dimensions
+    algo: str
+        either NMF or ICA
+    overwrite: bool
+        overwrite directory
+    """
+
+    if os.path.exists(nfactQc_directory) and not overwrite:
+        error_and_exit(
+            overwrite, "nfactQc already exists. Please use --overwrite to remove."
+        )
+    make_directory(nfactQc_directory, overwrite, ignore_errors=True)
+
+
+def check_Qc_dir(nfactQc_directory: str, dim: str, algo: str):
+    if f"{dim}_{algo}" in os.listdir(nfactQc_directory):
+        error_and_exit(
+            False, "QC images aleady exist. Please use --overwrite to continue"
+        )
