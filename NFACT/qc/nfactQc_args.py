@@ -1,5 +1,5 @@
 import argparse
-from NFACT.base.utils import colours, no_args, verbose_help_message
+from NFACT.base.utils import colours, no_args
 
 
 def nfact_qc_args() -> dict:
@@ -22,9 +22,9 @@ def nfact_qc_args() -> dict:
     )
     col = colours()
     args.add_argument(
-        "-o",
-        "--outdir",
-        dest="outdir",
+        "-n",
+        "--nfact_folder",
+        dest="nfact_folder",
         help=f"{col['red']}REQUIRED:{col['reset']} Path to nfact output folder",
     )
     args.add_argument(
@@ -49,10 +49,7 @@ def nfact_qc_args() -> dict:
         type=int,
     )
     no_args(args)
-    options = args.parse_args()
-    if options.verbose_help:
-        verbose_help_message(args, nfact_Qc_usage())
-    return vars(options)
+    return vars(args.parse_args())
 
 
 def nfact_Qc_splash() -> str:
