@@ -88,7 +88,9 @@ class Dual_regression:
         col = colours()
         for idx, subject in enumerate(self.list_of_file):
             subject_id = self.__get_subject_id(subject, idx)
-            nprint(f"{col['pink']}Dual regressing on:{col['reset']} {subject_id}:")
+            nprint(
+                f"\n{col['pink']}Dual regressing on subject:{col['reset']} {subject_id}"
+            )
             connectivity_matrix = self.__connecitivity_matrix(subject)
 
             try:
@@ -192,7 +194,13 @@ class Dual_regression:
         """
         try:
             return re.findall(r"sub[a-zA-Z0-9]*", path)[0]
-        except Exception:
+        except IndexError:
+            sub_name = os.path.basename(os.path.dirname(path))
+            if "MR" in sub_name:
+                try:
+                    return sub_name.split("_")[0]
+                except IndexError:
+                    pass
             return f"sub-{number}"
 
     def __ica_dual_regression(self, connectivity_matrix: np.ndarray) -> dict:

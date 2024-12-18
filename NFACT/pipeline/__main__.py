@@ -14,8 +14,11 @@ from NFACT.base.setup import does_list_of_subjects_exist
 from NFACT.preprocess.__main__ import nfact_pp_main
 from NFACT.preprocess.nfactpp_args import nfact_pp_splash
 from NFACT.decomp.setup.args import nfact_decomp_splash
+from NFACT.decomp.__main__ import nfact_decomp_main
 from NFACT.dual_reg.nfact_dr_args import nfact_dr_splash
 from NFACT.dual_reg.__main__ import nfact_dr_main
+from NFACT.qc.__main__ import nfactQc_main
+from NFACT.qc.nfactQc_args import nfact_Qc_splash
 
 import os
 import shutil
@@ -55,19 +58,20 @@ def nfact_pipeline_main() -> None:
         nfact_dr_args = build_module_arguments(
             global_arguments["nfact_dr"], args, "decomp"
         )
+        nfact_qc_args = build_module_arguments(global_arguments["nfact_qc"], args, "qc")
 
     # Build out arguments from config file
     if args["input"]["config"]:
-        print(f"{col['plum']}NFACT input:{col['reset']}: Config File")
+        print(f"{col['plum']}NFACT input:{col['reset']} Config File")
         global_arguments = load_json(args["input"]["config"])
         nfact_pp_args = global_arguments["nfact_pp"]
         nfact_decomp_args = global_arguments["nfact_decomp"]
         nfact_dr_args = global_arguments["nfact_dr"]
+        nfact_qc_args = global_arguments["nfact_qc"]
         compulsory_args_for_config(global_arguments)
 
     update_nfact_args_in_place(global_arguments)
     medial_wall_file(global_arguments)
-
     print(f'{col["plum"]}NFACT directory{col["reset"]}: {nfact_pp_args["outdir"]}')
     make_directory(nfact_pp_args["outdir"], ignore_errors=True)
 
@@ -135,7 +139,7 @@ def nfact_pipeline_main() -> None:
         )
 
     print(nfact_decomp_splash())
-    # nfact_decomp_main(nfact_decomp_args)
+    nfact_decomp_main(nfact_decomp_args)
     print(f'{col["plum"]}\nFinished:{col["reset"]} NFACT Decomp')
     print("-" * 100)
 
@@ -153,6 +157,20 @@ def nfact_pipeline_main() -> None:
     except Exception:
         pass
 
+    if not global_arguments["global_input"]["qc_skip"]:
+        nfact_qc_args["nfact_folder"] = nfact_dr_args["nfact_decomp_dir"]
+        nfact_qc_args["dim"] = nfact_decomp_args["dim"]
+        nfact_qc_args["algo"] = nfact_decomp_args["algo"]
+        nfact_qc_args["overwrite"] = False
+        print(f'{col["plum"]}Running:{col["reset"]} NFACT Qc')
+        print("-" * 100)
+        print(nfact_Qc_splash())
+        nfactQc_main(nfact_qc_args)
+        print(f'{col["plum"]}\nFinished:{col["reset"]} NFACT Qc')
+        print("-" * 100)
+    else:
+        print(f'{col["plum"]}Skipping: {col["reset"]} NFACT Qc')
+
     # Run NFACT_DR
     if (len(nfact_pp_args["list_of_subjects"]) > 1) and (
         not global_arguments["global_input"]["dr_skip"]
@@ -161,7 +179,7 @@ def nfact_pipeline_main() -> None:
         print("-" * 100)
         print(nfact_dr_splash())
         nfact_dr_main(nfact_dr_args)
-        print(f'{col["plum"]}\nFinished:{col["reset"]} NFACT_DR')
+        print(f'{col["plum"]}\nFinished:{col["reset"]} NFACT DR')
         print("-" * 100)
     else:
         print(f'{col["plum"]}Skipping: {col["reset"]} NFACT DR')

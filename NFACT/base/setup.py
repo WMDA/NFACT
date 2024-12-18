@@ -280,4 +280,32 @@ def check_medial_wall(args) -> dict:
         return args
     if args["surface"] and not args["medial_wall"]:
         error_and_exit(False, "Seeds are surface files but no medial wall given.")
-    
+
+
+def process_dim(dim: str) -> str:
+    """
+    Function to process dimensions from
+    command line input.
+
+    Parameters
+    ----------
+    dim: str
+        number of dimensions
+    Returns
+    -------
+    dim: int/float
+        number of dimensions as
+        float or int
+    """
+    dim = str(dim)
+    if ".0" in dim:
+        dim = float(dim)
+    try:
+        dim = int(dim)
+    except Exception:
+        error_and_exit(
+            False,
+            f"Dimmensions must be a interger value. {dim} is not a interger type",
+        )
+
+    return dim

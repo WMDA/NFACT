@@ -85,7 +85,7 @@ def nfact_dr_main(args: dict = None) -> None:
         args["seeds"],
         args["medial_wall"],
     )
-    nprint("Dual Regression\n")
+    nprint("\nDual Regression\n")
     nprint("-" * 100)
     method = "Regression" if args["algo"] == "ica" else "Non-negative Regression"
     nprint(f"{col['pink']}DR Method:{col['reset']} {method}")

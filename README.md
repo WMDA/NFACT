@@ -15,10 +15,12 @@ It consists of three "main" decomposition modules:
     
     - nfact_dr (Dual regression on group matrix)
 
-as well as two axillary "modules":
+as well as three axillary "modules":
     
     - nfact_config (creates config files for the pipeline and changing any hyperparameters)
     
+    - nfact_Qc (Creates hitmaps to check for bias in decomposition)
+
     - nfact_glm (To run hypothesis testing)
 and a pipeline wrapper
     
@@ -311,6 +313,50 @@ options:
 ```
 
 nfact_dr is independent from nfact_decomp however, nfact_decomp expects a strict naming convention of files. If nfact_decomp has not been ran then group average files and components must all be in the same folder. Components must be named W_dim* and G_dim* with group average files named coords_for_fdt_matrix2, lookup_tractspace_fdt_matrix2.nii.gz. 
+
+------------------------------------------------------------------------------------------------------------------------------------------
+```
+ _   _ ______   ___   _____  _____     ___     ____
+| \ | ||  ___| / _ \ /  __ \|_   _|   / _ \   / ___|
+|  \| || |_   / /_\ \| /  \/  | |    | | | | | |
+| . ` ||  _|  |  _  || |      | |    | | | | | |
+| |\  || |    | | | || \__/\  | |    | |_| | | |___
+\_| \_/\_|    \_| |_/ \____/  \_/     \__\_\  \____|
+
+```
+## NFACT Qc
+
+This is a qulaity control module that creates a number of hitmaps that can be used to check for bias in decomposition.
+
+Each map contains the number of times that voxel/vertex appears in the decomposition. 
+
+
+## Output:
+
+Prefix:
+- hitmap_*.nii.gz: Volume nii component. Components are thresholded by zscoring to remove noise
+- hitmap_*_raw.nii.gz: Volume nii component. Components are not thresholded
+- mask_*.nii.gz: Volume nii component. Binary mask of thresholded components
+- mask_*_raw.nii.gz: Volume nii component. Binary mask of unthresholded components     
+- *.gii: Surface gii component. Components are thresholded by zscoring to remove noise
+- *_raw.gii: Surface gii component. Components are not thresholded   
+
+## Usage:
+
+```
+usage: nfact [-h] [-n NFACT_FOLDER] [-d DIM] [-a ALGO] [-t THRESHOLD] [-O]
+
+options:
+  -h, --help            show this help message and exit
+  -n NFACT_FOLDER, --nfact_folder NFACT_FOLDER
+                        REQUIRED: Path to nfact output folder
+  -d DIM, --dim DIM     REQUIRED: Number of dimensions/components
+  -a ALGO, --algo ALGO  REQUIRED:What algorithm to qc. Options are: NMF (default), or ICA.
+  -t THRESHOLD, --threshold THRESHOLD
+                        Threshold value for z scoring the normalised image
+  -O, --overwrite       Overwite previous QC
+
+```
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 ```

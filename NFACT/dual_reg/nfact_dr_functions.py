@@ -74,7 +74,6 @@ def save_dual_regression_images(
     """
 
     col = colours()
-    nprint(f"{col['purple']}Saving Dual regression components{col['reset']}\n")
     for comp, _ in components.items():
         algo_path = algo
         w_file_name = f"W_{sub}_dim{dim}"
@@ -86,6 +85,7 @@ def save_dual_regression_images(
             grey_prefix = f"G_{sub}_norm"
 
         if "grey" in comp:
+            nprint(f"{col['pink']}Image:{col['reset']} {comp}")
             save_grey_matter_components(
                 components[comp],
                 nfact_path,
@@ -97,6 +97,7 @@ def save_dual_regression_images(
                 grey_prefix,
             )
         if "white" in comp:
+            nprint(f"{col['pink']}Image:{col['reset']} {comp}")
             save_white_matter(
                 components[comp],
                 os.path.join(ptx_directory, "lookup_tractspace_fdt_matrix2.nii.gz"),

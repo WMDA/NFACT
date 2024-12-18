@@ -1,33 +1,5 @@
 from NFACT.base.utils import error_and_exit
-
-
-def process_dim(dim: dict) -> dict:
-    """
-    Function to process dimensions from
-    command line input.
-
-    Parameters
-    ----------
-    dim: str
-        number of dimensions
-    Returns
-    -------
-    dim: int/float
-        number of dimensions as
-        float or int
-    """
-    dim = str(dim)
-    if ".0" in dim:
-        dim = float(dim)
-    try:
-        dim = int(dim)
-    except Exception:
-        error_and_exit(
-            False,
-            f"Dimmensions must be a interger value. {dim} is not a interger type",
-        )
-
-    return dim
+from NFACT.base.setup import process_dim
 
 
 def process_wta_zhr(wta_zthr: dict) -> dict:
