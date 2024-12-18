@@ -7,6 +7,35 @@ from NFACT.base.utils import colours, error_and_exit
 from NFACT.base.setup import make_directory
 
 
+def save_gifit(filename: str, seed: object, surf_data: np.array):
+    """
+    Function to save gifti file from a
+    numpy array
+
+    Parameters
+    ---------
+    data: np.array
+        array of data to save as image
+    affine: np.array
+        affine of image
+    filename: str
+        filename of image to save
+
+    Returns
+    -------
+    None
+    """
+    darrays = [
+        nib.gifti.GiftiDataArray(
+            surf_data,
+            datatype="NIFTI_TYPE_FLOAT32",
+            intent=2001,
+            meta=seed.darrays[0].meta,
+        )
+    ]
+    nib.gifti.GiftiImage(darrays=darrays).to_filename(f"{filename}.func.gii")
+
+
 def save_nifti(data: np.array, affine: np.array, filename: str) -> None:
     """
     Function to save nifti file from a
@@ -94,12 +123,30 @@ def binary_mask(binary_masks: np.array) -> np.ndarray:
 
 
 def scoring(img_data: np.array, normalize: bool, threshold: int) -> dict:
+    """
+    Function to zscore hitmap if normlaise given
+    else returns the raw values.
+
+    Parameters
+    ----------
+    img_data: np.array
+        imaging data
+    normalize: bool
+        to normalise or not
+    threshold: int
+        threshold value
+
+    Returns
+    -------
+    dict: dictionary
+        dict of scores and threshold value
+    """
     if normalize:
-        return {"scores": normalization(img_data), "threshold": threshold}
+        return {"scores": normalization(img_data), "threshold": int(threshold)}
     return {"scores": img_data, "threshold": 0}
 
 
-def hitcount_maps(img_data: np.array, threshold: int, normalize=True) -> dict:
+def nifti_hitcount_maps(img_data: np.array, threshold: int, normalize=True) -> dict:
     """
     Function to create a binary coverage mask
     and a hitmap of voxels
@@ -121,7 +168,39 @@ def hitcount_maps(img_data: np.array, threshold: int, normalize=True) -> dict:
     return hitcount(comp_scores["scores"], comp_scores["threshold"])
 
 
-def coverage_maps(img_path: str, img_name: str, threshold: int, normalize=True) -> None:
+def create_gifti_hitmap(
+    seed_path: str, filename: str, threshold: int, normalize=True
+) -> None:
+    """
+    Function to create hitmap from
+    seed.
+
+    Parameters
+    ----------
+    seed_path: str
+        str of path to seed
+    filename: str
+        name of file. Does not
+        need .func.gii
+
+    Returns
+    -------
+    None
+    """
+    seed = nib.load(seed_path)
+
+    combinearray = np.array(
+        [seed.darrays[idx].data for idx, _ in enumerate(seed.darrays)]
+    )
+
+    comp_scores = scoring(combinearray, normalize, threshold)
+    hitmap = np.sum(comp_scores["scores"] > comp_scores["threshold"], axis=0)
+    save_gifit(filename, seed, hitmap)
+
+
+def create_nifti_hitmap(
+    img_path: str, img_name: str, threshold: int, normalize=True
+) -> None:
     """
     Wrapper function to create a binary coverage mask
     and a hitmap of voxels. Saves images
@@ -143,12 +222,15 @@ def coverage_maps(img_path: str, img_name: str, threshold: int, normalize=True) 
     col = colours()
     img_comp = nib.load(img_path)
     img_data = img_comp.get_fdata()
-    maps = hitcount_maps(img_data, threshold, normalize)
+    maps = nifti_hitcount_maps(img_data, threshold, normalize)
     print(f"{col['pink']}Image:{col['reset']} Saving Hitmap")
-    save_nifti(maps["hitcount"], img_comp.affine, img_name)
+    image_name_hitmap = os.path.join(
+        os.path.dirname(img_name), f"hitmap_{os.path.basename(img_name)}.nii.gz"
+    )
+    save_nifti(maps["hitcount"], img_comp.affine, image_name_hitmap)
     coverage_map_mask = binary_mask(maps["bin_mask"])
     image_name_mask = os.path.join(
-        os.path.dirname(img_name), f"mask_{os.path.basename(img_name)}"
+        os.path.dirname(img_name), f"mask_{os.path.basename(img_name)}.nii.gz"
     )
     print(f"{col['pink']}Image:{col['reset']} Saving Binary Mask")
     save_nifti(coverage_map_mask, img_comp.affine, image_name_mask)
@@ -172,14 +254,21 @@ def get_images(nfact_directory: str, dim: str, algo: str) -> dict:
     dict: dictionary
          dict of grey and white images
     """
+    # use glob as it also checks the images exist
     return {
         "grey_images": glob(
             os.path.join(
-                nfact_directory, "components", algo, "decomp" f"G_{algo}_dim{dim}*"
+                nfact_directory, "components", algo, "decomp", f"G_{algo}_dim{dim}*"
             )
         ),
-        "white_image": os.path.join(
-            nfact_directory, "components", algo, "decomp" f"W_{algo}_dim{dim}.nii.gz"
+        "white_image": glob(
+            os.path.join(
+                nfact_directory,
+                "components",
+                algo,
+                "decomp",
+                f"W_{algo}_dim{dim}.nii.gz",
+            )
         ),
     }
 
@@ -201,14 +290,29 @@ def nfactQc_dir(nfactQc_directory: str, overwrite: bool = False) -> None:
     """
 
     if os.path.exists(nfactQc_directory) and not overwrite:
-        error_and_exit(
-            overwrite, "nfactQc already exists. Please use --overwrite to remove."
-        )
+        return None
     make_directory(nfactQc_directory, overwrite, ignore_errors=True)
 
 
-def check_Qc_dir(nfactQc_directory: str, dim: str, algo: str):
-    if f"{dim}_{algo}" in os.listdir(nfactQc_directory):
+def check_Qc_dir(nfactQc_directory: str, white_name: str) -> None:
+    """
+    Function to check Qc directory.
+    Checks if files already exist and errors out
+    if they do.
+
+    Parameters
+    ----------
+    nfactQc_directory: str
+        path to qc directory
+    white_name : str
+        name of wm image
+
+    Returns
+    -------
+    None
+    """
+
+    if f"hitmap_{white_name}.nii.gz" in os.listdir(nfactQc_directory):
         error_and_exit(
             False, "QC images aleady exist. Please use --overwrite to continue"
         )
