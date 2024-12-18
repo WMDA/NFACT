@@ -141,6 +141,7 @@ def process_global_arguments(args: dict) -> dict:
     args["global_input"]["overwrite"] = False
     args["global_input"]["pp_skip"] = False
     args["global_input"]["dr_skip"] = False
+    args["global_input"]["qc_skip"] = False
     return args
 
 
@@ -182,6 +183,28 @@ def reorganise_args(args: dict) -> dict:
     }
 
 
+def delete_keys(input_dict: dict, keys_to_delete: list) -> dict:
+    """
+    Function to delete keys
+    from a dictionary.
+
+    Parameters
+    ----------
+    input_dict: dict
+        dictionary to change
+    keys_to_delete: list
+        list of keys
+
+    Returns
+    -------
+    input_dict: dict
+        processed inpur dict
+    """
+    for key in keys_to_delete:
+        del input_dict[key]
+    return input_dict
+
+
 def process_config_file(args: dict) -> dict:
     """
     Function to process arguments
@@ -203,6 +226,7 @@ def process_config_file(args: dict) -> dict:
     args = process_global_arguments(args)
     args["nfact_pp"]["medial_wall"] = []
     args["nfact_pp"]["warps"] = []
+    args["nfact_qc"] = delete_keys(args["nfact_qc"], ["nfact_folder", "dim", "algo"])
     return {"global_input": args.pop("global_input"), **args}
 
 
