@@ -331,7 +331,7 @@ This is a qulaity control module that creates a number of hitmaps that can be us
 Each map contains the number of times that voxel/vertex appears in the decomposition. 
 
 
-## Output
+## Output:
 
 Prefix:
 - hitmap_*.nii.gz: Volume nii component. Components are thresholded by zscoring to remove noise
