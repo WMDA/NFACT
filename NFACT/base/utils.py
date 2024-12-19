@@ -60,7 +60,7 @@ def colours():
     }
 
 
-def error_and_exit(bool_statement: bool, error_message: str = None) -> None:
+def error_and_exit(bool_statement: bool, error_message: str = None, log_message: bool = True) -> None:
     """
     Function to exit out of script
     with error message if bool statement
@@ -73,6 +73,8 @@ def error_and_exit(bool_statement: bool, error_message: str = None) -> None:
     error_message: str
         error message to print
         out. Default is None
+    log_message: bool
+        Whether to log the message. Default is True.
 
     Returns
     -------
@@ -81,7 +83,11 @@ def error_and_exit(bool_statement: bool, error_message: str = None) -> None:
     if not bool_statement:
         if error_message:
             col = colours()
-            nprint(col["red"] + error_message + col["reset"])
+            message = col["red"] + error_message + col["reset"]
+            if log_message:
+                nprint(message)
+            else:
+                print(message)
         print("Exiting...\n")
         exit(1)
 
