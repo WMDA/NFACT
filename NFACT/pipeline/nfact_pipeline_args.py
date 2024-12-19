@@ -62,11 +62,26 @@ def nfact_parser() -> dict:
         help="Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.",
     )
     input_args.add_argument(
+        "-Q",
+        "--qc_skip",
+        dest="qc_skip",
+        action="store_true",
+        help="Skips NFACT_QC.",
+    )
+    input_args.add_argument(
         "-D",
         "--dr_skip",
         dest="dr_skip",
         action="store_true",
         help="Skips NFACT_DR",
+    )
+    input_args.add_argument(
+        "-O",
+        "--overwrite",
+        dest="overwrite",
+        default=False,
+        action="store_true",
+        help="Overwirte existing file structure",
     )
     nfact_pp_args = args.add_argument_group(
         f"{col['darker_pink']}nfact_pp inputs{col['reset']}"

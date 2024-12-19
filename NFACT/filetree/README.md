@@ -10,6 +10,9 @@ All filetree files need to be saved as .tree and must contain:
     
     - bedpostx
 
-If seed is a surface file then a medial_wall is needed as well.
+NFACT also comes witha HCP downsample filetree. This is used if gii files have been downsampled.
+If seed is a surface file then a medial_wall is needed as well. If stoppage and wtstop masks are needed then put:
 
-NFACT also comes witha HCP downsample filetree. THis is used if gii files have been downsampled.
+    - wtstop(number)
+    
+    - stop(number)
