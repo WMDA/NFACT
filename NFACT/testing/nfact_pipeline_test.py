@@ -106,7 +106,7 @@ def dual_reg_class(list_of_mat_files, components, method):
     needed for testing
     """
     return Dual_regression(
-        method, False, False, list_of_mat_files, components, "None", "None"
+        method, False, False, list_of_mat_files, components, "None", "None", "None"
     )
 
 

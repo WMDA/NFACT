@@ -5,6 +5,7 @@ from .nfact_pipeline_functions import (
     write_decomp_list,
     compulsory_args_for_config,
     update_nfact_args_in_place,
+    medial_wall_file,
 )
 from NFACT.base.config import get_nfact_arguments, process_dictionary_arguments
 from NFACT.base.utils import error_and_exit, colours, Timer
@@ -12,10 +13,12 @@ from NFACT.base.filesystem import make_directory, load_json, read_file_to_list
 from NFACT.base.setup import does_list_of_subjects_exist
 from NFACT.preprocess.__main__ import nfact_pp_main
 from NFACT.preprocess.nfactpp_args import nfact_pp_splash
-from NFACT.decomp.__main__ import nfact_decomp_main
 from NFACT.decomp.setup.args import nfact_decomp_splash
+from NFACT.decomp.__main__ import nfact_decomp_main
 from NFACT.dual_reg.nfact_dr_args import nfact_dr_splash
 from NFACT.dual_reg.__main__ import nfact_dr_main
+from NFACT.qc.__main__ import nfactQc_main
+from NFACT.qc.nfactQc_args import nfact_Qc_splash
 
 import os
 import shutil
@@ -41,7 +44,7 @@ def nfact_pipeline_main() -> None:
 
     # Build out command line argument input
     if not args["input"]["config"]:
-        print("Building out NFACT arguments. Check logs for specifics")
+        print(f"{col['plum']}NFACT input:{col['reset']} Command line")
 
         pipeline_args_check(args)
 
@@ -55,18 +58,21 @@ def nfact_pipeline_main() -> None:
         nfact_dr_args = build_module_arguments(
             global_arguments["nfact_dr"], args, "decomp"
         )
+        nfact_qc_args = build_module_arguments(global_arguments["nfact_qc"], args, "qc")
 
     # Build out arguments from config file
     if args["input"]["config"]:
-        print("Arguments taken from config file rather than command line")
+        print(f"{col['plum']}NFACT input:{col['reset']} Config File")
         global_arguments = load_json(args["input"]["config"])
         nfact_pp_args = global_arguments["nfact_pp"]
         nfact_decomp_args = global_arguments["nfact_decomp"]
         nfact_dr_args = global_arguments["nfact_dr"]
+        nfact_qc_args = global_arguments["nfact_qc"]
         compulsory_args_for_config(global_arguments)
 
     update_nfact_args_in_place(global_arguments)
-    print(f'NFACT directory is at {nfact_pp_args["outdir"]}')
+    medial_wall_file(global_arguments)
+    print(f'{col["plum"]}NFACT directory{col["reset"]}: {nfact_pp_args["outdir"]}')
     make_directory(nfact_pp_args["outdir"], ignore_errors=True)
 
     # Build out temporary locations of arguments
@@ -75,10 +81,12 @@ def nfact_pipeline_main() -> None:
         nfact_tmp_location,
         "nfact_decomp_sub_list",
     )
-    nfact_decomp_args["seeds"] = os.path.join(nfact_tmp_location, "seeds.txt")
+    nfact_decomp_args["seeds"] = os.path.join(
+        nfact_tmp_location, "seeds_for_decomp.txt"
+    )
 
     nfact_dr_args["seeds"] = os.path.join(
-        nfact_dr_args["outdir"], "nfact_decomp", "files", "seeds.txt"
+        nfact_dr_args["outdir"], "nfact_decomp", "files", "seeds_for_decomp.txt"
     )
     nfact_dr_args["list_of_subjects"] = os.path.join(
         nfact_dr_args["outdir"], "nfact_decomp", "files", "nfact_decomp_sub_list"
@@ -103,28 +111,25 @@ def nfact_pipeline_main() -> None:
 
     # Run NFACT_PP
     if not global_arguments["global_input"]["pp_skip"]:
-        print(f'{col["plum"]}Running NFACT PP{col["reset"]}')
+        print(f'{col["plum"]}Running:{col["reset"]} NFACT PP')
+        print("-" * 100)
         print(nfact_pp_splash())
         nfact_pp_main(nfact_pp_args)
 
         print(f'{col["pink"]}\nFinished running NFACT_PP{col["reset"]}')
-        print("-" * 70)
+        print("-" * 100)
     else:
-        print("Skipping NFACT_PP")
+        print(f"\n{col['plum']}Skipping:{col['reset']} NFACT_PP")
         nfact_pp_args["list_of_subjects"] = read_file_to_list(
             nfact_pp_args["list_of_subjects"]
         )
 
     # Run NFACT_decomp
-    print(f'{col["plum"]}\nSetting up and running NFACT Decomp{col["reset"]}')
+    print(f'{col["plum"]}Running:{col["reset"]} NFACT Decomp')
+    print("-" * 100)
     try:
         shutil.copy(
-            os.path.join(
-                nfact_pp_args["outdir"],
-                "nfact_pp",
-                os.path.basename(nfact_pp_args["list_of_subjects"][0]),
-                "seeds.txt",
-            ),
+            os.path.join(nfact_pp_args["outdir"], "nfact_pp", "seeds_for_decomp.txt"),
             nfact_tmp_location,
         )
     except FileNotFoundError:
@@ -135,8 +140,8 @@ def nfact_pipeline_main() -> None:
 
     print(nfact_decomp_splash())
     nfact_decomp_main(nfact_decomp_args)
-    print(f'{col["pink"]}\nFinished running NFACT_decomp{col["reset"]}')
-    print("-" * 70)
+    print(f'{col["plum"]}\nFinished:{col["reset"]} NFACT Decomp')
+    print("-" * 100)
 
     # Clean up
     try:
@@ -152,20 +157,35 @@ def nfact_pipeline_main() -> None:
     except Exception:
         pass
 
+    if not global_arguments["global_input"]["qc_skip"]:
+        nfact_qc_args["nfact_folder"] = nfact_dr_args["nfact_decomp_dir"]
+        nfact_qc_args["dim"] = nfact_decomp_args["dim"]
+        nfact_qc_args["algo"] = nfact_decomp_args["algo"]
+        nfact_qc_args["overwrite"] = False
+        print(f'{col["plum"]}Running:{col["reset"]} NFACT Qc')
+        print("-" * 100)
+        print(nfact_Qc_splash())
+        nfactQc_main(nfact_qc_args)
+        print(f'{col["plum"]}\nFinished:{col["reset"]} NFACT Qc')
+        print("-" * 100)
+    else:
+        print(f'{col["plum"]}Skipping: {col["reset"]} NFACT Qc')
+
     # Run NFACT_DR
     if (len(nfact_pp_args["list_of_subjects"]) > 1) and (
         not global_arguments["global_input"]["dr_skip"]
     ):
-        print(f'{col["plum"]}Setting up and running NFACT DR{col["reset"]}')
+        print(f'\n\n{col["plum"]}Running: {col["reset"]} NFACT DR')
+        print("-" * 100)
         print(nfact_dr_splash())
         nfact_dr_main(nfact_dr_args)
-        print(f'{col["pink"]}\nFinished running NFACT_DR{col["reset"]}')
-        print("-" * 70)
+        print(f'{col["plum"]}\nFinished:{col["reset"]} NFACT DR')
+        print("-" * 100)
     else:
-        print("Skipping dual regression")
+        print(f'{col["plum"]}Skipping: {col["reset"]} NFACT DR')
 
     # Exit
-    print(f"Decomposition pipeline took {time.toc()} seconds")
+    print(f"Decomposition pipeline took {time.how_long()}")
     print("Finished")
     exit(0)
 

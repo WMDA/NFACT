@@ -2,7 +2,6 @@ from NFACT.base.utils import error_and_exit
 from NFACT.base.imagehandling import check_files_are_imaging_files
 from NFACT.base.filesystem import write_to_file, load_json
 import os
-import re
 
 
 def get_file(img_file: list, sub: str) -> list:
@@ -76,22 +75,17 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
         arguments
     """
     del arg["seed"]
-    del arg["rois"]
-    arg["seed"] = list(
-        set(
-            [
-                filetree_get_files(arg["file_tree"], sub, hemi, "seed")
-                for hemi in ["L", "R"]
-            ]
-        )
-    )
+    del arg["medial_wall"]
+    arg["seed"] = [
+        filetree_get_files(arg["file_tree"], sub, hemi, "seed") for hemi in ["L", "R"]
+    ]
     arg["warps"] = [
         filetree_get_files(arg["file_tree"], sub, "L", "std2diff"),
         filetree_get_files(arg["file_tree"], sub, "L", "diff2std"),
     ]
     arg["bpx_path"] = filetree_get_files(arg["file_tree"], sub, "L", "bedpostX")
     if arg["surface"]:
-        arg["rois"] = [
+        arg["medial_wall"] = [
             filetree_get_files(arg["file_tree"], sub, hemi, "medial_wall")
             for hemi in ["L", "R"]
         ]
@@ -121,36 +115,6 @@ def update_seeds_file(file_path: str) -> None:
             file.write(update_extensions)
     except Exception as e:
         error_and_exit(False, f"Unable to change seeds file due to {e}")
-
-
-def rename_seed(seeds: list) -> list:
-    """
-    Function to renmae seed. Either
-    will rename it as left_seed or
-    right_seed. Or removes unecessary extensions
-
-    Parameters
-    ----------
-    seed: list
-        list of seed names
-
-    Returns
-    -------
-    seed: list
-        list of processed seed names.
-    """
-
-    return [
-        (
-            "left_seed"
-            if "L" in (seed_extension := seed.split("."))
-            else "right_seed"
-            if "R" in seed_extension
-            else re.sub(r".gii|.surf", "", os.path.basename(seed))
-        )
-        for seed in seeds
-        if (seed_extension := seed.split("."))
-    ]
 
 
 def get_stop_files_filestree(files_tree: object, subject: str) -> dict:
@@ -260,9 +224,111 @@ def stop_masks(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str) -> dict:
     else:
         stop_files = load_json(arg["stop"])
     stop_ptx = stoppage(sub, os.path.join(nfactpp_diretory, "files"), stop_files)
-    if arg["ptx_options"]:
-        [arg["ptx_options"].append(command) for command in stop_ptx]
-    else:
-        arg["ptx_options"] = stop_ptx
-
+    arg["ptx_options"] = add_to_ptx_options(stop_ptx, arg["ptx_options"])
     return arg
+
+
+def add_to_ptx_options(commands: list, ptx_options: list) -> list:
+    """
+    Function to append to ptx options
+
+    Parameters
+    ----------
+    commands: list
+        list of commands to add to
+        ptx file
+    ptx_options: list
+        list of ptx_options. Can be
+        False.
+
+    Returns
+    -------
+    ptx_options: list
+        ptx options
+    """
+    if ptx_options:
+        [ptx_options.append(command) for command in commands]
+        return ptx_options
+    ptx_options = commands
+    return ptx_options
+
+
+def avoid(arg: dict) -> dict:
+    """
+    Function to add avoid file to
+    probtrackx command
+
+    Parameters
+    ----------
+    arg: dict
+        cmd args
+
+    Returns
+    -------
+    args: dict
+        dict of cmd args with avoid
+    """
+    avoid_command = [f"--avoid={arg['exclusion']}"]
+    arg["ptx_options"] = add_to_ptx_options(avoid_command, arg["ptx_options"])
+    return arg
+
+
+def create_files_for_decomp(
+    nfact_directory: str, seeds: list, medial_wall: list
+) -> None:
+    """
+    Function to write seeds and medial wall for
+    decomp.
+
+    Parameters
+    ----------
+    nfact_directory: str
+        subjects nfact_directory
+    seeds: list
+        list of seeds
+    medial_wall: list
+        list of medial wall files
+    """
+    seed_filename = "seeds_for_decomp"
+    medial_wall_filename = "mw_for_decomp"
+    base_nfact_dir = os.path.dirname(nfact_directory)
+    if not os.path.exists(os.path.join(base_nfact_dir, f"{seed_filename}.txt")):
+        seed_text = "\n".join(
+            [
+                os.path.join(nfact_directory, "files", os.path.basename(seed))
+                for seed in seeds
+            ]
+        )
+        write_options_to_file(base_nfact_dir, seed_text, seed_filename)
+
+    if medial_wall:
+        if not os.path.exists(
+            os.path.join(base_nfact_dir, f"{medial_wall_filename}.txt")
+        ):
+            mw_text = "\n".join(
+                [
+                    os.path.join(nfact_directory, "files", os.path.basename(mw))
+                    for mw in medial_wall
+                ]
+            )
+            write_options_to_file(base_nfact_dir, mw_text, medial_wall_filename)
+
+
+def write_options_to_file(file_path: str, text_to_save: str, name_of_file: str):
+    """
+    Function to write seeds
+    and ptx_options to file
+
+    Parmeters
+    ---------
+    file_path: str
+        file path for nfact_PP
+        directory
+    seed_txt: str
+        path of string to go into
+        seed directory
+    """
+    file_written = write_to_file(file_path, f"{name_of_file}.txt", text_to_save + "\n")
+    if not file_written:
+        return False
+    return True

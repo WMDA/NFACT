@@ -141,6 +141,7 @@ def process_global_arguments(args: dict) -> dict:
     args["global_input"]["overwrite"] = False
     args["global_input"]["pp_skip"] = False
     args["global_input"]["dr_skip"] = False
+    args["global_input"]["qc_skip"] = False
     return args
 
 
@@ -168,7 +169,8 @@ def reorganise_args(args: dict) -> dict:
         key: {
             top_key: value
             for top_key, value in sub_dict.items()
-            if top_key not in ["list_of_subjects", "outdir", "seed", "overwrite"]
+            if top_key
+            not in ["list_of_subjects", "outdir", "seed", "overwrite", "verbose_help"]
             and not (
                 (key == "nfact_decomp" and top_key in ["seeds"])
                 or (
@@ -179,6 +181,28 @@ def reorganise_args(args: dict) -> dict:
         }
         for key, sub_dict in args.items()
     }
+
+
+def delete_keys(input_dict: dict, keys_to_delete: list) -> dict:
+    """
+    Function to delete keys
+    from a dictionary.
+
+    Parameters
+    ----------
+    input_dict: dict
+        dictionary to change
+    keys_to_delete: list
+        list of keys
+
+    Returns
+    -------
+    input_dict: dict
+        processed inpur dict
+    """
+    for key in keys_to_delete:
+        del input_dict[key]
+    return input_dict
 
 
 def process_config_file(args: dict) -> dict:
@@ -200,8 +224,9 @@ def process_config_file(args: dict) -> dict:
 
     args = reorganise_args(args)
     args = process_global_arguments(args)
-    args["nfact_pp"]["rois"] = []
+    args["nfact_pp"]["medial_wall"] = []
     args["nfact_pp"]["warps"] = []
+    args["nfact_qc"] = delete_keys(args["nfact_qc"], ["nfact_folder", "dim", "algo"])
     return {"global_input": args.pop("global_input"), **args}
 
 
@@ -209,7 +234,7 @@ def create_config() -> dict:
     """
     Function to create a config file.
 
-    Parameteres
+    Parameters
     -----------
     None
 
@@ -403,4 +428,3 @@ def create_subject_list(study_folder_path: str, ouput_dir: str) -> None:
         sub_list = [sub.rstrip("\n") + "/omatrix2\n" for sub in sub_list]
     sub_list = filter_sublist(sub_list)
     write_to_file(ouput_dir, "nfact_config_sublist", sub_list, text_is_list=True)
-    return None

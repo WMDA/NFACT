@@ -10,8 +10,10 @@ from NFACT.base.setup import (
     check_algo,
     get_subjects,
     check_subject_exist,
-    process_seeds,
     check_arguments,
+    process_input_imgs,
+    check_seeds_surfaces,
+    check_medial_wall,
 )
 from NFACT.base.utils import colours, nprint
 from NFACT.base.logging import NFACT_logs
@@ -60,8 +62,9 @@ def nfact_dr_main(args: dict = None) -> None:
     create_nfact_dr_folder_set_up(args["outdir"])
 
     # Process seeds
-    seeds = process_seeds(args["seeds"])
-
+    args["seeds"] = process_input_imgs(args["seeds"])
+    args["surface"] = check_seeds_surfaces(args["seeds"])
+    args = check_medial_wall(args)
     # logging
     log = NFACT_logs(args["algo"], "DR", len(args["ptxdir"]))
     log.set_up_logging(os.path.join(args["outdir"], "nfact_dr", "logs"))
@@ -72,14 +75,20 @@ def nfact_dr_main(args: dict = None) -> None:
     log.log_break("input")
     log.log_arguments(args)
     log.log_break("nfact decomp workflow")
-    nprint(
-        f"{col['plum']}Performing dual regression on {len(args['ptxdir'])} subjects{col['reset']}\n"
-    )
+    nprint(f"{col['plum']}Number of subject:{col['reset']} {len(args['ptxdir'])} \n")
 
     nprint("Obtaining components\n")
+    nprint("-" * 100)
     components = get_group_level_components(
-        paths["component_path"], paths["group_average_path"], seeds
+        paths["component_path"],
+        paths["group_average_path"],
+        args["seeds"],
+        args["medial_wall"],
     )
+    nprint("\nDual Regression\n")
+    nprint("-" * 100)
+    method = "Regression" if args["algo"] == "ica" else "Non-negative Regression"
+    nprint(f"{col['pink']}DR Method:{col['reset']} {method}")
 
     dual_reg = Dual_regression(
         algo=args["algo"],
@@ -87,8 +96,9 @@ def nfact_dr_main(args: dict = None) -> None:
         parallel=False,
         list_of_files=args["ptxdir"],
         component=components,
-        seeds=seeds,
+        seeds=args["seeds"],
         nfact_directory=os.path.join(args["outdir"], "nfact_dr"),
+        medial_wall=args["medial_wall"],
     )
     dual_reg.run()
 

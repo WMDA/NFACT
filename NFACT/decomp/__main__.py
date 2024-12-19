@@ -5,8 +5,10 @@ from NFACT.base.setup import (
     check_subject_exist,
     check_algo,
     get_subjects,
-    process_seeds,
+    process_input_imgs,
     check_arguments,
+    check_seeds_surfaces,
+    check_medial_wall,
 )
 
 from .setup.args import nfact_decomp_args, nfact_decomp_splash
@@ -63,13 +65,13 @@ def nfact_decomp_main(args: dict = None) -> None:
     # check subjects exist
     args = get_subjects(args)
     check_subject_exist(args["ptxdir"])
-    print("Number of Subjects:", len(args["ptxdir"]), "\n")
+    print(f"{col['plum']}Number of Subjects:{col['reset']}", len(args["ptxdir"]))
 
     group_mode = True if len(args["ptxdir"]) > 0 else False
-
     # process seeds
-    seeds = process_seeds(args["seeds"])
-
+    args["seeds"] = process_input_imgs(args["seeds"])
+    args["surface"] = check_seeds_surfaces(args["seeds"])
+    args = check_medial_wall(args)
     if args["config"]:
         args["config"] = load_config_file(args["config"], args["algo"])
         check_config_file(args["config"], args["algo"])
@@ -83,8 +85,8 @@ def nfact_decomp_main(args: dict = None) -> None:
             shutil.rmtree(
                 os.path.join(args["outdir"], "nfact_decomp"), ignore_errors=True
             )
-
     create_folder_set_up(args["outdir"])
+    print(f"{col['plum']}NFACT folder:{col['reset']} {args['outdir']}")
 
     # Get hyperparameters
     parameters = get_parameters(args["config"], args["algo"], args["dim"])
@@ -98,7 +100,7 @@ def nfact_decomp_main(args: dict = None) -> None:
     log.log_parameters(parameters)
     log.log_break("nfact decomp workflow")
     print(
-        f'Log file is located at {os.path.join(args["outdir"], "nfact_decomp", "logs")}'
+        f'{col["plum"]}Log file:{col["reset"]} {os.path.join(args["outdir"], "nfact_decomp", "logs")}'
     )
 
     get_group_average_files(
@@ -107,29 +109,43 @@ def nfact_decomp_main(args: dict = None) -> None:
     )
 
     # load matrix
-    nprint(f"{col['darker_pink']}\nLoading matrix{col['reset']}\n")
+    nprint("\nLOADING MATRIX")
+    nprint("-" * 100)
     matrix_time = Timer()
     matrix_time.tic()
-
-    fdt_2_conn = load_previous_matrix(
+    print_str = f"{col['pink']}NFACT Matrix:{col['reset']}"
+    fdt_2_conn = None
+    if os.path.exists(
         os.path.join(
             args["outdir"], "nfact_decomp", "group_averages", "average_matrix2.npy"
         )
-    )
+    ):
+        nprint(f"{print_str} Loading previously saved")
+
+        fdt_2_conn = load_previous_matrix(
+            os.path.join(
+                args["outdir"], "nfact_decomp", "group_averages", "average_matrix2.npy"
+            )
+        )
 
     if fdt_2_conn is None:
+        nprint(f"{print_str} Averaging")
+        save_directory = os.path.join(args["outdir"], "nfact_decomp", "group_averages")
         fdt_2_conn = process_fdt_matrix2(args["ptxdir"], group_mode)
-        save_avg_matrix(fdt_2_conn, os.path.join(args["outdir"], "nfact_decomp"))
+        save_avg_matrix(fdt_2_conn, save_directory)
+        nprint(f'{col["pink"]}Saving Matrix:{col["reset"]} {save_directory}')
     nprint(
-        f"{col['darker_pink']}loaded matrix in {matrix_time.toc()} secs.{col['reset']}\n"
+        f"{col['pink']}Matrix Loading Time:{col['reset']} {matrix_time.how_long()} \n"
     )
 
     # Run the decomposition
     decomposition_timer = Timer()
     decomposition_timer.tic()
 
-    print(f"Decomposing fdt matrix using {args['algo'].upper()}")
-    log.log("Decomposing matrix")
+    nprint("DECOMPOSING MATRIX")
+    nprint("-" * 100)
+    nprint(f"{col['pink']}NFACT method:{col['reset']} {args['algo'].upper()}")
+
     components = matrix_decomposition(
         fdt_2_conn,
         algo=args["algo"],
@@ -140,7 +156,7 @@ def nfact_decomp_main(args: dict = None) -> None:
         pca_type=args["pca_type"],
     )
     nprint(
-        f'{col["darker_pink"]}Decomposition took {decomposition_timer.toc()} secs{col["reset"]}\n'
+        f'{col["pink"]}Decomposition time:{col["reset"]} {decomposition_timer.how_long()}\n'
     )
 
     # Save the results
@@ -150,9 +166,10 @@ def nfact_decomp_main(args: dict = None) -> None:
             args["outdir"],
             "nfact_decomp",
         ),
-        seeds,
+        args["seeds"],
         args["algo"].upper(),
         args["dim"],
+        args["medial_wall"],
     )
 
     if args["wta"]:
@@ -166,10 +183,11 @@ def nfact_decomp_main(args: dict = None) -> None:
                 args["outdir"],
                 "nfact_decomp",
             ),
-            seeds,
+            args["seeds"],
             args["dim"],
+            args["medial_wall"],
         )
-    nprint(f"{col['darker_pink']}NFACT has finished{col['reset']}")
+    nprint(f"{col['darker_pink']}NFACT decomp has finished{col['reset']}")
 
     log.clear_logging()
 

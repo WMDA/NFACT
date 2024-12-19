@@ -31,7 +31,7 @@ def check_script_for_bad_variable_names(script_path):
     error_code = False
     if checker.bad_variable_names:
         col = colours()
-        accepted_shorted_variables = ["_"]
+        accepted_shorted_variables = ["_", "e"]
         for var_name, lineno in checker.bad_variable_names:
             if var_name in accepted_shorted_variables:
                 continue

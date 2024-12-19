@@ -77,7 +77,7 @@ def nfact_parser() -> dict:
         dest="warps",
         nargs="+",
         default=False,
-        help=f"""{col['pink']}REQUIRED FOR NFACT_PP VOLUME/SEED MODE:{col['reset']} 
+        help=f"""{col['pink']}REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE:{col['reset']} 
         Path to warps inside a subjects directory (can accept multiple arguments)""",
     )
     nfact_pp_args.add_argument(
@@ -85,16 +85,16 @@ def nfact_parser() -> dict:
         "--bpx",
         dest="bpx_path",
         default=False,
-        help=f"""{col['pink']}REQUIRED FOR NFACT_PP VOLUME/SEED MODE:{col['reset']}
+        help=f"""{col['pink']}REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE:{col['reset']}
         Path to Bedpostx folder inside a subjects directory.""",
     )
     nfact_pp_args.add_argument(
-        "-r",
-        "--rois",
-        dest="rois",
+        "-m",
+        "--medial_wall",
+        dest="medial_wall",
         nargs="+",
         default=False,
-        help=f"""{col['purple']}REQUIRED FOR NFACT_PP SEED MODE: {col['reset']} 
+        help=f"""{col['purple']}REQUIRED FOR NFACT_PP SURFACE MODE: {col['reset']} 
         A single or list of ROIS. Use when doing whole brain surface tractography to provide medial wall.""",
     )
     nfact_pp_args.add_argument(
@@ -134,6 +134,12 @@ def nfact_parser() -> dict:
         "--algo",
         default="ICA",
         help="What algorithm to run. Options are: ICA (default), or NMF.",
+    )
+    nfact_decomp_args.add_argument(
+        "-dm",
+        "--decomp_medial_wall",
+        default="medial_wall",
+        help="File containing medial wall. Needed if seeds are .gii",
     )
     no_args(args)
     return {

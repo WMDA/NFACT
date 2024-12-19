@@ -1,6 +1,7 @@
 import time
 import logging
 import sys
+import importlib.metadata
 
 
 class Timer:
@@ -11,13 +12,29 @@ class Timer:
     """
 
     def __init__(self):
-        self._t = time.time()
+        self._t = None
 
     def tic(self):
         self._t = time.time()
 
     def toc(self):
         return f"{time.time()-self._t:.2f}"
+
+    def format_time(self, seconds: float):
+        seconds = int(round(seconds))
+        if seconds < 60:
+            return f"{seconds} seconds"
+        elif seconds < 3600:
+            minutes, remaining_seconds = divmod(seconds, 60)
+            return f"{minutes} minutes: {remaining_seconds} seconds"
+        else:
+            hours, remaining_seconds = divmod(seconds, 3600)
+            minutes, remaining_seconds = divmod(remaining_seconds, 60)
+            return f"{hours} hours: {minutes} minutes: {remaining_seconds} seconds"
+
+    def how_long(self):
+        seconds = self.toc()
+        return self.format_time(float(seconds))
 
 
 def colours():
@@ -108,3 +125,28 @@ def no_args(args: object) -> None:
     if len(sys.argv) == 1:
         args.print_help(sys.stderr)
         sys.exit(1)
+
+
+def verbose_help_message(options: object, verbose_message_str: str) -> None:
+    """
+    Fnction to print out a verbose
+    help message.
+
+    Parameters
+    ----------
+    options: object
+        argparse option not parsed
+    verbose_message_str: str
+        str of additional help message to print
+
+    Returns
+    -------
+    None
+    """
+    col = colours()
+    print(options.format_help())
+    print(verbose_message_str)
+    print(
+        f"{col['plum']}NFACT version:{col['reset']} {importlib.metadata.version('NFACT')}"
+    )
+    exit(0)
