@@ -169,7 +169,7 @@ def nfact_pp_args() -> dict:
         Argument can be used with the --filetree, in that case no json file is needed.
       """,
     )
-        option.add_argument(
+    option.add_argument(
         "-hh",
         "--verbose_help",
         dest="verbose_help",
