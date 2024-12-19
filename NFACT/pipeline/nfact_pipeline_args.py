@@ -38,7 +38,7 @@ def nfact_parser() -> dict:
         nargs="+",
         dest="seed",
         default=False,
-        help=f"""{col['pink']}REQUIRED FOR ALL IF NOT USING FILESTREE MODE: {col['reset']}
+        help=f"""{col['pink']}REQUIRED FOR ALL IF NOT USING FILESTREE MODE:{col['reset']}
         A single or list of seeds""",
     )
     input_args.add_argument(
@@ -132,21 +132,34 @@ def nfact_parser() -> dict:
     nfact_decomp_args.add_argument(
         "-a",
         "--algo",
-        default="ICA",
-        help="What algorithm to run. Options are: ICA (default), or NMF.",
+        dest="algo",
+        default="NMF",
+        help="What algorithm to run. Options are: NMF (default) or ICA.",
     )
     nfact_decomp_args.add_argument(
-        "-dm",
-        "--decomp_medial_wall",
-        default="medial_wall",
+        "-mw",
+        "--medial_wall_decomp",
+        dest="medial_wall",
+        default=False,
         help="File containing medial wall. Needed if seeds are .gii",
     )
+    nfact_Qc_args = args.add_argument_group(
+        f"{col['darker_pink']}nfact_Qc inputs{col['reset']}"
+    )
+    nfact_Qc_args.add_argument(
+        "--threshold",
+        dest="threshold",
+        default=2,
+        help="File containing medial wall. Needed if seeds are .gii",
+    )
+
     no_args(args)
     return {
         "args": vars(args.parse_args()),
         "input": input_args._group_actions,
         "nfact_pp": nfact_pp_args._group_actions,
         "decomp": nfact_decomp_args._group_actions,
+        "qc": nfact_Qc_args._group_actions,
     }
 
 
@@ -169,7 +182,11 @@ def extract_group_args(group: list, args_dict: dict):
 
 
 def sort_args(
-    args_dictionary: dict, input_args: list, nfact_pp_args: list, decomp_args: list
+    args_dictionary: dict,
+    input_args: list,
+    nfact_pp_args: list,
+    decomp_args: list,
+    qc_args: list,
 ) -> dict:
     """
     Function to sort arguments into
@@ -182,6 +199,13 @@ def sort_args(
         by group
     input_args: list
         a list of argparse._StoreAction
+    nfact_pp_args: list
+        a list of argparse._StoreAction
+    decomp_args: list
+        a list of argparse._StoreAction
+    qc_args: list
+        a list of argparse._StoreAction
+
 
     Returns
     -------
@@ -194,6 +218,7 @@ def sort_args(
         "input": extract_group_args(input_args, args_dictionary),
         "pre_process": extract_group_args(nfact_pp_args, args_dictionary),
         "decomp": extract_group_args(decomp_args, args_dictionary),
+        "qc": extract_group_args(qc_args, args_dictionary),
     }
 
 
@@ -214,7 +239,9 @@ def nfact_args():
     """
 
     args = nfact_parser()
-    return sort_args(args["args"], args["input"], args["nfact_pp"], args["decomp"])
+    return sort_args(
+        args["args"], args["input"], args["nfact_pp"], args["decomp"], args["qc"]
+    )
 
 
 def nfact_splash() -> str:
