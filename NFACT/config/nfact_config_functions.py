@@ -316,6 +316,7 @@ def check_arguments(args: dict) -> None:
             False,
             f"""Multiple arguments were given {matching}. 
 Please specify either --decomp --config or --subject_list only""",
+            False,
         )
 
 
@@ -335,10 +336,10 @@ def check_study_folder(study_folder_path: str) -> None:
     """
 
     error_and_exit(
-        os.path.exists(study_folder_path), "Study folder provided doesn't exist"
+        os.path.exists(study_folder_path), "Study folder provided doesn't exist", False
     )
     error_and_exit(
-        os.path.isdir(study_folder_path), "Study directory is not a directory"
+        os.path.isdir(study_folder_path), "Study directory is not a directory", False
     )
     error_and_exit(
         [
@@ -347,6 +348,7 @@ def check_study_folder(study_folder_path: str) -> None:
             if os.path.isdir(os.path.join(study_folder_path, dirs))
         ],
         "Study directory is empty",
+        False,
     )
 
 
