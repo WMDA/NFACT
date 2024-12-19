@@ -307,6 +307,26 @@ def get_probtrack2_arguments(bin: bool = False) -> None:
     return help_arguments.stderr.decode("utf-8")
 
 
+def has_queues() -> bool:
+    """
+    Function to check if queues
+    available.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    bool: boolean
+        False if stdout is no
+    """
+    queues = run_fsl_sub(
+        [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"), "--has_queues"]
+    )
+    return False if queues["stdout"] == "No" else True
+
+
 def cluster_parameters(arg: dict) -> dict:
     """
     Function to return cluster
@@ -325,13 +345,11 @@ def cluster_parameters(arg: dict) -> dict:
         command line arguments
     """
     col = colours()
-    queues = run_fsl_sub(
-        [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"), "--has_queues"]
-    )
+    queues = has_queues()
 
-    if queues["stdout"] == "No":
+    if not queues:
         print(
-            f"{col['darker_pink']}Cluster:{col['reset']} No queues detected. Not running on cluster"
+            f"{col['plum']}Cluster:{col['reset']} No queues detected. Not running on cluster"
         )
         arg["cluster"] = None
         return arg
@@ -347,7 +365,7 @@ def cluster_parameters(arg: dict) -> dict:
             arg["cluster_queue"] if arg["cluster_queue"] in queues["stdout"] else None
         )
 
-    print(f"{col['darker_pink']}Cluster:{col['reset']} {print_string}")
+    print(f"{col['plum']}Cluster:{col['reset']} {print_string}")
     return arg
 
 
