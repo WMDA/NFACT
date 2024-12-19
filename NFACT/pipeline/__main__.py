@@ -45,10 +45,9 @@ def nfact_pipeline_main() -> None:
     # Build out command line argument input
     if not args["input"]["config"]:
         print(f"{col['plum']}NFACT input:{col['reset']} Command line")
-
         pipeline_args_check(args)
-
         global_arguments = get_nfact_arguments()
+        global_arguments["global_input"] = args['input']
         nfact_pp_args = build_module_arguments(
             global_arguments["nfact_pp"], args, "pre_process"
         )
@@ -97,7 +96,6 @@ def nfact_pipeline_main() -> None:
     nfact_pp_args = global_arguments["nfact_pp"]
     nfact_decomp_args = global_arguments["nfact_decomp"]
     nfact_dr_args = global_arguments["nfact_dr"]
-
     # Create tmp directory and decomposition subject list
     make_directory(nfact_tmp_location, overwrite=True)
     error_and_exit(
@@ -162,6 +160,9 @@ def nfact_pipeline_main() -> None:
         nfact_qc_args["dim"] = nfact_decomp_args["dim"]
         nfact_qc_args["algo"] = nfact_decomp_args["algo"]
         nfact_qc_args["overwrite"] = False
+        nfact_qc_args["threshold"] = (
+            nfact_qc_args["threshold"] if not nfact_qc_args["threshold"] else 2
+        )
         print(f'{col["plum"]}Running:{col["reset"]} NFACT Qc')
         print("-" * 100)
         print(nfact_Qc_splash())
