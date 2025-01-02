@@ -56,6 +56,13 @@ def nfact_config_args() -> dict:
         default=os.getcwd(),
         help="Where to save config file",
     )
+    args.add_argument(
+        "-f",
+        "--file_name",
+        dest="file_name",
+        default="nfact_config",
+        help="Name of the nfact config filename",
+    )
     no_args(args)
 
     return vars(args.parse_args())
@@ -292,7 +299,7 @@ def save_to_json(path: str, dictionary_to_save: dict, file_name: str) -> None:
     """
 
     config_file = json.dumps(dictionary_to_save, indent=4)
-    with open(os.path.join(path, f"{file_name}.config"), "w") as json_file:
+    with open(os.path.join(path, file_name), "w") as json_file:
         json_file.write(config_file)
 
 
@@ -407,7 +414,7 @@ def filter_sublist(sub_list: str) -> list:
     ]
 
 
-def create_subject_list(study_folder_path: str, ouput_dir: str) -> None:
+def create_subject_list(study_folder_path: str, ouput_dir: str, filename: str) -> None:
     """
     Function to create subjects
     study list
@@ -418,6 +425,8 @@ def create_subject_list(study_folder_path: str, ouput_dir: str) -> None:
         path to study folder
     ouput_dir: str
         path to output directory
+    filename: str
+        filename of sublist
 
     Returns
     -------
@@ -430,4 +439,4 @@ def create_subject_list(study_folder_path: str, ouput_dir: str) -> None:
     if "nfact_pp" in study_folder_path:
         sub_list = [sub.rstrip("\n") + "/omatrix2\n" for sub in sub_list]
     sub_list = filter_sublist(sub_list)
-    write_to_file(ouput_dir, "nfact_config_sublist", sub_list, text_is_list=True)
+    write_to_file(ouput_dir, f"{filename}.sublist", sub_list, text_is_list=True)
