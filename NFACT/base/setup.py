@@ -88,9 +88,10 @@ def return_list_of_subjects_from_file(path_to_list: str) -> list:
         list of subjects
     """
     # First check that list of subjects is a txt file.
+    accepted_types =['txt', "sublist"]
     try:
         file_name = os.path.basename(path_to_list)
-        if file_name.split(".")[1] != "txt":
+        if file_name.split(".")[1] not in accepted_types:
             error_and_exit(
                 False,
                 "List of subjects is not a text file. Please specify a list of subject.",
