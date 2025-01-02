@@ -224,6 +224,7 @@ def process_config_file(args: dict) -> dict:
 
     args = reorganise_args(args)
     args = process_global_arguments(args)
+    args["global_input"]["folder_name"] = "nfact"
     args["nfact_pp"]["medial_wall"] = []
     args["nfact_pp"]["warps"] = []
     args["nfact_qc"] = delete_keys(args["nfact_qc"], ["nfact_folder", "dim", "algo"])

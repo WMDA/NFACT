@@ -48,6 +48,13 @@ def nfact_parser() -> dict:
         help=f"{col['red']}REQUIRED FOR ALL: {col['reset']}Path to where to create an output folder",
     )
     input_args.add_argument(
+        "-n",
+        "--folder_name",
+        dest="folder_name",
+        default="nfact",
+        help="Name of nfact folder, default is nfact",
+    )
+    input_args.add_argument(
         "-c",
         "--config",
         dest="config",
