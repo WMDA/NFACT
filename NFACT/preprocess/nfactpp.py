@@ -274,7 +274,6 @@ def pre_processing(arg: dict, handler: object) -> None:
 
     # Running probtrackx2
     print_to_screen("TRACTOGRAPHY")
-
     probtrack = Probtrackx(
         subjects_commands,
         arg["cluster"],

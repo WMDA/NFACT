@@ -42,7 +42,7 @@ class Cluster_parameters:
         if not queues_avail:
             raise NoClusterQueuesException
         self.cluster_ram()
-        self.cluster_queue_assignment()
+        #self.cluster_queue_assignment()
         self.cluster_time()
         if self.arg["cluster_qos"]:
             self.cluster_qos()

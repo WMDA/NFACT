@@ -1,4 +1,4 @@
-from NFACT.base.filesystem import get_current_date
+from NFACT.base.filesystem import get_current_date, write_to_file
 from NFACT.base.utils import colours, error_and_exit
 from NFACT.base.cluster_support import run_fsl_sub
 import os
@@ -124,7 +124,8 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
     """
 
     command_arguments = process_command_arguments(arg, sub)
-    binary = "probtrackx2_gpu" if arg["gpu"] else "probtrackx2"
+    prob_bin = "probtrackx2_gpu" if arg["gpu"] else "probtrackx2"
+    binary = os.path.join(os.environ["FSLDIR"], "bin", prob_bin)
     warps = command_arguments["warps"]
     seeds = command_arguments["seed"]
     mask = os.path.join(command_arguments["bpx_path"], "nodif_brain_mask")
@@ -336,11 +337,11 @@ class Probtrackx:
         self.parallel = parallel
         self.col = colours()
         self.cluster = cluster
-        self.gpu = True if "probtrackx2_gpu" in command[0] else False
         self.cluster_time = cluster_time
         self.cluster_queue = cluster_queue
         self.cluster_ram = cluster_ram
         self.cluster_qos = cluster_qos
+
 
     def run(self):
         """
@@ -372,25 +373,40 @@ class Probtrackx:
 
         submitted_jobs = []
         for sub_command in self.command:
+            nfactpp_directory = self.__nfact_dir(sub_command)
+            subject = self.__subject_id(nfactpp_directory)
+            print(
+            "Running",
+            os.path.basename(sub_command[0]),
+            f"on subject {subject}",
+        )
             if self.__cluster:
-                job = run_probtractkx["command"](sub_command)
+                job = run_probtractkx["command"](sub_command, subject, nfactpp_directory)
                 submitted_jobs.append(job["stdout"])
             if not self.__cluster:
-                run_probtractkx["command"](sub_command)
+                run_probtractkx["command"](sub_command, nfactpp_directory)
         self.__wait_for_complete(submitted_jobs)
 
-    def __cluster(self, command):
+    def __write_command_tmp(self, command, subject, nfactpp_directory):
+        file_path = os.path.join(nfactpp_directory, 'files', 
+                                 f'.tmp_{subject}_cluster_command.txt')
+                    
+        write_to_file(os.path.dirname(file_path), 
+                     os.path.basename(file_path),
+                    " ".join(command))
+        return file_path
+
+    def __cluster(self, command, subject, nfactpp_directory):
         """
         Method to submit jobs to cluster
         """
+        command_txt = self.__write_command_tmp(command, subject, nfactpp_directory)
         cluster_command = [
             os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"),
             "-T",
             str(self.cluster_time),
             "-R",
             str(self.cluster_ram),
-            "-c",
-            "cuda" if self.gpu else False,
             "-N",
             f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
         ]
@@ -399,7 +415,9 @@ class Probtrackx:
             cluster_command.append(self.cluster_qos)
         if self.cluster_queue:
             cluster_command.extend(["-q", str(self.cluster_queue)])
-        cluster_command.extend(["-t", " ".join(command)])
+        if "gpu" in command[0]:
+            cluster_command.extend(["-c","cuda"])
+        cluster_command.extend(["-t", command_txt])
         return run_fsl_sub(cluster_command)
 
     def __wait_for_complete(self, job_id):
@@ -458,8 +476,11 @@ class Probtrackx:
 
     def __nfact_dir(self, command):
         return os.path.dirname(command[2])
-
-    def __run_probtrackx(self, command: list) -> None:
+    
+    def __subject_id(self, nfactpp_diretory: str):
+        return os.path.basename(nfactpp_diretory)
+        
+    def __run_probtrackx(self, command: list, nfactpp_directory: str) -> None:
         """
         Method to run probtrackx
 
@@ -472,14 +493,9 @@ class Probtrackx:
         -------
         None
         """
-        nfactpp_diretory = self.__nfact_dir(command)
-        print(
-            "Running",
-            command[0],
-            f"on subject {os.path.basename(nfactpp_diretory)}",
-        )
+        
         try:
-            with open(self.__log_path(nfactpp_diretory), "w") as log_file:
+            with open(self.__log_path(nfactpp_directory), "w") as log_file:
                 run = subprocess.run(
                     command,
                     stdout=log_file,
