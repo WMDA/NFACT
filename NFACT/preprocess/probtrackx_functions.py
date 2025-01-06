@@ -400,7 +400,6 @@ class Probtrackx:
         if self.cluster_queue:
             cluster_command.extend(["-q", str(self.cluster_queue)])
         cluster_command.extend(["-t", " ".join(command)])
-        breakpoint()
         return run_fsl_sub(cluster_command)
 
     def __wait_for_complete(self, job_id):
