@@ -71,7 +71,7 @@ def nfact_pipeline_main() -> None:
 
     update_nfact_args_in_place(global_arguments)
     medial_wall_file(global_arguments)
-    print(f'{col["plum"]}NFACT directory{col["reset"]}: {nfact_pp_args["outdir"]}')
+    print(f'{col["plum"]}NFACT directory:{col["reset"]} {nfact_pp_args["outdir"]}')
     make_directory(nfact_pp_args["outdir"], ignore_errors=True)
 
     # Build out temporary locations of arguments

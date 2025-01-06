@@ -3,7 +3,7 @@ from NFACT.base.filesystem import read_file_to_list, write_to_file
 import os
 
 
-def non_compulsory_arguments(additional_args: list=[]) -> list:
+def non_compulsory_arguments(additional_args: list = []) -> list:
     """
     Function to return what are non
     complusory arguments.
@@ -20,7 +20,16 @@ def non_compulsory_arguments(additional_args: list=[]) -> list:
         List of non
         compulsory arguments
     """
-    return ["target2", "config", "pp_skip", "dr_skip", "file_tree", "overwrite", "qc_skip"] + additional_args
+    return [
+        "target2",
+        "config",
+        "pp_skip",
+        "dr_skip",
+        "file_tree",
+        "overwrite",
+        "qc_skip",
+    ] + additional_args
+
 
 def get_compulsory_arguments(args):
     """
@@ -41,7 +50,9 @@ def get_compulsory_arguments(args):
     if args["input"]["pp_skip"]:
         return non_compulsory_arguments(["ref", "bpx_path", "warps", "medial_wall"])
     if args["pre_process"]["file_tree"]:
-        return non_compulsory_arguments(["ref", "bpx_path", "warps", "seed", "medial_wall"])
+        return non_compulsory_arguments(
+            ["ref", "bpx_path", "warps", "seed", "medial_wall"]
+        )
     return non_compulsory_arguments()
 
 
@@ -221,7 +232,9 @@ def assign_outdir_in_place(args: dict) -> None:
     None
     """
     for module in ["nfact_pp", "nfact_decomp", "nfact_dr"]:
-        args[module]["outdir"] = os.path.join(args["global_input"]["outdir"], "nfact")
+        args[module]["outdir"] = os.path.join(
+            args["global_input"]["outdir"], args["global_input"]["folder_name"]
+        )
 
 
 def assign_nfact_decomp_in_place(args: dict) -> None:
@@ -257,7 +270,9 @@ def assign_nfact_dr_in_place(args: dict) -> None:
     None
     """
     args["nfact_dr"]["nfact_decomp_dir"] = os.path.join(
-        args["global_input"]["outdir"], "nfact", "nfact_decomp"
+        args["global_input"]["outdir"],
+        args["global_input"]["folder_name"],
+        "nfact_decomp",
     )
     args["nfact_dr"]["algo"] = args["nfact_decomp"]["algo"]
 
@@ -278,7 +293,10 @@ def medial_wall_file(args: dict) -> None:
     """
     if args["nfact_pp"]["medial_wall"] or args["nfact_pp"]["file_tree"]:
         path = os.path.join(
-            args["global_input"]["outdir"], "nfact", "nfact_pp", "mw_for_decomp.txt"
+            args["global_input"]["outdir"],
+            args["global_input"]["folder_name"],
+            "nfact_pp",
+            "mw_for_decomp.txt",
         )
         args["nfact_decomp"]["medial_wall"] = path
         args["nfact_dr"]["medial_wall"] = path
