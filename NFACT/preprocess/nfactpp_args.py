@@ -138,7 +138,7 @@ def nfact_pp_args() -> dict:
         help="Use cluster enviornment",
     )
     option.add_argument(
-        "-q",
+        "-cq",
         "--queue",
         dest="cluster_queue",
         default=None,
@@ -157,6 +157,13 @@ def nfact_pp_args() -> dict:
         dest="cluster_time",
         default=False,
         help="Time that job will take. nfact_pp will assign a time if none given",
+    )
+    option.add_argument(
+        "-cq",
+        "--cluster_qos",
+        dest="cluster_qos",
+        default=False,
+        help="Set the qos for the cluster",
     )
     option.add_argument(
         "-S",

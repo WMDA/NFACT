@@ -1,5 +1,5 @@
 from .nfactpp import pre_processing
-from .probtrackx_functions import to_use_gpu, cluster_parameters
+from .probtrackx_functions import to_use_gpu
 from .nfactpp_args import nfact_pp_args
 from .nfactpp_setup import (
     check_fsl_is_installed,
@@ -15,7 +15,7 @@ from NFACT.base.setup import (
     does_list_of_subjects_exist,
     check_arguments,
 )
-
+from NFACT.base.cluster_support import Cluster_parameters, NoClusterQueuesException, no_cluster_queues
 import os
 import shutil
 
@@ -75,7 +75,9 @@ def nfact_pp_main(arg: dict = None):
         )
 
     if arg["cluster"]:
-        arg = cluster_parameters(arg)
+        try:
+            arg = Cluster_parameters(arg).process_parameters()
+        except 
     if arg["stop"] == []:
         arg["stop"] = True
     if type(arg["stop"]) is list:

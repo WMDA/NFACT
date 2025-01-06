@@ -1,5 +1,6 @@
 from NFACT.base.filesystem import get_current_date
 from NFACT.base.utils import colours, error_and_exit
+from NFACT.base.cluster_support import run_fsl_sub
 import os
 import subprocess
 import multiprocessing
@@ -305,104 +306,6 @@ def get_probtrack2_arguments(bin: bool = False) -> None:
         error_and_exit(False, f"Error in calling probtrackx2: {error}")
 
     return help_arguments.stderr.decode("utf-8")
-
-
-def has_queues() -> bool:
-    """
-    Function to check if queues
-    available.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    bool: boolean
-        False if stdout is no
-    """
-    queues = run_fsl_sub(
-        [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"), "--has_queues"]
-    )
-    return False if queues["stdout"] == "No" else True
-
-
-def cluster_parameters(arg: dict) -> dict:
-    """
-    Function to return cluster
-    parameters
-
-    Parameters
-    ----------
-    args: dict
-        dictionary of command
-        line arguments
-
-    Returns
-    ------
-    args: dict
-        dictionary of processed
-        command line arguments
-    """
-    col = colours()
-    queues = has_queues()
-
-    if not queues:
-        print(
-            f"{col['plum']}Cluster:{col['reset']} No queues detected. Not running on cluster"
-        )
-        arg["cluster"] = None
-        return arg
-
-    arg["cluster_ram"] = arg["cluster_ram"] if arg["cluster_ram"] else 30
-    arg["cluster_time"] = (
-        arg["cluster_time"] if arg["cluster_time"] else 160 if arg["gpu"] else 600
-    )
-    print_string = "No queue given will assign"
-    if arg["cluster_queue"]:
-        print_string = arg["cluster_queue"]
-        arg["cluster_queue"] = (
-            arg["cluster_queue"] if arg["cluster_queue"] in queues["stdout"] else None
-        )
-
-    print(f"{col['plum']}Cluster:{col['reset']} {print_string}")
-    return arg
-
-
-def run_fsl_sub(command: list) -> str:
-    """
-    Function wrapper around fsl_sub calls.
-
-    Parameters
-    ----------
-    command: list
-        list of command to run
-    report: bool
-        to use fsl_sub_report
-
-    Returns
-    -------
-    run: str
-        output of fsl_sub call
-    """
-    try:
-        run = subprocess.run(
-            command,
-            capture_output=True,
-        )
-
-    except subprocess.CalledProcessError as error:
-        error_and_exit(False, f"Error in calling fsl_sub due to: {error}")
-    except KeyboardInterrupt:
-        run.kill()
-    output = {
-        key: value.decode("utf-8").strip() if isinstance(value, bytes) else value
-        for key, value in vars(run).items()
-    }
-    if output["stderr"]:
-        error_and_exit(False, f"FSL sub failed due to {output['stderr']}")
-    return output
-
 
 class Probtrackx:
     """
