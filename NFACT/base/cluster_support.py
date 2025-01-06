@@ -18,8 +18,8 @@ class Cluster_parameters:
     """
 
     def __init__(self, arg: dict):
-        self.args = arg
-        self.colours = colours()
+        self.arg = arg
+        self.col = colours()
         self.queues = self.has_queues()
 
     def process_parameters(self):
@@ -43,6 +43,7 @@ class Cluster_parameters:
             raise NoClusterQueuesException
         self.cluster_ram()
         self.cluster_queue_assignment()
+        self.cluster_time()
         if self.arg["cluster_qos"]:
             self.cluster_qos()
         self.print_cluster_queues()
@@ -75,15 +76,17 @@ class Cluster_parameters:
 
     def cluster_queue_assignment(self):
         """Method to assign cluster queue"""
-        self.arg["cluster_queue"] = (
-            self.arg["cluster_queue"]
-            if self.arg["cluster_queue"] in self.queues["std_out"]
-            else None
-        )
+        if self.arg["cluster_queue"]:
+            self.arg["cluster_queue"] = (
+                self.arg["cluster_queue"]
+                if self.arg["cluster_queue"] in self.queues["stdout"]
+                else None
+            )
 
     def cluster_qos(self):
         """Method to assign cluster qos"""
-        self.args["cluster_qos"] = f'--extra "--qos={self.args['cluster_qos']}'
+        qos = self.arg["cluster_qos"]
+        self.arg["cluster_qos"] = f'--extra "--qos={qos}"'
 
     def print_cluster_queues(self):
         """Method to print cluster queues"""

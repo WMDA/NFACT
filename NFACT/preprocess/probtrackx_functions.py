@@ -297,15 +297,15 @@ def get_probtrack2_arguments(bin: bool = False) -> None:
     help_arguments: str
         string of help arguments
     """
-
-    binary = "probtrackx2" if not bin else "probtrackx2_gpu"
-
+    prob_bin = "probtrackx2" if not bin else "probtrackx2_gpu"
+    binary = os.path.join(os.environ["FSLDIR"], "bin", prob_bin)
     try:
         help_arguments = subprocess.run([binary, "--help"], capture_output=True)
     except subprocess.CalledProcessError as error:
         error_and_exit(False, f"Error in calling probtrackx2: {error}")
 
     return help_arguments.stderr.decode("utf-8")
+
 
 class Probtrackx:
     """
@@ -329,6 +329,7 @@ class Probtrackx:
         cluster_time: int,
         cluster_queue: str,
         cluster_ram: int,
+        cluster_qos: str,
         parallel: bool = False,
     ) -> None:
         self.command = command
@@ -339,6 +340,7 @@ class Probtrackx:
         self.cluster_time = cluster_time
         self.cluster_queue = cluster_queue
         self.cluster_ram = cluster_ram
+        self.cluster_qos = cluster_qos
 
     def run(self):
         """
@@ -383,19 +385,22 @@ class Probtrackx:
         """
         cluster_command = [
             os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"),
-            command,
             "-T",
-            self.cluster_time,
+            str(self.cluster_time),
             "-R",
-            self.cluster_ram,
-            "-q",
-            self.cluster_queue,
+            str(self.cluster_ram),
             "-c",
             "cuda" if self.gpu else False,
             "-N",
             f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
         ]
 
+        if self.cluster_qos:
+            cluster_command.append(self.cluster_qos)
+        if self.cluster_queue:
+            cluster_command.extend(["-q", str(self.cluster_queue)])
+        cluster_command.extend(["-t", " ".join(command)])
+        breakpoint()
         return run_fsl_sub(cluster_command)
 
     def __wait_for_complete(self, job_id):

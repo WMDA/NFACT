@@ -15,7 +15,11 @@ from NFACT.base.setup import (
     does_list_of_subjects_exist,
     check_arguments,
 )
-from NFACT.base.cluster_support import Cluster_parameters, NoClusterQueuesException, no_cluster_queues
+from NFACT.base.cluster_support import (
+    Cluster_parameters,
+    NoClusterQueuesException,
+    no_cluster_queues,
+)
 import os
 import shutil
 
@@ -77,7 +81,8 @@ def nfact_pp_main(arg: dict = None):
     if arg["cluster"]:
         try:
             arg = Cluster_parameters(arg).process_parameters()
-        except 
+        except NoClusterQueuesException:
+            arg["cluster"] = no_cluster_queues()
     if arg["stop"] == []:
         arg["stop"] = True
     if type(arg["stop"]) is list:

@@ -159,7 +159,7 @@ def nfact_pp_args() -> dict:
         help="Time that job will take. nfact_pp will assign a time if none given",
     )
     option.add_argument(
-        "-cq",
+        "-cqos",
         "--cluster_qos",
         dest="cluster_qos",
         default=False,

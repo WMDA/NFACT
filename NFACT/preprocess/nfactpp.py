@@ -274,12 +274,14 @@ def pre_processing(arg: dict, handler: object) -> None:
 
     # Running probtrackx2
     print_to_screen("TRACTOGRAPHY")
+
     probtrack = Probtrackx(
         subjects_commands,
         arg["cluster"],
         arg["cluster_time"],
         arg["cluster_queue"],
         arg["cluster_ram"],
+        arg["cluster_qos"],
         arg["n_cores"],
     )
     probtrack.run()
