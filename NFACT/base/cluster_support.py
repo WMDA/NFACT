@@ -3,9 +3,21 @@ import os
 import subprocess
 
 class Cluster_parameters:
-    """Class to process cluster parameters"""
+    """
+    Class to process cluster parameters.
+
+    Usage
+    -----
+    arg = Cluster_parameters().process_parameters(arg)
+
+    Parameters
+    ----------
+    arg: dict
+        command line arguments    
+    """
     
     def __init__(self, arg: dict):
+
         self.args = arg
         self.colours = colours()
         self.queues = self.has_queues()
