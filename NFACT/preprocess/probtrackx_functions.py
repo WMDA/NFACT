@@ -337,9 +337,9 @@ class Probtrackx:
         cluster_qos: str,
         parallel: bool = False,
     ) -> None:
+        self.col = colours()
         self.command = command
         self.parallel = parallel
-        self.col = colours()
         self.cluster = cluster
         self.cluster_time = cluster_time
         self.cluster_queue = cluster_queue
@@ -384,28 +384,32 @@ class Probtrackx:
                 f"on subject {subject}",
             )
 
-            job = run_probtractkx["command"](sub_command, nfactpp_directory)
+            job = run_probtractkx["command"](
+                sub_command, self.__log_path(nfactpp_directory)
+            )
             submitted_jobs.append(job)
 
         if submitted_jobs:
             queue = Queue_Monitoring()
             queue.monitor(submitted_jobs)
 
-    def __cluster(self, command, nfactpp_directory):
+    def __cluster(self, command: list, log_path: str):
         """
         Method to submit jobs to cluster
         """
-        base_cluster_command = (
-            base_command(
-                self.cluster_time,
-                self.cluster_ram,
-                nfactpp_directory,
-                f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
-            ),
+        bcluster_command = base_command(
+            self.cluster_time,
+            self.cluster_ram,
+            log_path,
+            f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
         )
 
         cluster_command = fsl_sub_cluster_command(
-            base_cluster_command, self.cluster_queue, self.cluster_qos, self.cluster_ram
+            bcluster_command,
+            command,
+            self.cluster_queue,
+            self.cluster_qos,
+            self.cluster_ram,
         )
 
         fsl_sub_rout = run_fsl_sub(cluster_command)
@@ -451,7 +455,7 @@ class Probtrackx:
     def __subject_id(self, nfactpp_diretory: str):
         return os.path.basename(nfactpp_diretory)
 
-    def __run_probtrackx(self, command: list, nfactpp_directory: str) -> None:
+    def __run_probtrackx(self, command: list, log_path: str) -> None:
         """
         Method to run probtrackx
 
@@ -459,6 +463,8 @@ class Probtrackx:
         ----------
         command: list
             command in list form to run
+        log_path: str
+            Log path
 
         Returns
         -------
@@ -466,7 +472,7 @@ class Probtrackx:
         """
 
         try:
-            with open(self.__log_path(nfactpp_directory), "w") as log_file:
+            with open(log_path, "w") as log_file:
                 run = subprocess.run(
                     command,
                     stdout=log_file,

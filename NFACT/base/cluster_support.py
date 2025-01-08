@@ -68,7 +68,7 @@ class Cluster_parameters:
     def cluster_ram(self):
         """Method to assign ram amount"""
         self.arg["cluster_ram"] = (
-            self.arg["cluster_ram"] if self.arg["cluster_ram"] else 30
+            self.arg["cluster_ram"] if self.arg["cluster_ram"] else "40"
         )
 
     def cluster_time(self):
@@ -76,9 +76,9 @@ class Cluster_parameters:
         self.arg["cluster_time"] = (
             self.arg["cluster_time"]
             if self.arg["cluster_time"]
-            else 160
+            else "160"
             if self.arg["gpu"]
-            else 600
+            else "600"
         )
 
     def cluster_queue_check(self):
@@ -143,9 +143,9 @@ def base_command(
     return [
         os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"),
         "-T",
-        cluster_time,
+        str(cluster_time),
         "-R",
-        cluster_ram,
+        str(cluster_ram),
         "-N",
         log_name,
         "-l",
@@ -174,26 +174,40 @@ def fsl_sub_cluster_command(
 
 
 class Queue_Monitoring:
+    """
+    Class to Monitor cluster queue
+    for jobs completion.
+
+    Usage
+    ----
+    queue = Queue_Monitoring()
+    queue.monitor(list_of_job_ids)
+    """
+
     def __init__(self):
         self.spinner_running = True
 
-    def __spinner(self):
-        spinner_cycle = itertools.cycle(["|", "\\", "-", "/"])
-        while self.spinner_running:
-            print(f"\r{next(spinner_cycle)}", end="")
-            time.sleep(0.1)
+    def monitor(self, job_id: list) -> None:
+        """
+        Main method to monitor queue.
 
-    def monitor(self, job_id):
-        print("Monitoring Queue:")
-        time.sleep(100)
+        Parameters
+        ----------
+        job_id: list
+            list of job_ids
+        """
+        print("\nStarting Queue Monitoring")
+
         self.spinner_running = True  # Control variable for the spinner thread
         spinner_thread = threading.Thread(target=self.__spinner, daemon=True)
         spinner_thread.start()
+
         try:
             with tqdm(
                 total=len(job_id), desc="Jobs completed", unit="job", colour="magenta"
             ) as pbar:
                 completed_jobs = []
+                time.sleep(100)
                 while True:
                     for job in job_id:
                         if job not in completed_jobs:
@@ -205,19 +219,29 @@ class Queue_Monitoring:
                     if len(completed_jobs) == len(job_id):
                         print("All jobs have finihsed")
                         break
-
                     time.sleep(300)
+
         except KeyboardInterrupt:
             pass
         finally:
             self.spinner_running = False
             spinner_thread.join()
 
+    def __spinner(self):
+        spinner_cycle = itertools.cycle(["|", "\\", "-", "/"])
+        while self.spinner_running:
+            print(f"\r{next(spinner_cycle)}", end="")
+            time.sleep(0.1)
+
     def __check_job(self, job_id):
         output = run_fsl_sub(
             [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub_report"), job_id]
         )
-        if "finished" in output["stdout"]:
+        if "Finished" in output["stdout"]:
+            return False
+        if "Failed" in output["stdout"]:
+            col = colours()
+            print(f"{col['red']}JOB FAILED. CHECK LOGS{col['reset']}")
             return False
         return True
 
