@@ -384,23 +384,21 @@ class Probtrackx:
                 f"on subject {subject}",
             )
 
-            job = run_probtractkx["command"](
-                sub_command, self.__log_path(nfactpp_directory)
-            )
+            job = run_probtractkx["command"](sub_command, nfactpp_directory)
             submitted_jobs.append(job)
 
         if submitted_jobs:
             queue = Queue_Monitoring()
             queue.monitor(submitted_jobs)
 
-    def __cluster(self, command: list, log_path: str):
+    def __cluster(self, command: list, nfactpp_directory: str):
         """
         Method to submit jobs to cluster
         """
         bcluster_command = base_command(
             self.cluster_time,
             self.cluster_ram,
-            log_path,
+            os.path.join(nfactpp_directory, "logs"),
             f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
         )
 
@@ -446,16 +444,16 @@ class Probtrackx:
     def __log_name(self):
         return "PP_log_" + get_current_date()
 
-    def __log_path(self, nfactpp_diretory):
-        return os.path.join(nfactpp_diretory, "logs", self.__log_name())
+    def __log_path(self, nfactpp_directory):
+        return os.path.join(nfactpp_directory, "logs", self.__log_name())
 
     def __nfact_dir(self, command):
         return os.path.dirname(command[2])
 
-    def __subject_id(self, nfactpp_diretory: str):
-        return os.path.basename(nfactpp_diretory)
+    def __subject_id(self, nfactpp_directory: str):
+        return os.path.basename(nfactpp_directory)
 
-    def __run_probtrackx(self, command: list, log_path: str) -> None:
+    def __run_probtrackx(self, command: list, nfactpp_directory: str) -> None:
         """
         Method to run probtrackx
 
@@ -472,7 +470,7 @@ class Probtrackx:
         """
 
         try:
-            with open(log_path, "w") as log_file:
+            with open(self.__log_path(nfactpp_directory), "w") as log_file:
                 run = subprocess.run(
                     command,
                     stdout=log_file,

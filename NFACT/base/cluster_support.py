@@ -1,7 +1,6 @@
 from .utils import colours, error_and_exit
 import os
 import subprocess
-import itertools
 import time
 from tqdm import tqdm
 import threading
@@ -66,9 +65,9 @@ class Cluster_parameters:
         )
 
     def cluster_ram(self):
-        """Method to assign ram amount"""
+        """Method to assign ram amount. Largely Reduant"""
         self.arg["cluster_ram"] = (
-            self.arg["cluster_ram"] if self.arg["cluster_ram"] else "40"
+            self.arg["cluster_ram"] if self.arg["cluster_ram"] else "60"
         )
 
     def cluster_time(self):
@@ -186,6 +185,8 @@ class Queue_Monitoring:
 
     def __init__(self):
         self.spinner_running = True
+        self.col = colours()
+        print(f"{self.col['pink']}\nStarting Queue Monitoring{self.col['reset']}")
 
     def monitor(self, job_id: list) -> None:
         """
@@ -196,7 +197,6 @@ class Queue_Monitoring:
         job_id: list
             list of job_ids
         """
-        print("\nStarting Queue Monitoring")
 
         self.spinner_running = True  # Control variable for the spinner thread
         spinner_thread = threading.Thread(target=self.__spinner, daemon=True)
@@ -217,6 +217,7 @@ class Queue_Monitoring:
                                 completed_jobs.append(job)
 
                     if len(completed_jobs) == len(job_id):
+                        pbar.close()
                         print("All jobs have finihsed")
                         break
                     time.sleep(300)
@@ -228,20 +229,38 @@ class Queue_Monitoring:
             spinner_thread.join()
 
     def __spinner(self):
-        spinner_cycle = itertools.cycle(["|", "\\", "-", "/"])
+        hash_line = ""
+        max_hashes = 50  # Maximum number of `#` characters to display
+        adding_hash = True  # Direction flag to alternate adding/removing `#`
+
         while self.spinner_running:
-            print(f"\r{next(spinner_cycle)}", end="")
+            # Update the hash line based on the direction
+            if adding_hash:
+                hash_line += "#"
+                if len(hash_line) >= max_hashes:
+                    adding_hash = False
+            else:
+                hash_line = hash_line[:-1]
+                if len(hash_line) == 0:
+                    adding_hash = True
+
+            # Print the hash line
+            print(
+                f"{self.col['deep_pink']}\033[1B\r{hash_line.ljust(max_hashes)}\033[1A{self.col['reset']}",
+                end="",
+            )
             time.sleep(0.1)
 
-    def __check_job(self, job_id):
+    def __check_job(self, job_id: str):
         output = run_fsl_sub(
             [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub_report"), job_id]
         )
         if "Finished" in output["stdout"]:
             return False
         if "Failed" in output["stdout"]:
-            col = colours()
-            print(f"{col['red']}JOB FAILED. CHECK LOGS{col['reset']}")
+            tqdm.write(
+                f"{self.col['red']}JOB {job_id} FAILED. CHECK LOGS{self.col['reset']}"
+            )
             return False
         return True
 

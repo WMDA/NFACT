@@ -96,7 +96,6 @@ def nfact_pp_folder_setup(nfactpp_diretory: str) -> None:
     """
     col = colours()
     print(f"{col['pink']}nfact_PP folder:{col['reset']} {nfactpp_diretory}")
-
     make_directory(nfactpp_diretory)
     sub_folders = ["logs", "files"]
     [make_directory(os.path.join(nfactpp_diretory, sub)) for sub in sub_folders]

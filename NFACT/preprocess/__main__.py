@@ -67,14 +67,15 @@ def nfact_pp_main(arg: dict = None):
 
     print(f"{col['deep_pink']}Checking:{col['reset']} GPU status")
     arg["gpu"] = to_use_gpu()
-    print("GPU found, Using GPU\n") if arg["gpu"] else print(
-        "No GPU. Using CPU version\n"
+    print(f"{col['amethyst']}Using:{col['reset']} GPU\n") if arg["gpu"] else print(
+        f"{col['amethyst']}Using:{col['reset']} CPU\n"
     )
 
     if arg["cluster"]:
         print(f"{col['deep_pink']}Checking:{col['reset']} Cluster Availability\n")
         try:
             arg = Cluster_parameters(arg).process_parameters()
+            print(f"{col['amethyst']}Using: Cluster")
         except NoClusterQueuesException:
             arg["cluster"] = no_cluster_queues()
 

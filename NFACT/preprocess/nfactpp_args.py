@@ -148,8 +148,8 @@ def nfact_pp_args() -> dict:
         "-cr",
         "--cluster_ram",
         dest="cluster_ram",
-        default=30,
-        help="Ram that job will take. Default is 30",
+        default="60",
+        help="Ram that job will take. Default is 60",
     )
     option.add_argument(
         "-ct",
