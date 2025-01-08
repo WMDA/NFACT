@@ -75,9 +75,9 @@ class Cluster_parameters:
         self.arg["cluster_time"] = (
             self.arg["cluster_time"]
             if self.arg["cluster_time"]
-            else "160"
-            if self.arg["gpu"]
             else "600"
+            if self.arg["gpu"]
+            else "160"
         )
 
     def cluster_queue_check(self):
@@ -121,7 +121,7 @@ def base_command(
     cluster_time: str, cluster_ram: str, log_directory: str, log_name: str
 ) -> list:
     """
-    Function to return base command
+    Function to build base command for fsl sub
 
     Parameters
     ----------
@@ -155,12 +155,35 @@ def base_command(
 def fsl_sub_cluster_command(
     cluster_command: list,
     command_to_run: list,
-    queue: str = False,
-    qos: str = False,
+    queue: str = None,
+    qos: str = None,
     gpu: bool = False,
-):
+) -> list:
     """
-    Function to
+    Function to build out fsl sub command.
+    Adds in queue, cuda, qos and command
+    to run.
+
+    Parameters
+    ----------
+    cluster_command: list
+        base cluster command
+    command_to_run: list
+        command to run on cluster
+    queue: str = None
+        Queue to send command to.
+        Can be None as fsl sub
+        can assign queue.
+    qos: str = None
+        SLURM qos. Can be None
+    gpu: bool = False
+        To use GPU.
+
+    Returns
+    -------
+    cluster_command: list
+        built out command
+        to run on cluster.
     """
     if qos:
         cluster_command.append(str(qos))
@@ -183,7 +206,7 @@ class Queue_Monitoring:
     queue.monitor(list_of_job_ids)
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.spinner_running = True
         self.col = colours()
         print(f"{self.col['pink']}\nStarting Queue Monitoring{self.col['reset']}")
@@ -196,9 +219,13 @@ class Queue_Monitoring:
         ----------
         job_id: list
             list of job_ids
+
+        Returns
+        -------
+        None
         """
 
-        self.spinner_running = True  # Control variable for the spinner thread
+        self.spinner_running = True
         spinner_thread = threading.Thread(target=self.__spinner, daemon=True)
         spinner_thread.start()
 
@@ -223,18 +250,21 @@ class Queue_Monitoring:
                     time.sleep(300)
 
         except KeyboardInterrupt:
-            pass
+            pbar.close()
         finally:
             self.spinner_running = False
             spinner_thread.join()
 
-    def __spinner(self):
+    def __spinner(self) -> None:
+        """
+        Method to run spinner bar
+        while monitoring the queue.
+        """
         hash_line = ""
-        max_hashes = 50  # Maximum number of `#` characters to display
-        adding_hash = True  # Direction flag to alternate adding/removing `#`
+        max_hashes = 50
+        adding_hash = True
 
         while self.spinner_running:
-            # Update the hash line based on the direction
             if adding_hash:
                 hash_line += "#"
                 if len(hash_line) >= max_hashes:
@@ -244,14 +274,27 @@ class Queue_Monitoring:
                 if len(hash_line) == 0:
                     adding_hash = True
 
-            # Print the hash line
             print(
                 f"{self.col['deep_pink']}\033[1B\r{hash_line.ljust(max_hashes)}\033[1A{self.col['reset']}",
                 end="",
             )
             time.sleep(0.1)
 
-    def __check_job(self, job_id: str):
+    def __check_job(self, job_id: str) -> bool:
+        """
+        Method to check job progress.
+
+        Parameters
+        ----------
+        job_id: str
+            job ID of fsl sub job
+
+        Returns
+        -------
+        bool: boolean
+            True if job is still running
+            or False if completed.
+        """
         output = run_fsl_sub(
             [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub_report"), job_id]
         )
