@@ -1,6 +1,10 @@
 from NFACT.base.filesystem import get_current_date
 from NFACT.base.utils import colours, error_and_exit
-from NFACT.base.cluster_support import run_fsl_sub, base_command, fsl_sub_cluster_command
+from NFACT.base.cluster_support import (
+    run_fsl_sub,
+    base_command,
+    fsl_sub_cluster_command,
+)
 import os
 import subprocess
 import multiprocessing
@@ -341,7 +345,6 @@ class Probtrackx:
         self.cluster_ram = cluster_ram
         self.cluster_qos = cluster_qos
 
-
     def run(self):
         """
         Method to run probtrackx
@@ -375,10 +378,10 @@ class Probtrackx:
             nfactpp_directory = self.__nfact_dir(sub_command)
             subject = self.__subject_id(nfactpp_directory)
             print(
-            "Running",
-            os.path.basename(sub_command[0]),
-            f"on subject {subject}",
-        )
+                "Running",
+                os.path.basename(sub_command[0]),
+                f"on subject {subject}",
+            )
 
             job = run_probtractkx["command"](sub_command, nfactpp_directory)
             submitted_jobs.append(job)
@@ -388,22 +391,20 @@ class Probtrackx:
         """
         Method to submit jobs to cluster
         """
-        base_cluster_command = base_command(
-                                       self.cluster_time, 
-                                       self.cluster_ram,
-                                       nfactpp_directory,
-                                       f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}" 
-                                        ), 
+        base_cluster_command = (
+            base_command(
+                self.cluster_time,
+                self.cluster_ram,
+                nfactpp_directory,
+                f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
+            ),
+        )
         cluster_command = fsl_sub_cluster_command(
-                                                 base_cluster_command, 
-                                                  self.cluster_queue, 
-                                                  self.cluster_qos, 
-                                                  self.cluster_ram
-                                                  )
-        
+            base_cluster_command, self.cluster_queue, self.cluster_qos, self.cluster_ram
+        )
+
         fsl_sub_rout = run_fsl_sub(cluster_command)
         return fsl_sub_rout["stdout"]
- 
 
     def __parallel_mode(self) -> None:
         """
@@ -441,10 +442,10 @@ class Probtrackx:
 
     def __nfact_dir(self, command):
         return os.path.dirname(command[2])
-    
+
     def __subject_id(self, nfactpp_diretory: str):
         return os.path.basename(nfactpp_diretory)
-        
+
     def __run_probtrackx(self, command: list, nfactpp_directory: str) -> None:
         """
         Method to run probtrackx
@@ -458,7 +459,7 @@ class Probtrackx:
         -------
         None
         """
-        
+
         try:
             with open(self.__log_path(nfactpp_directory), "w") as log_file:
                 run = subprocess.run(
@@ -477,4 +478,3 @@ class Probtrackx:
         # Error handling subprocess
         if run.returncode != 0:
             error_and_exit(False, f"Error in {command[0]} please check log files")
-        
