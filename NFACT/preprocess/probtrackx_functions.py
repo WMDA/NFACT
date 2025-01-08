@@ -1,11 +1,10 @@
-from NFACT.base.filesystem import get_current_date, write_to_file
+from NFACT.base.filesystem import get_current_date
 from NFACT.base.utils import colours, error_and_exit
-from NFACT.base.cluster_support import run_fsl_sub
+from NFACT.base.cluster_support import run_fsl_sub, base_command, fsl_sub_cluster_command
 import os
 import subprocess
 import multiprocessing
 import signal
-import time
 
 
 def to_use_gpu():
@@ -380,65 +379,31 @@ class Probtrackx:
             os.path.basename(sub_command[0]),
             f"on subject {subject}",
         )
-            if self.__cluster:
-                job = run_probtractkx["command"](sub_command, subject, nfactpp_directory)
-                submitted_jobs.append(job["stdout"])
-            if not self.__cluster:
-                run_probtractkx["command"](sub_command, nfactpp_directory)
+
+            job = run_probtractkx["command"](sub_command, nfactpp_directory)
+            submitted_jobs.append(job)
         self.__wait_for_complete(submitted_jobs)
 
-    def __write_command_tmp(self, command, subject, nfactpp_directory):
-        file_path = os.path.join(nfactpp_directory, 'files', 
-                                 f'.tmp_{subject}_cluster_command.txt')
-                    
-        write_to_file(os.path.dirname(file_path), 
-                     os.path.basename(file_path),
-                    " ".join(command))
-        return file_path
-
-    def __cluster(self, command, subject, nfactpp_directory):
+    def __cluster(self, command, nfactpp_directory):
         """
         Method to submit jobs to cluster
         """
-        command_txt = self.__write_command_tmp(command, subject, nfactpp_directory)
-        cluster_command = [
-            os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"),
-            "-T",
-            str(self.cluster_time),
-            "-R",
-            str(self.cluster_ram),
-            "-N",
-            f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
-        ]
-
-        if self.cluster_qos:
-            cluster_command.append(self.cluster_qos)
-        if self.cluster_queue:
-            cluster_command.extend(["-q", str(self.cluster_queue)])
-        if "gpu" in command[0]:
-            cluster_command.extend(["-c","cuda"])
-        cluster_command.extend(["-t", command_txt])
-        return run_fsl_sub(cluster_command)
-
-    def __wait_for_complete(self, job_id):
-        while True:
-            running = True
-            for job in job_id:
-                running = self.__check_job(job)
-
-            if not running:
-                print("All NFACT_PP jobs have finihsed")
-                break
-
-            time.sleep(300)
-
-    def __check_job(self, job_id):
-        output = run_fsl_sub(
-            [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub_report"), job_id]
-        )
-        if "finished" in output["stdout"]:
-            return False
-        return True
+        base_cluster_command = base_command(
+                                       self.cluster_time, 
+                                       self.cluster_ram,
+                                       nfactpp_directory,
+                                       f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}" 
+                                        ), 
+        cluster_command = fsl_sub_cluster_command(
+                                                 base_cluster_command, 
+                                                  self.cluster_queue, 
+                                                  self.cluster_qos, 
+                                                  self.cluster_ram
+                                                  )
+        
+        fsl_sub_rout = run_fsl_sub(cluster_command)
+        return fsl_sub_rout["stdout"]
+ 
 
     def __parallel_mode(self) -> None:
         """
@@ -512,3 +477,4 @@ class Probtrackx:
         # Error handling subprocess
         if run.returncode != 0:
             error_and_exit(False, f"Error in {command[0]} please check log files")
+        

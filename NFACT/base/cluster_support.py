@@ -1,7 +1,10 @@
 from .utils import colours, error_and_exit
 import os
 import subprocess
-
+import itertools
+import time
+from tqdm import tqdm
+import threading
 
 class Cluster_parameters:
     """
@@ -20,7 +23,7 @@ class Cluster_parameters:
     def __init__(self, arg: dict):
         self.arg = arg
         self.col = colours()
-        self.queues = self.has_queues()
+        
 
     def process_parameters(self):
         """
@@ -37,12 +40,11 @@ class Cluster_parameters:
         dictionary of processed
         command line arguments
         """
-
-        queues_avail = self.queues["stdout"] != "No"
+        queues = self.has_queues()
+        queues_avail = queues["stdout"] != "No"
         if not queues_avail:
             raise NoClusterQueuesException
         self.cluster_ram()
-        #self.cluster_queue_assignment()
         self.cluster_time()
         if self.arg["cluster_qos"]:
             self.cluster_qos()
@@ -56,6 +58,10 @@ class Cluster_parameters:
         """
         return run_fsl_sub(
             [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"), "--has_queues"]
+        )
+    def config(self):
+        return run_fsl_sub(
+            [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"), "--show_config"]
         )
 
     def cluster_ram(self):
@@ -74,15 +80,12 @@ class Cluster_parameters:
             else 600
         )
 
-    def cluster_queue_assignment(self):
+    def cluster_queue_check(self):
         """Method to assign cluster queue"""
         if self.arg["cluster_queue"]:
-            self.arg["cluster_queue"] = (
-                self.arg["cluster_queue"]
-                if self.arg["cluster_queue"] in self.queues["stdout"]
-                else None
-            )
-
+            queue_config = self.config()
+            return True if self.arg["cluster_queue"] in queue_config["stdout"] else False
+    
     def cluster_qos(self):
         """Method to assign cluster qos"""
         qos = self.arg["cluster_qos"]
@@ -95,7 +98,10 @@ class Cluster_parameters:
             if not self.arg["cluster_queue"]
             else self.arg["cluster_queue"]
         )
-        print(f"{self.col['plum']}Cluster:{self.col['reset']} {print_string}")
+        is_queue_config = self.cluster_queue_check()
+        if not is_queue_config:
+            print_string = print_string + " given but not configured. Queue may not work."
+        print(f"{self.col['darker_pink']}Cluster queue:{self.col['reset']} {print_string}")
 
 
 class NoClusterQueuesException(Exception):
@@ -104,6 +110,99 @@ class NoClusterQueuesException(Exception):
     def __init__(self):
         super().__init__()
 
+
+def base_command(cluster_time: str, cluster_ram: str, log_directory: str, log_name: str) -> list:
+    """
+    Function to return base command
+
+    Parameters
+    ----------
+    cluster_time: str
+        Time job will take
+    cluster_ram: str
+        Amount of ram job will take
+    log_directory: str
+        Path to log directory
+    log_name: str
+        Name of log file
+
+    Returns
+    -------
+    list: list object
+        list of base cluster_command
+    """
+    return [
+        os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub"),
+        "-T",
+        cluster_time,
+        "-R",
+        cluster_ram,
+        "-N",
+        log_name,
+        '-l', 
+        log_directory
+    ]
+
+def fsl_sub_cluster_command(cluster_command: list, command_to_run: list, queue: str = False, qos: str= False, gpu: bool = False):
+    """
+    Function to 
+    """
+    if qos:
+        cluster_command.append(str(qos))
+    if queue:
+        cluster_command.extend(["-q", str(queue)])
+    if gpu:
+        cluster_command.extend(["-c", "cuda"])
+    cluster_command.extend([" ".join(command_to_run)])
+    return cluster_command
+
+
+
+class Queue_Monitoring:
+    def __init__(self):
+        self.spinner_running = True
+    def __spinner(self):
+        spinner_cycle = itertools.cycle(["|", "\\", "-", "/"])
+        while self.spinner_running:
+            print(f"\r{next(spinner_cycle)}", end="")
+            time.sleep(0.1)
+
+    def monitor(self, job_id):
+        print("Monitoring Queue:")
+        time.sleep(100)
+        self.spinner_running = True  # Control variable for the spinner thread
+        spinner_thread = threading.Thread(target=self.__spinner, daemon=True)
+        spinner_thread.start()
+        try:
+            with tqdm(total=len(job_id), desc="Jobs completed", unit="job", colour="magenta") as pbar:
+                completed_jobs = []
+                while True:
+                    for job in job_id:
+                        if job not in completed_jobs:
+                            running = self.__check_job(job)
+                            if not running:
+                                pbar.update(1)
+                                completed_jobs.append(job)
+    
+                    if len(completed_jobs) == len(job_id):
+                        print("All jobs have finihsed")
+                        break
+        
+                    time.sleep(300)
+        except KeyboardInterrupt:
+            pass
+        finally:
+            self.spinner_running = False
+            spinner_thread.join()
+
+
+    def __check_job(self, job_id):
+        output = run_fsl_sub(
+            [os.path.join(os.environ["FSLDIR"], "bin", "fsl_sub_report"), job_id]
+        )
+        if "finished" in output["stdout"]:
+            return False
+        return True
 
 def no_cluster_queues():
     """

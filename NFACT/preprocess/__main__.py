@@ -70,6 +70,12 @@ def nfact_pp_main(arg: dict = None):
     print("GPU found, Using GPU\n") if arg["gpu"] else print(
         "No GPU. Using CPU version\n"
     )
+    if arg["cluster"]:
+        print("Cluster arguments given. Checking cluster")
+        try:
+            arg = Cluster_parameters(arg).process_parameters()
+        except NoClusterQueuesException:
+            arg["cluster"] = no_cluster_queues()
     print(
         f'{col["darker_pink"]}Filetree:{col["reset"]} {arg["file_tree"].lower()} '
     ) if arg["file_tree"] else None
@@ -78,11 +84,7 @@ def nfact_pp_main(arg: dict = None):
             os.getenv("FSLDIR"), "data", "standard", "MNI152_T1_2mm_brain.nii.gz"
         )
 
-    if arg["cluster"]:
-        try:
-            arg = Cluster_parameters(arg).process_parameters()
-        except NoClusterQueuesException:
-            arg["cluster"] = no_cluster_queues()
+
     if arg["stop"] == []:
         arg["stop"] = True
     if type(arg["stop"]) is list:
