@@ -4,6 +4,7 @@ from NFACT.base.cluster_support import (
     run_fsl_sub,
     base_command,
     fsl_sub_cluster_command,
+    Queue_Monitoring,
 )
 import os
 import subprocess
@@ -385,7 +386,10 @@ class Probtrackx:
 
             job = run_probtractkx["command"](sub_command, nfactpp_directory)
             submitted_jobs.append(job)
-        self.__wait_for_complete(submitted_jobs)
+
+        if submitted_jobs:
+            queue = Queue_Monitoring()
+            queue.monitor(submitted_jobs)
 
     def __cluster(self, command, nfactpp_directory):
         """
@@ -399,6 +403,7 @@ class Probtrackx:
                 f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
             ),
         )
+
         cluster_command = fsl_sub_cluster_command(
             base_cluster_command, self.cluster_queue, self.cluster_qos, self.cluster_ram
         )
