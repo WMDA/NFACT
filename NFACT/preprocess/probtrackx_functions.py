@@ -479,7 +479,6 @@ class Probtrackx:
             run.kill()
         except Exception as e:
             error_and_exit(False, f"The following error occured: {e}")
-            return None
-        # Error handling subprocess
         if run.returncode != 0:
             error_and_exit(False, f"Error in {command[0]} please check log files")
+        return None
