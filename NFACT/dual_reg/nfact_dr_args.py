@@ -15,68 +15,13 @@ def nfactdr_args() -> dict:
     dict: dictionary
         dictionary of cmd arguments
     """
-    args = argparse.ArgumentParser(
+    base_args = argparse.ArgumentParser(
         prog="nfact_dr",
         description=print(nfact_dr_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     col = colours()
-    args.add_argument(
-        "-l",
-        "--list_of_subjects",
-        dest="list_of_subjects",
-        help=f"{col['red']}REQUIRED:{col['reset']} Filepath to a list of subjects",
-    )
-    args.add_argument(
-        "-o",
-        "--outdir",
-        dest="outdir",
-        help=f"{col['red']}REQUIRED:{col['reset']}  Path to output directory",
-    )
-    args.add_argument(
-        "-a",
-        "--algo",
-        dest="algo",
-        help=f"{col['red']}REQUIRED:{col['reset']} Which NFACT algorithm to perform dual regression on",
-    )
-    args.add_argument(
-        "--seeds",
-        "-s",
-        dest="seeds",
-        help=f"{col['red']}REQUIRED:{col['reset']} File of seeds used in NFACT_PP/probtrackx",
-    )
-    args.add_argument(
-        "--medial_wall",
-        "-m",
-        dest="medial_wall",
-        default=False,
-        help=f"""
-        {col['pink']}RECOMMENDED FOR SURFACE SEEDS:{col['reset']} Medial wall images if surface seeds given.
-        Masks out grey matter components that cross the medial wall.
-        """,
-    )
-    args.add_argument(
-        "-n",
-        "--nfact_decomp_dir",
-        dest="nfact_decomp_dir",
-        help=f"{col['plum']}REQUIRED IF NFACT_DECOMP:{col['reset']} Filepath to the NFACT_decomp directory. Use this if you have ran NFACT decomp",
-    )
-    args.add_argument(
-        "-d",
-        "--decomp_dir",
-        dest="decomp_dir",
-        help=f"""{col['plum']}REQUIRED IF NOT NFACT_DECOMP:{col['reset']} Filepath to decomposition components. 
-        WARNING NFACT decomp expects components to be named in a set way. See documentation for further info.""",
-    )
-    args.add_argument(
-        "-N",
-        "--normalise",
-        dest="normalise",
-        action="store_true",
-        default=False,
-        help="normalise components by scaling",
-    )
-    args.add_argument(
+    base_args.add_argument(
         "-hh",
         "--verbose_help",
         dest="verbose_help",
@@ -86,10 +31,112 @@ def nfactdr_args() -> dict:
         Prints help message and example usages
       """,
     )
-    no_args(args)
-    options = args.parse_args()
+    set_up_args = base_args.add_argument_group(
+        f"{col['deep_pink']}Set Up Arguments{col['reset']}"
+    )
+    set_up_args.add_argument(
+        "-l",
+        "--list_of_subjects",
+        dest="list_of_subjects",
+        help="Filepath to a list of subjects",
+    )
+    set_up_args.add_argument(
+        "-o",
+        "--outdir",
+        dest="outdir",
+        help="Path to output directory",
+    )
+    dr_args = base_args.add_argument_group(
+        f"{col['pink']}Dual Regression Arguments{col['reset']}"
+    )
+    dr_args.add_argument(
+        "-a",
+        "--algo",
+        dest="algo",
+        help="Which NFACT algorithm to perform dual regression on",
+    )
+    dr_args.add_argument(
+        "--seeds",
+        "-s",
+        dest="seeds",
+        help="File of seeds used in NFACT_PP/probtrackx",
+    )
+    dr_args.add_argument(
+        "--medial_wall",
+        "-m",
+        dest="medial_wall",
+        default=False,
+        help="""
+        Medial wall images if surface seeds given.
+        """,
+    )
+    dr_args.add_argument(
+        "-n",
+        "--nfact_decomp_dir",
+        dest="nfact_decomp_dir",
+        help="Filepath to the NFACT_decomp directory. Use this if you have ran NFACT decomp",
+    )
+    dr_args.add_argument(
+        "-d",
+        "--decomp_dir",
+        dest="decomp_dir",
+        help="""Filepath to decomposition components. 
+        WARNING NFACT decomp expects components to be named in a set way. See documentation for further info.""",
+    )
+    dr_args.add_argument(
+        "-N",
+        "--normalise",
+        dest="normalise",
+        action="store_true",
+        default=False,
+        help="normalise components by scaling",
+    )
+
+    cluster_args = base_args.add_argument_group(
+        f"{col['amethyst']}Cluster Arguments{col['reset']}"
+    )
+
+    cluster_args.add_argument(
+        "-C",
+        "--cluster",
+        dest="cluster",
+        action="store_true",
+        default=False,
+        help="Use cluster enviornment",
+    )
+    cluster_args.add_argument(
+        "-cq",
+        "--queue",
+        dest="cluster_queue",
+        default=None,
+        help="Cluster queue to submit to",
+    )
+    cluster_args.add_argument(
+        "-cr",
+        "--cluster_ram",
+        dest="cluster_ram",
+        default="60",
+        help="Ram that job will take. Default is 60",
+    )
+    cluster_args.add_argument(
+        "-ct",
+        "--cluster_time",
+        dest="cluster_time",
+        default=False,
+        help="Time that job will take. nfact_pp will assign a time if none given",
+    )
+    cluster_args.add_argument(
+        "-cqos",
+        "--cluster_qos",
+        dest="cluster_qos",
+        default=False,
+        help="Set the qos for the cluster",
+    )
+
+    no_args(base_args)
+    options = base_args.parse_args()
     if options.verbose_help:
-        verbose_help_message(args, nfact_dr_usage())
+        verbose_help_message(base_args, nfact_dr_usage())
     return vars(options)
 
 
