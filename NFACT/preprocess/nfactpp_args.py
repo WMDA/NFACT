@@ -122,6 +122,17 @@ def nfact_pp_args() -> dict:
       """,
     )
     option.add_argument(
+        "-S",
+        "--stop",
+        dest="stop",
+        default=False,
+        nargs="*",
+        help="""
+        Use wtstop and stop in the tractography. Takes a file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask.
+        Argument can be used with the --filetree, in that case no json file is needed.
+      """,
+    )
+    option.add_argument(
         "-O",
         "--overwrite",
         dest="overwrite",
@@ -165,17 +176,7 @@ def nfact_pp_args() -> dict:
         default=False,
         help="Set the qos for the cluster",
     )
-    option.add_argument(
-        "-S",
-        "--stop",
-        dest="stop",
-        default=False,
-        nargs="*",
-        help="""
-        Use wtstop and stop in the tractography. Takes a file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask.
-        Argument can be used with the --filetree, in that case no json file is needed.
-      """,
-    )
+
     option.add_argument(
         "-hh",
         "--verbose_help",
