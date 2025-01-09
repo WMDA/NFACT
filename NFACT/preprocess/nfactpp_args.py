@@ -16,103 +16,127 @@ def nfact_pp_args() -> dict:
     dict: dictionary object
         dict of arguments
     """
-    option = argparse.ArgumentParser(
+    base_args = argparse.ArgumentParser(
         prog="nfact_pp",
         description=print(nfact_pp_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     col = colours()
-    option.add_argument(
+    base_args.add_argument(
+        "-hh",
+        "--verbose_help",
+        dest="verbose_help",
+        default=False,
+        action="store_true",
+        help="""
+        Prints help message and example usages
+      """,
+    )
+    base_args.add_argument(
+        "-O",
+        "--overwrite",
+        dest="overwrite",
+        action="store_true",
+        default=False,
+        help="Overwrite previous file structure",
+    )
+    compulsory_args = base_args.add_argument_group(
+        f"{col['deep_pink']}Compulsory Arguments{col['reset']}"
+    )
+    compulsory_args.add_argument(
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
-        help=f"""{col['red']}REQUIRED FOR ALL MODES:{col['reset']} A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. 
+        help="""A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. 
         All subjects need full file path to subjects directory""",
     )
-    option.add_argument(
+    compulsory_args.add_argument(
         "-o",
         "--outdir",
         dest="outdir",
-        help=f"{col['red']}REQUIRED FOR ALL MODES:{col['reset']} Directory to save results in",
+        help=" Directory to save results in",
     )
-    option.add_argument(
-        "-s",
-        "--seed",
-        nargs="+",
-        dest="seed",
-        help=f"{col['pink']}REQUIRED FOR VOLUME/SURFACE MODE:{col['reset']} A single or list of seeds",
+
+    file_tree_input = base_args.add_argument_group(
+        f"{col['plum']}REQUIRED FOR FILETREE MODE: {col['reset']}"
     )
-    option.add_argument(
-        "-w",
-        "--warps",
-        dest="warps",
-        nargs="+",
-        help=f"{col['pink']}REQUIRED FOR VOLUME/SURFACE MODE:{col['reset']} Path to warps inside a subjects directory (can accept multiple arguments)",
-    )
-    option.add_argument(
-        "-b",
-        "--bpx",
-        dest="bpx_path",
-        help=f"{col['pink']}REQUIRED FOR VOLUME/SURFACE MODE:{col['reset']} Path to Bedpostx folder inside a subjects directory.",
-    )
-    option.add_argument(
-        "-m",
-        "--medial_wall",
-        dest="medial_wall",
-        nargs="+",
-        help=f"""{col['purple']}REQUIRED FOR SURFACE MODE: {col['reset']}Medial wall file. 
-        Use when doing whole brain surface tractography to provide medial wall.""",
-    )
-    option.add_argument(
+    file_tree_input.add_argument(
         "-f",
         "--file_tree",
         dest="file_tree",
         default=False,
-        help=f"""{col['plum']}REQUIRED FOR FILETREE MODE: {col['reset']}Use this option to provide name of predefined file tree to 
+        help="""Use this option to provide name of predefined file tree to 
         perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.""",
     )
-    option.add_argument(
+    tractography_input = base_args.add_argument_group(
+        f"{col['pink']}Tractography options: {col['reset']}"
+    )
+
+    tractography_input.add_argument(
+        "-s",
+        "--seed",
+        nargs="+",
+        dest="seed",
+        help="A single or list of seeds",
+    )
+    tractography_input.add_argument(
+        "-w",
+        "--warps",
+        dest="warps",
+        nargs="+",
+        help="Path to warps inside a subjects directory (can accept multiple arguments)",
+    )
+    tractography_input.add_argument(
+        "-b",
+        "--bpx",
+        dest="bpx_path",
+        help="Path to Bedpostx folder inside a subjects directory.",
+    )
+    tractography_input.add_argument(
+        "-m",
+        "--medial_wall",
+        dest="medial_wall",
+        nargs="+",
+        help="""REQUIRED FOR SURFACE MODE: Medial wall file. 
+        Use when doing whole brain surface tractography to provide medial wall.""",
+    )
+
+    tractography_input.add_argument(
         "-i",
         "--ref",
         dest="ref",
         help="Standard space reference image. Default is $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz",
     )
-    option.add_argument(
+    tractography_input.add_argument(
         "-t",
         "--target",
         dest="target2",
         default=False,
         help="Name of target. If not given will create a whole mask from reference image",
     )
-    option.add_argument(
+    tractography_input.add_argument(
         "-N",
         "--nsamples",
         dest="nsamples",
         default=1000,
         help="Number of samples per seed used in tractography (default = 1000)",
     )
-    option.add_argument(
+    tractography_input.add_argument(
         "-mm",
         "--mm_res",
         dest="mm_res",
         default=2,
         help="Resolution of target image (Default = 2 mm)",
     )
-    option.add_argument(
+    tractography_input.add_argument(
         "-p",
         "--ptx_options",
         dest="ptx_options",
         help="Path to ptx_options file for additional options",
         default=False,
     )
-    option.add_argument(
-        "-n",
-        "--n_cores",
-        dest="n_cores",
-        help="If should parallel process and with how many cores",
-        default=False,
-    )
-    option.add_argument(
+
+    tractography_input.add_argument(
         "-e",
         "--exclusion",
         dest="exclusion",
@@ -121,7 +145,7 @@ def nfact_pp_args() -> dict:
         Path to an exclusion mask. Will reject pathways passing through locations given by this mask
       """,
     )
-    option.add_argument(
+    tractography_input.add_argument(
         "-S",
         "--stop",
         dest="stop",
@@ -132,15 +156,21 @@ def nfact_pp_args() -> dict:
         Argument can be used with the --filetree, in that case no json file is needed.
       """,
     )
-    option.add_argument(
-        "-O",
-        "--overwrite",
-        dest="overwrite",
-        action="store_true",
-        default=False,
-        help="Overwrite previous file structure",
+    parallel_process = base_args.add_argument_group(
+        f"{col['darker_pink']}Parallel Processing arguments{col['reset']}"
     )
-    option.add_argument(
+    parallel_process.add_argument(
+        "-n",
+        "--n_cores",
+        dest="n_cores",
+        help="If should parallel process and with how many cores",
+        default=False,
+    )
+    cluster_args = base_args.add_argument_group(
+        f"{col['amethyst']}Cluster Arguments{col['reset']}"
+    )
+
+    cluster_args.add_argument(
         "-C",
         "--cluster",
         dest="cluster",
@@ -148,28 +178,28 @@ def nfact_pp_args() -> dict:
         default=False,
         help="Use cluster enviornment",
     )
-    option.add_argument(
+    cluster_args.add_argument(
         "-cq",
         "--queue",
         dest="cluster_queue",
         default=None,
         help="Cluster queue to submit to",
     )
-    option.add_argument(
+    cluster_args.add_argument(
         "-cr",
         "--cluster_ram",
         dest="cluster_ram",
         default="60",
         help="Ram that job will take. Default is 60",
     )
-    option.add_argument(
+    cluster_args.add_argument(
         "-ct",
         "--cluster_time",
         dest="cluster_time",
         default=False,
         help="Time that job will take. nfact_pp will assign a time if none given",
     )
-    option.add_argument(
+    cluster_args.add_argument(
         "-cqos",
         "--cluster_qos",
         dest="cluster_qos",
@@ -177,20 +207,10 @@ def nfact_pp_args() -> dict:
         help="Set the qos for the cluster",
     )
 
-    option.add_argument(
-        "-hh",
-        "--verbose_help",
-        dest="verbose_help",
-        default=False,
-        action="store_true",
-        help="""
-        Prints help message and example usages
-      """,
-    )
-    no_args(option)
-    args = option.parse_args()
+    no_args(base_args)
+    args = base_args.parse_args()
     if args.verbose_help:
-        verbose_help_message(option, nfact_pp_example_usage())
+        verbose_help_message(base_args, nfact_pp_example_usage())
 
     return vars(args)
 
