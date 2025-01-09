@@ -162,53 +162,78 @@ seed files are aliased as (seed), medial wall as (medial_wall), warps as (diff2s
 ### Usage:
 
 ```
-usage: nfact_pp [-h] [-l LIST_OF_SUBJECTS] [-o OUTDIR] [-s SEED [SEED ...]] [-w WARPS [WARPS ...]] [-b BPX_PATH] [-r ROIS [ROIS ...]] [-f FILE_TREE] [-i REF] [-t TARGET2] [-N NSAMPLES] [-m MM_RES] [-p PTX_OPTIONS] [-n N_CORES] [-C] [-O]
+usage: nfact_pp [-h] [-hh] [-O] [-l LIST_OF_SUBJECTS] [-o OUTDIR] [-f FILE_TREE] [-s SEED [SEED ...]] [-w WARPS [WARPS ...]] [-b BPX_PATH] [-m MEDIAL_WALL [MEDIAL_WALL ...]] [-i REF] [-t TARGET2] [-N NSAMPLES] [-mm MM_RES] [-p PTX_OPTIONS] [-e EXCLUSION]
+                [-S [STOP ...]] [-n N_CORES] [-C] [-cq CLUSTER_QUEUE] [-cr CLUSTER_RAM] [-ct CLUSTER_TIME] [-cqos CLUSTER_QOS]
 
 options:
   -h, --help            show this help message and exit
+  -hh, --verbose_help   Prints help message and example usages
+  -O, --overwrite       Overwrite previous file structure
+
+Compulsory Arguments:
   -l LIST_OF_SUBJECTS, --list_of_subjects LIST_OF_SUBJECTS
-                        REQUIRED FOR ALL MODES: A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. All subjects need full file path to subjects directory
+                        A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. All subjects need full file path to subjects directory
   -o OUTDIR, --outdir OUTDIR
-                        REQUIRED FOR ALL MODES: Directory to save results in
-  -s SEED [SEED ...], --seed SEED [SEED ...]
-                        REQUIRED FOR VOLUME/SEED MODE: A single or list of seeds
-  -w WARPS [WARPS ...], --warps WARPS [WARPS ...]
-                        REQUIRED FOR VOLUME/SEED MODE: Path to warps inside a subjects directory (can accept multiple arguments)
-  -b BPX_PATH, --bpx BPX_PATH
-                        REQUIRED FOR VOLUME/SEED MODE: Path to Bedpostx folder inside a subjects directory.
-  -r ROIS [ROIS ...], --rois ROIS [ROIS ...]
-                        REQUIRED FOR SEED MODE: A single or list of ROIS. Use when doing whole brain surface tractography to provide medial wall.
+                        Directory to save results in
+
+REQUIRED FOR FILETREE MODE: :
   -f FILE_TREE, --file_tree FILE_TREE
-                        REQUIRED FOR FILESTREE MODE: Use this option to provide name of predefined file tree to perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.
+                        Use this option to provide name of predefined file tree to perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.
+
+Tractography options: :
+  -s SEED [SEED ...], --seed SEED [SEED ...]
+                        A single or list of seeds
+  -w WARPS [WARPS ...], --warps WARPS [WARPS ...]
+                        Path to warps inside a subjects directory (can accept multiple arguments)
+  -b BPX_PATH, --bpx BPX_PATH
+                        Path to Bedpostx folder inside a subjects directory.
+  -m MEDIAL_WALL [MEDIAL_WALL ...], --medial_wall MEDIAL_WALL [MEDIAL_WALL ...]
+                        REQUIRED FOR SURFACE MODE: Medial wall file. Use when doing whole brain surface tractography to provide medial wall.
   -i REF, --ref REF     Standard space reference image. Default is $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz
   -t TARGET2, --target TARGET2
                         Name of target. If not given will create a whole mask from reference image
   -N NSAMPLES, --nsamples NSAMPLES
                         Number of samples per seed used in tractography (default = 1000)
-  -m MM_RES, --mm_res MM_RES
+  -mm MM_RES, --mm_res MM_RES
                         Resolution of target image (Default = 2 mm)
   -p PTX_OPTIONS, --ptx_options PTX_OPTIONS
                         Path to ptx_options file for additional options
+  -e EXCLUSION, --exclusion EXCLUSION
+                        Path to an exclusion mask. Will reject pathways passing through locations given by this mask
+  -S [STOP ...], --stop [STOP ...]
+                        Use wtstop and stop in the tractography. Takes a file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask. Argument can be used with the --filetree, in that case no json file is needed.
+
+Parallel Processing arguments:
   -n N_CORES, --n_cores N_CORES
                         If should parallel process and with how many cores
-  -C, --cluster         Run on cluster. Currently not implemented
-  -O, --overwrite       Overwrite previous file structure
+
+Cluster Arguments:
+  -C, --cluster         Use cluster enviornment
+  -cq CLUSTER_QUEUE, --queue CLUSTER_QUEUE
+                        Cluster queue to submit to
+  -cr CLUSTER_RAM, --cluster_ram CLUSTER_RAM
+                        Ram that job will take. Default is 60
+  -ct CLUSTER_TIME, --cluster_time CLUSTER_TIME
+                        Time that job will take. nfact_pp will assign a time if none given
+  -cqos CLUSTER_QOS, --cluster_qos CLUSTER_QOS
+                        Set the qos for the cluster
+
 
 Example Usage:
-    Seed surface mode:
+    Seed mode:
            nfact_pp --list_of_subjects /home/study/sub_list
                --outdir /home/study
                --bpx_path /path_to/.bedpostX
                --seeds /path_to/L.white.32k_fs_LR.surf.gii /path_to/R.white.32k_fs_LR.surf.gii
                --rois /path_to/L.atlasroi.32k_fs_LR.shape.gii /path_to/R.atlasroi.32k_fs_LR.shape.gii
-               --warps /path_to/standard2acpc_dc.nii.gz /path_to/acpc_dc2standard.nii.gz
+               --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz
                --n_cores 3
 
-    Volume surface mode:
+    Volume mode:
             nfact_pp --list_of_subjects /home/study/sub_list
                 --bpx_path /path_to/.bedpostX
                 --seeds /path_to/L.white.nii.gz /path_to/R.white.nii.gz
-                --warps /path_to/standard2acpc_dc.nii.gz /path_to/acpc_dc2standard.nii.gz
+                --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz
                 --ref MNI152_T1_1mm_brain.nii.gz
                 --target dlpfc.nii.gz
 
@@ -218,7 +243,6 @@ Example Usage:
             --outdir /home/study
             --n_cores 3
 
-```
 ------------------------------------------------------------------------------------------------------------------------------------------
 ```
  _   _ ______   ___   _____  _____  ______  _____  _____  _____ ___  ___ _____
