@@ -4,7 +4,6 @@ from .matrix_handling import (
 from NFACT.base.utils import error_and_exit, nprint, Timer
 from NFACT.base.matrix_handling import normalise_components
 from NFACT.config.nfact_config_functions import create_combined_algo_dict
-
 from sklearn.decomposition import FastICA, NMF, PCA
 import numpy as np
 from sklearn.utils._testing import ignore_warnings

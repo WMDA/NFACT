@@ -15,7 +15,11 @@ from NFACT.base.setup import (
     does_list_of_subjects_exist,
     check_arguments,
 )
-
+from NFACT.base.cluster_support import (
+    Cluster_parameters,
+    NoClusterQueuesException,
+    no_cluster_queues,
+)
 import os
 import shutil
 
@@ -43,7 +47,6 @@ def nfact_pp_main(arg: dict = None):
 
     handler = Signit_handler()
     col = colours()
-
     # Check that complusory arguments given
     if not arg["file_tree"]:
         check_arguments(arg, ["outdir", "list_of_subjects", "seed", "warps"])
@@ -62,13 +65,22 @@ def nfact_pp_main(arg: dict = None):
     arg["list_of_subjects"] = return_list_of_subjects_from_file(arg["list_of_subjects"])
     check_subject_exist(arg["list_of_subjects"])
 
-    print("Checking GPU status")
+    print(f"{col['deep_pink']}Checking:{col['reset']} GPU status")
     arg["gpu"] = to_use_gpu()
-    print("GPU found, Using GPU\n") if arg["gpu"] else print(
-        "No GPU. Using CPU version\n"
+    print(f"{col['amethyst']}Using:{col['reset']} GPU\n") if arg["gpu"] else print(
+        f"{col['amethyst']}Using:{col['reset']} CPU\n"
     )
+
+    if arg["cluster"]:
+        print(f"{col['deep_pink']}Checking:{col['reset']} Cluster Availability\n")
+        try:
+            arg = Cluster_parameters(arg).process_parameters()
+            print(f"{col['amethyst']}Using: Cluster")
+        except NoClusterQueuesException:
+            arg["cluster"] = no_cluster_queues()
+
     print(
-        f'{col["plum"]}Filetree {arg["file_tree"].lower()} given {col["reset"]}'
+        f'{col["darker_pink"]}Filetree:{col["reset"]} {arg["file_tree"].lower()} '
     ) if arg["file_tree"] else None
     if not arg["ref"]:
         arg["ref"] = os.path.join(

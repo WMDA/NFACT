@@ -54,13 +54,17 @@ def colours():
         "reset": "\033[0;0m",
         "red": "\033[1;31m",
         "pink": "\033[1;35m",
+        "deep_pink": "\033[38;2;255;20;147m",
         "purple": "\033[38;5;93m",
         "darker_pink": "\033[38;5;129m",
         "plum": "\033[0;35m",
+        "amethyst": "\033[38;2;153;102;204m",
     }
 
 
-def error_and_exit(bool_statement: bool, error_message: str = None, log_message: bool = True) -> None:
+def error_and_exit(
+    bool_statement: bool, error_message: str = None, log_message: bool = True
+) -> None:
     """
     Function to exit out of script
     with error message if bool statement

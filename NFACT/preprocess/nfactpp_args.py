@@ -122,14 +122,6 @@ def nfact_pp_args() -> dict:
       """,
     )
     option.add_argument(
-        "-O",
-        "--overwrite",
-        dest="overwrite",
-        action="store_true",
-        default=False,
-        help="Overwrite previous file structure",
-    )
-    option.add_argument(
         "-S",
         "--stop",
         dest="stop",
@@ -140,6 +132,51 @@ def nfact_pp_args() -> dict:
         Argument can be used with the --filetree, in that case no json file is needed.
       """,
     )
+    option.add_argument(
+        "-O",
+        "--overwrite",
+        dest="overwrite",
+        action="store_true",
+        default=False,
+        help="Overwrite previous file structure",
+    )
+    option.add_argument(
+        "-C",
+        "--cluster",
+        dest="cluster",
+        action="store_true",
+        default=False,
+        help="Use cluster enviornment",
+    )
+    option.add_argument(
+        "-cq",
+        "--queue",
+        dest="cluster_queue",
+        default=None,
+        help="Cluster queue to submit to",
+    )
+    option.add_argument(
+        "-cr",
+        "--cluster_ram",
+        dest="cluster_ram",
+        default="60",
+        help="Ram that job will take. Default is 60",
+    )
+    option.add_argument(
+        "-ct",
+        "--cluster_time",
+        dest="cluster_time",
+        default=False,
+        help="Time that job will take. nfact_pp will assign a time if none given",
+    )
+    option.add_argument(
+        "-cqos",
+        "--cluster_qos",
+        dest="cluster_qos",
+        default=False,
+        help="Set the qos for the cluster",
+    )
+
     option.add_argument(
         "-hh",
         "--verbose_help",

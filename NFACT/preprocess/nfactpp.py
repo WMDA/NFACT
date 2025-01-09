@@ -173,7 +173,7 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
     medial_wall = get_file(arg["medial_wall"], sub) if arg["surface"] else False
     setup_subject_directory(nfactpp_diretory, seed, medial_wall)
     create_files_for_decomp(nfactpp_diretory, seed, medial_wall)
-    
+
     if arg["surface"]:
         seed_text = process_surface(nfactpp_diretory, seed, medial_wall)
 
@@ -272,5 +272,15 @@ def pre_processing(arg: dict, handler: object) -> None:
     if arg["n_cores"]:
         handler.set_suppress_messages = True
 
+    # Running probtrackx2
     print_to_screen("TRACTOGRAPHY")
-    Probtrackx(subjects_commands, arg["n_cores"])
+    probtrack = Probtrackx(
+        subjects_commands,
+        arg["cluster"],
+        arg["cluster_time"],
+        arg["cluster_queue"],
+        arg["cluster_ram"],
+        arg["cluster_qos"],
+        arg["n_cores"],
+    )
+    probtrack.run()
