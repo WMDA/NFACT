@@ -324,7 +324,7 @@ def no_cluster_queues():
     """
     col = colours()
     print(
-        f"{col['plum']}Cluster:{col['reset']} No queues detected. Not running on cluster"
+        f"{col['darker_pink']}Cluster:{col['reset']} No queues detected. Not running on cluster"
     )
     return None
 
