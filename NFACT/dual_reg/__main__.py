@@ -78,11 +78,12 @@ def nfact_dr_main(args: dict = None) -> None:
     )
     log.log_break("input")
     log.log_arguments(args)
-    log.log_break("nfact decomp workflow")
+    log.log_break("NFACT Decomp Workflow")
     nprint(f"{col['plum']}Number of subject:{col['reset']} {len(args['ptxdir'])} \n")
 
     nprint("\nDual Regression\n")
     nprint("-" * 100)
+
     if args["cluster"]:
         run_on_cluster()
     else:
