@@ -69,6 +69,7 @@ def nfact_dr_main(args: dict = None) -> None:
     args["seeds"] = process_input_imgs(args["seeds"])
     args["surface"] = check_seeds_surfaces(args["seeds"])
     args = check_medial_wall(args)
+
     # logging
     log = NFACT_logs(args["algo"], "DR", len(args["ptxdir"]))
     log.set_up_logging(os.path.join(args["outdir"], "nfact_dr", "logs"))

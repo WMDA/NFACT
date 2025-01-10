@@ -7,7 +7,7 @@ import argparse
 
 def script_args() -> dict:
     """
-    NMF args
+    Script args
 
     Parameters
     ----------
