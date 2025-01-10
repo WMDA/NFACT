@@ -6,7 +6,7 @@ From: python:3.10-slim
     pip install --no-cache-dir .
 
 %files
-    ../dual_reg/cluster/regression_scripts/cluster_script.py /app/cluster_script.py
+    NFACT/dual_reg/cluster/regression_scripts/cluster_script.py /app/cluster_script.py
 
 %environment
     export PATH=/app:$PATH
