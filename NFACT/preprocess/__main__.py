@@ -15,11 +15,7 @@ from NFACT.base.setup import (
     does_list_of_subjects_exist,
     check_arguments,
 )
-from NFACT.base.cluster_support import (
-    Cluster_parameters,
-    NoClusterQueuesException,
-    no_cluster_queues,
-)
+from NFACT.base.cluster_support import processing_cluster
 import os
 import shutil
 
@@ -72,12 +68,7 @@ def nfact_pp_main(arg: dict = None):
     )
 
     if arg["cluster"]:
-        print(f"{col['deep_pink']}Checking:{col['reset']} Cluster Availability\n")
-        try:
-            arg = Cluster_parameters(arg).process_parameters()
-            print(f"{col['amethyst']}Using: Cluster")
-        except NoClusterQueuesException:
-            arg["cluster"] = no_cluster_queues()
+        arg = processing_cluster(arg)
 
     print(
         f'{col["darker_pink"]}Filetree:{col["reset"]} {arg["file_tree"].lower()} '

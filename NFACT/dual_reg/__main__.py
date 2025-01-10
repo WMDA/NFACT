@@ -18,6 +18,7 @@ from NFACT.base.setup import (
 from NFACT.base.utils import colours, nprint
 from NFACT.base.logging import NFACT_logs
 from NFACT.base.signithandler import Signit_handler
+from NFACT.base.cluster_support import processing_cluster
 import os
 
 
@@ -57,6 +58,9 @@ def nfact_dr_main(args: dict = None) -> None:
     args = get_subjects(args)
     check_subject_exist(args["ptxdir"])
     check_nfact_decomp_directory(paths["component_path"], paths["group_average_path"])
+
+    if args["cluster"]:
+        args = processing_cluster(args)
 
     # Set up directory
     create_nfact_dr_folder_set_up(args["outdir"])

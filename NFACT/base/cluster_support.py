@@ -362,3 +362,27 @@ def run_fsl_sub(command: list) -> dict:
     if output["stderr"]:
         error_and_exit(False, f"FSL sub failed due to {output['stderr']}")
     return output
+
+
+def processing_cluster(arg: dict) -> dict:
+    """
+    Function to process cluster.
+
+    Parameters
+    ----------
+    arg: dict
+        dictionary of command line arguments
+
+    Returns
+    -------
+    arg: dict
+       processed command line arguments
+    """
+    col = colours()
+    print(f"{col['deep_pink']}Checking:{col['reset']} Cluster Availability\n")
+    try:
+        arg = Cluster_parameters(arg).process_parameters()
+        print(f"{col['amethyst']}Using: Cluster")
+    except NoClusterQueuesException:
+        arg["cluster"] = no_cluster_queues()
+    return arg
