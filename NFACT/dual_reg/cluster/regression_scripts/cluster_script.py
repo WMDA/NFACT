@@ -1,11 +1,11 @@
 from NFACT.dual_reg.nfact_dr_functions import get_group_level_components
 from NFACT.base.matrix_handling import load_fdt_matrix
-from NFACT.dual_reg.dual_regression import nmf_dual_regression
+from NFACT.dual_reg.dual_regression import nmf_dual_regression, ica_dual_regression
 from NFACT.dual_reg.nfact_dr_functions import save_dual_regression_images
 import argparse
 
 
-def nmf_script_args() -> dict:
+def script_args() -> dict:
     """
     NMF args
 
@@ -28,13 +28,26 @@ def nmf_script_args() -> dict:
     parser.add_argument(
         "--group_average_path", required=True, help="Path to group averages."
     )
+    parser.add_argument("--algo", required=True, help="Which algo to run")
     parser.add_argument("--seeds", required=True, help="Path to seeds.")
     parser.add_argument("--id", required=True, help="Subject ID.")
     parser.add_argument("--medial_wall", default=False, help="Path to medial wall.")
     return vars(parser.parse_args())
 
 
-def main(args: dict) -> None:
+def main_dr(args: dict) -> None:
+    """
+    Main NMF function.
+
+    Parameters
+    ----------
+    args: dict
+        dictionary of args
+
+    Returns
+    -------
+    None
+    """
     components = get_group_level_components(
         args["component_path"],
         args["group_average_path"],
@@ -42,12 +55,13 @@ def main(args: dict) -> None:
         args["medial_wall"],
     )
     matrix = load_fdt_matrix(args["fdt_path"])
-    dr_results = nmf_dual_regression(components, matrix)
+    dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
+    dr_results = dr_regression(components, matrix)
     save_dual_regression_images(
         dr_results,
         args["output_dir"],
         args["seeds"],
-        "NMF",
+        args["algo"].upper(),
         dr_results["white_components"].shape[0],
         args["id"],
         args["medial_wall"],
@@ -56,5 +70,5 @@ def main(args: dict) -> None:
 
 
 if __name__ == "__main__":
-    args = nmf_script_args()
-    main(args)
+    args = script_args()
+    main_dr(args)

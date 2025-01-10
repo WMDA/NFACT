@@ -85,7 +85,7 @@ def nfact_dr_main(args: dict = None) -> None:
     nprint("-" * 100)
 
     if args["cluster"]:
-        run_on_cluster()
+        run_on_cluster(args, paths)
     else:
         run_locally(args, paths)
 

@@ -42,7 +42,7 @@ def ica_dual_regression(components: dict, connectivity_matrix: np.ndarray) -> di
 
 def nmf_dual_regression(components: dict, connectivity_matrix: np.ndarray) -> dict:
     """
-    Dual regression method for NMF.
+    Dual regression function for NMF.
 
     Parameters
     ----------
