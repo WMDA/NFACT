@@ -18,7 +18,7 @@ def script_args() -> dict:
     dict: dictionary
         dict of cmd options
     """
-    parser = argparse.ArgumentParser(description="Run NMF dual regression")
+    parser = argparse.ArgumentParser(description="Run Dual Regression")
     parser.add_argument(
         "--output_dir", required=True, help="Directory to save the output components."
     )
