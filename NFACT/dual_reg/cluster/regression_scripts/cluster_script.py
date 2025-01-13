@@ -20,6 +20,9 @@ def script_args() -> dict:
     """
     parser = argparse.ArgumentParser(description="Run Dual Regression")
     parser.add_argument(
+        "--fdt_path", required=True, help="Directory to individual subject fdt path"
+    )
+    parser.add_argument(
         "--output_dir", required=True, help="Directory to save the output components."
     )
     parser.add_argument(
