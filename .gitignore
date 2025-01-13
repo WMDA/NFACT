@@ -167,3 +167,4 @@ dev/*
 nfact_config*.config
 .ruff_cache
 *.sif
+test_cluster.sh

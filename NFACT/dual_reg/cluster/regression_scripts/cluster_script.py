@@ -1,4 +1,5 @@
 from NFACT.dual_reg.nfact_dr_functions import get_group_level_components
+from NFACT.base.setup import check_medial_wall
 from NFACT.base.matrix_handling import load_fdt_matrix
 from NFACT.dual_reg.dual_regression import nmf_dual_regression, ica_dual_regression
 from NFACT.dual_reg.nfact_dr_functions import save_dual_regression_images
@@ -51,15 +52,29 @@ def main_dr(args: dict) -> None:
     -------
     None
     """
+
+    if args["medial_wall"]:
+        args["surface"] = True
+        args = check_medial_wall(args)
+    else:
+        args["surface"] = False
+
+    print("Obtaining Group Level Components")
     components = get_group_level_components(
         args["component_path"],
         args["group_average_path"],
         args["seeds"],
         args["medial_wall"],
     )
+
+    print("Obtaining FDT Matrix")
     matrix = load_fdt_matrix(args["fdt_path"])
     dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
+
+    print("Running Dual Regression")
     dr_results = dr_regression(components, matrix)
+
+    print("Saving Components")
     save_dual_regression_images(
         dr_results,
         args["output_dir"],
