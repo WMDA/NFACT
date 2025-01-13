@@ -1,0 +1,12 @@
+build
+.ruff_cache
+.github
+.git
+.vscode
+*.pyc
+*.pyo
+__pycache__
+.pytest_cache/
+.DS_Store
+NFACT.egg-info
+.pytest_cache
