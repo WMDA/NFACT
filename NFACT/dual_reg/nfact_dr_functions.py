@@ -176,15 +176,11 @@ def load_grey_matter_gifti_seed(file_name: str, medial_wall: str) -> np.array:
     grey_matter_component: np.array
         Reconstructed grey matter component.
     """
-
+    m_wall = nb.load(medial_wall).darrays[0].data != 0
     gifti_img = nb.load(file_name)
-    m_wall = nb.load(medial_wall).darrays[0].data
-    non_masked_indices = np.where(m_wall == 1)[0]
-    grey_matter_component = np.column_stack(
-        [darray.data for darray in gifti_img.darrays]
-    )
-    grey_matter_component = grey_matter_component[non_masked_indices]
-    return grey_matter_component
+    grey_component = np.column_stack([darray.data for darray in gifti_img.darrays])
+    grey_component = grey_component[m_wall == 1, :]
+    return grey_component
 
 
 def grey_components(

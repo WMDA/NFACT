@@ -70,7 +70,6 @@ def main_dr(args: dict) -> None:
     print("Obtaining FDT Matrix")
     matrix = load_fdt_matrix(args["fdt_path"])
     dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
-
     print("Running Dual Regression")
     dr_results = dr_regression(components, matrix)
 
