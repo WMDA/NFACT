@@ -4,6 +4,7 @@ from NFACT.base.matrix_handling import load_fdt_matrix
 from NFACT.dual_reg.dual_regression import nmf_dual_regression, ica_dual_regression
 from NFACT.dual_reg.nfact_dr_functions import save_dual_regression_images
 import argparse
+import os
 
 
 def script_args() -> dict:
@@ -36,7 +37,70 @@ def script_args() -> dict:
     parser.add_argument("--seeds", required=True, help="Path to seeds.")
     parser.add_argument("--id", required=True, help="Subject ID.")
     parser.add_argument("--medial_wall", default=False, help="Path to medial wall.")
+    parser.add_argument("--parallel", default="1", help="Path to medial wall.")
     return vars(parser.parse_args())
+
+
+from scipy.optimize import nnls
+import numpy as np
+from joblib import Parallel, delayed
+
+
+def nmf_dual_regression_par(
+    components: dict, connectivity_matrix: np.ndarray, n_jobs: int = -1
+) -> dict:
+    """
+    Dual regression function for NMF with optimized performance.
+
+    Parameters
+    ----------
+    components: dict
+        Dictionary of components.
+    connectivity_matrix: np.ndarray
+        Subjects' loaded connectivity matrix.
+    n_jobs: int
+        Number of parallel jobs for computation. Default is -1 (all available CPUs).
+
+    Returns
+    -------
+    dict
+        Dictionary of components.
+    """
+
+    grey_components = components["grey_components"]
+    wm_component_white_map = np.array(
+        Parallel(n_jobs=n_jobs)(
+            delayed(lambda col: nnls(grey_components, connectivity_matrix[:, col])[0])(
+                col
+            )
+            for col in range(connectivity_matrix.shape[1])
+        )
+    ).T
+
+    wm_component_white_map_T = wm_component_white_map.T
+    gm_component_grey_map = np.array(
+        Parallel(n_jobs=n_jobs)(
+            delayed(
+                lambda col: nnls(
+                    wm_component_white_map_T, connectivity_matrix.T[:, col]
+                )[0]
+            )(col)
+            for col in range(connectivity_matrix.shape[0])
+        )
+    )
+
+    return {
+        "grey_components": gm_component_grey_map,
+        "white_components": wm_component_white_map,
+    }
+
+
+"""
+Non parallell
+real    62m3.276s
+user    222m39.697s
+sys     0m19.303s
+"""
 
 
 def main_dr(args: dict) -> None:
@@ -71,8 +135,7 @@ def main_dr(args: dict) -> None:
     matrix = load_fdt_matrix(args["fdt_path"])
     dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
     print("Running Dual Regression")
-    dr_results = dr_regression(components, matrix)
-
+    dr_results = nmf_dual_regression_par(components, matrix, 3)
     print("Saving Components")
     save_dual_regression_images(
         dr_results,
@@ -81,6 +144,7 @@ def main_dr(args: dict) -> None:
         args["algo"].upper(),
         dr_results["white_components"].shape[0],
         args["id"],
+        os.path.dirname(args["fdt_path"]),
         args["medial_wall"],
     )
     return None

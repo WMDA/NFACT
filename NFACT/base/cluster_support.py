@@ -352,7 +352,7 @@ def run_fsl_sub(command: list) -> dict:
         )
 
     except subprocess.CalledProcessError as error:
-        error_and_exit(False, f"Error in calling fsl_sub due to: {error}")
+        error_and_exit(False, f"Error in calling FSL sub due to: {error}")
     except KeyboardInterrupt:
         run.kill()
     output = {
@@ -362,6 +362,60 @@ def run_fsl_sub(command: list) -> dict:
     if output["stderr"]:
         error_and_exit(False, f"FSL sub failed due to {output['stderr']}")
     return output
+
+
+def cluster_submission(
+    command: list,
+    cluster_time: str,
+    cluster_ram: str,
+    cluster_queue: str,
+    log_name: str,
+    log_location: str,
+    cluster_qos: str,
+    gpu: bool,
+) -> str:
+    """
+    Function to submit jobs to cluster.
+
+    Parameters
+    ----------
+    command: list
+        command to run on cluster
+    cluster_time: str,
+        time job will take
+    cluster_ram: str
+        amount of ram needed
+    cluster_queue: str = None
+        Queue to send command to.
+        Can be None as fsl sub
+        can assign queue.
+    log_name: str
+        name of process and lo file
+    log_location: str
+        location of where log should be
+        sent
+    cluster_qos: str = None
+        SLURM qos. Can be None
+    gpu: bool = False
+        To use GPU.
+
+    Returns
+    -------
+    str: string
+        job id of cluster
+        submission
+    """
+    bcluster_command = base_command(
+        cluster_time,
+        cluster_ram,
+        log_location,
+        log_name,
+    )
+    cluster_command = fsl_sub_cluster_command(
+        bcluster_command, command, cluster_queue, cluster_qos, gpu
+    )
+    fsl_sub_rout = run_fsl_sub(cluster_command)
+    return fsl_sub_rout["stdout"]
 
 
 def processing_cluster(arg: dict) -> dict:

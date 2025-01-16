@@ -1,4 +1,4 @@
-from ..dual_regression import ica_dual_regression, nmf_dual_regression
+from ..dual_regression import ica_dual_regression, nmf_dual_regression, get_subject_id
 from ..nfact_dr_functions import get_group_level_components
 from ..nfact_dr_functions import save_dual_regression_images
 from NFACT.base.utils import nprint, colours
@@ -7,7 +7,6 @@ from NFACT.base.matrix_handling import load_fdt_matrix
 from NFACT.base.utils import error_and_exit
 
 import numpy as np
-import re
 import os
 
 
@@ -131,7 +130,7 @@ class Dual_regression:
         decomp = self.__decomp_method()
         col = colours()
         for idx, subject in enumerate(self.list_of_file):
-            subject_id = self.__get_subject_id(subject, idx)
+            subject_id = get_subject_id(subject, idx)
             nprint(
                 f"\n{col['pink']}Dual regressing on subject:{col['reset']} {subject_id}"
             )
@@ -214,31 +213,3 @@ class Dual_regression:
             subject,
             self.medial_wall,
         )
-
-    def __get_subject_id(self, path: str, number: int) -> str:
-        """
-        Method to assign a subjects Id
-
-        Parameters
-        ----------
-        path: str
-            string of path to subjects
-        number: int
-            subject number
-
-        Returns
-        ------
-        str: string
-            subject id either taken from file path
-            or assigned number in the list
-        """
-        try:
-            return re.findall(r"sub[a-zA-Z0-9]*", path)[0]
-        except IndexError:
-            sub_name = os.path.basename(os.path.dirname(path))
-            if "MR" in sub_name:
-                try:
-                    return sub_name.split("_")[0]
-                except IndexError:
-                    pass
-            return f"sub-{number}"

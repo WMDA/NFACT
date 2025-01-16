@@ -67,6 +67,12 @@ def save_dual_regression_images(
         used for naming output
     sub: str
         Subject id in string format
+    ptx_dir: str
+        needed to obtain coords/lookup
+        tractspace
+    medial_wall: list
+        list of medial walls. Needed
+        for surfaces.
 
     Returns
     -------
@@ -150,11 +156,8 @@ def load_grey_matter_volume(nifti_file: str, x_y_z_coordinates: np.array) -> np.
 
     img = nb.load(nifti_file)
     data = img.get_fdata()
-    # Convert the x, y, z coordinates into flat indices
     vol_shape = data.shape[:3]
     xyz_idx = np.ravel_multi_index(x_y_z_coordinates.T, vol_shape)
-
-    # Flatten the data to 2D (number of voxels x number of components)
     ncols = data.shape[3] if len(data.shape) > 3 else 1
     flattened_data = data.reshape(-1, ncols)
     return flattened_data[xyz_idx, :]

@@ -4,7 +4,7 @@ from fsl.data.image import Image
 import nibabel as nib
 import numpy as np
 import re
-from .utils import error_and_exit
+from .utils import error_and_exit, colours
 
 
 def imaging_type(path: str) -> str:
@@ -323,4 +323,9 @@ def save_grey_matter_components(
                 file_name = re.sub("_gz", "", file_name)
             save_grey_matter_volume(
                 grey_matter_seed, file_name, seed, coord_mat2[mask_to_get_seed, :3]
+            )
+        if not save_type:
+            col = colours()
+            print(
+                f"{col['red']}Unable to decide on filetype. Not saving image.{col['reset']}"
             )

@@ -1,5 +1,36 @@
 import numpy as np
 from scipy.optimize import nnls
+import re
+import os
+
+
+def get_subject_id(path: str, number: int) -> str:
+    """
+    Function to assign a subjects Id
+
+    Parameters
+    ----------
+    path: str
+        string of path to subjects
+    number: int
+        subject number
+
+    Returns
+    ------
+    str: string
+        subject id either taken from file path
+        or assigned number in the list
+    """
+    try:
+        return re.findall(r"sub[a-zA-Z0-9]*", path)[0]
+    except IndexError:
+        sub_name = os.path.basename(os.path.dirname(path))
+        if "MR" in sub_name:
+            try:
+                return sub_name.split("_")[0]
+            except IndexError:
+                pass
+        return f"sub-{number}"
 
 
 def ica_dual_regression(components: dict, connectivity_matrix: np.ndarray) -> dict:
