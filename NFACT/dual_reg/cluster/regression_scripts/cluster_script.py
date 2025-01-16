@@ -5,6 +5,9 @@ from NFACT.dual_reg.dual_regression import nmf_dual_regression, ica_dual_regress
 from NFACT.dual_reg.nfact_dr_functions import save_dual_regression_images
 import argparse
 import os
+from scipy.optimize import nnls
+import numpy as np
+from joblib import Parallel, delayed
 
 
 def script_args() -> dict:
@@ -39,11 +42,6 @@ def script_args() -> dict:
     parser.add_argument("--medial_wall", default=False, help="Path to medial wall.")
     parser.add_argument("--parallel", default="1", help="Path to medial wall.")
     return vars(parser.parse_args())
-
-
-from scipy.optimize import nnls
-import numpy as np
-from joblib import Parallel, delayed
 
 
 def nmf_dual_regression_par(
