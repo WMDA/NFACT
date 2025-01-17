@@ -159,6 +159,8 @@ def matrix_decomposition(
         to sign flip ICA components so heavy tail is > 0
     pca_dim: int
         number of pca dimensions for ICA
+    parameters: dict
+        parameters for decomp algo
     pca_type: str
         type of PCA to do
 

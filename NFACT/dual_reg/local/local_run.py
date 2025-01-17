@@ -11,49 +11,6 @@ import numpy as np
 import os
 
 
-def run_locally(args: dict, paths: dict):
-    """
-    nfact_dr local run function
-
-    Parameters
-    ----------
-    args: dict
-        dictionary of cmd args
-    paths: dict
-        path to images
-
-    Returns
-    -------
-    None
-    """
-    col = colours()
-
-    nprint(f"{col['pink']}Running:{col['reset']} Locally")
-    nprint(f"{col['pink']}Obtaining:{col['reset']} Components")
-    nprint("-" * 100)
-    components = get_group_level_components(
-        paths["component_path"],
-        paths["group_average_path"],
-        args["seeds"],
-        args["medial_wall"],
-    )
-
-    method = "Regression" if args["algo"] == "ica" else "Non-negative Regression"
-    nprint(f"{col['pink']}DR Method:{col['reset']} {method}")
-
-    dual_reg = Dual_regression(
-        algo=args["algo"],
-        normalise=args["normalise"],
-        parallel=False,
-        list_of_files=args["ptxdir"],
-        component=components,
-        seeds=args["seeds"],
-        nfact_directory=os.path.join(args["outdir"], "nfact_dr"),
-        medial_wall=args["medial_wall"],
-    )
-    dual_reg.run()
-
-
 class Dual_regression:
     """
     Dual regression Class.
@@ -205,3 +162,46 @@ class Dual_regression:
             subject,
             self.medial_wall,
         )
+
+
+def run_locally(args: dict, paths: dict):
+    """
+    nfact_dr local run function
+
+    Parameters
+    ----------
+    args: dict
+        dictionary of cmd args
+    paths: dict
+        path to images
+
+    Returns
+    -------
+    None
+    """
+    col = colours()
+
+    nprint(f"{col['pink']}Running:{col['reset']} Locally")
+    nprint(f"{col['pink']}Obtaining:{col['reset']} Components")
+    nprint("-" * 100)
+    components = get_group_level_components(
+        paths["component_path"],
+        paths["group_average_path"],
+        args["seeds"],
+        args["medial_wall"],
+    )
+
+    method = "Regression" if args["algo"] == "ica" else "Non-negative Regression"
+    nprint(f"{col['pink']}DR Method:{col['reset']} {method}")
+
+    dual_reg = Dual_regression(
+        algo=args["algo"],
+        normalise=args["normalise"],
+        parallel=False,
+        list_of_files=args["ptxdir"],
+        component=components,
+        seeds=args["seeds"],
+        nfact_directory=os.path.join(args["outdir"], "nfact_dr"),
+        medial_wall=args["medial_wall"],
+    )
+    dual_reg.run()

@@ -5,13 +5,32 @@ from joblib import Parallel, delayed
 
 
 def run_decomp(
-    decomp: object, connectivity_matrix: np.ndarray, components: dict
+    decomp: object,
+    components: dict,
+    connectivity_matrix: np.ndarray,
+    parallel: int = None,
 ) -> dict:
     """
     Function to
+
+    Parameters
+    ----------
+    components: dict
+        dictionary of components
+    connectivity_matrix: np.ndarray
+        subjects loaded connectivity matrix
+    parallel: int=None
+        How many cores to run the decomp
+        with. For ICA this just prints
+        error message
+
+    Returns
+    -------
+    dict: dictionary
+        dictionary of components
     """
     try:
-        components = decomp(components, connectivity_matrix)
+        components = decomp(components, connectivity_matrix, parallel)
     except ValueError as e:
         error_and_exit(
             False,
@@ -22,7 +41,9 @@ def run_decomp(
     return components
 
 
-def ica_dual_regression(components: dict, connectivity_matrix: np.ndarray) -> dict:
+def ica_dual_regression(
+    components: dict, connectivity_matrix: np.ndarray, parallel: int = None
+) -> dict:
     """
     Dual regression function for ICA.
     Regresses the invidiual connectivity matrix
@@ -36,12 +57,19 @@ def ica_dual_regression(components: dict, connectivity_matrix: np.ndarray) -> di
         dictionary of components
     connectivity_matrix: np.ndarray
         subjects loaded connectivity matrix
+    parallel: int=None
+        This is a parameters added for
+        running run_decomp function.
+        If given prints out error
+        message.
 
     Returns
     -------
     dict: dictionary
         dictionary of components
     """
+    if parallel:
+        print("ICA cannot be run in parallel")
 
     wm_component_grey_map = (
         np.linalg.pinv(components["white_components"].T) @ connectivity_matrix.T
