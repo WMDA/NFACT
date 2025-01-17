@@ -4,6 +4,7 @@ import subprocess
 import time
 from tqdm import tqdm
 import threading
+from pathlib import Path
 
 
 class Cluster_parameters:
@@ -440,3 +441,24 @@ def processing_cluster(arg: dict) -> dict:
     except NoClusterQueuesException:
         arg["cluster"] = no_cluster_queues()
     return arg
+
+
+def find_container_path(container_name: str) -> str:
+    """
+    Function to return container path
+
+    Parameters
+    ----------
+    container_name: str
+        container name
+
+    Returns
+    -------
+    str: string
+        str to container path
+
+    """
+    current_dir = Path(__file__).resolve().parent
+    return os.path.join(
+        current_dir.parents[2], "containers", "builds", f"{container_name}.sif"
+    )

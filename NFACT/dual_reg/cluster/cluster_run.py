@@ -1,4 +1,4 @@
-from ..dual_regression import get_subject_id
+# from ..dual_regression import get_subject_id
 
 
 def bind_string(bind_path) -> str:
@@ -65,8 +65,4 @@ singularity exec {bind_string} {sif_path} \\
 
 
 def run_on_cluster(args: dict, paths: dict) -> None:
-    sub_id = get_subject_id(
-        paths[""],
-    )
-
     return None

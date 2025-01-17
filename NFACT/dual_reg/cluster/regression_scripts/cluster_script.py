@@ -42,7 +42,7 @@ def script_args() -> dict:
     parser.add_argument(
         "--medial_wall", nargs="+", default=False, help="Path to medial wall(s)."
     )
-    parser.add_argument("--parallel", default="1", help="Path to medial wall.")
+    parser.add_argument("--parallel", default=None, help="Path to medial wall.")
     return vars(parser.parse_args())
 
 
@@ -72,7 +72,7 @@ def main_dr(args: dict) -> None:
     matrix = load_fdt_matrix(args["fdt_path"])
     dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
     print("Running Dual Regression")
-    dr_results = run_decomp(dr_regression, matrix)
+    dr_results = run_decomp(dr_regression, components, matrix, args["parallel"])
     print("Saving Components")
     save_dual_regression_images(
         dr_results,
