@@ -4,12 +4,14 @@ from scipy.optimize import nnls
 from joblib import Parallel, delayed
 
 
-def run_decomp(decomp: object, connectivity_matrix: np.ndarray) -> dict:
+def run_decomp(
+    decomp: object, connectivity_matrix: np.ndarray, components: dict
+) -> dict:
     """
     Function to
     """
     try:
-        components = decomp(connectivity_matrix)
+        components = decomp(components, connectivity_matrix)
     except ValueError as e:
         error_and_exit(
             False,
