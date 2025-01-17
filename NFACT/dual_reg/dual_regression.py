@@ -92,6 +92,64 @@ def nmf_dual_regression(
     components: dict, connectivity_matrix: np.ndarray, n_jobs: int = -1
 ) -> dict:
     """
+    Dual regression function for NMF.
+
+    Parameters
+    ----------
+    components: dict
+        Dictionary of components.
+    connectivity_matrix: np.ndarray
+        Subjects' loaded connectivity matrix.
+    n_jobs: int
+        Number of parallel jobs for computation.
+        Default is -1 (all available CPUs).
+
+    Returns
+    -------
+    dict
+        Dictionary of components.
+    """
+    if n_jobs < 2 or not n_jobs:
+        return nnls_non_parallel(components, connectivity_matrix)
+    return nnls_parallel(components, connectivity_matrix, n_jobs)
+
+
+def nnls_non_parallel(components: dict, connectivity_matrix: np.ndarray):
+    """
+    Dual regression method for NMF.
+
+    Parameters
+    ----------
+    components: dict
+        Dictionary of components.
+    connectivity_matrix: np.ndarray
+        Subjects' loaded connectivity matrix.
+
+    Returns
+    -------
+    dict
+        Dictionary of components.
+    """
+    wm_component_white_map = np.array(
+        [
+            nnls(components["grey_components"], connectivity_matrix[:, col])[0]
+            for col in range(connectivity_matrix.shape[1])
+        ]
+    ).T
+    gm_component_grey_map = np.array(
+        [
+            nnls(wm_component_white_map.T, connectivity_matrix.T[:, col])[0]
+            for col in range(connectivity_matrix.shape[0])
+        ]
+    )
+    return {
+        "grey_components": gm_component_grey_map,
+        "white_components": wm_component_white_map,
+    }
+
+
+def nnls_parallel(components: dict, connectivity_matrix: np.ndarray, n_jobs: int = -1):
+    """
     Dual regression function for NMF with optimized performance.
 
     Parameters
@@ -109,7 +167,6 @@ def nmf_dual_regression(
     dict
         Dictionary of components.
     """
-
     grey_components = components["grey_components"]
     wm_component_white_map = np.array(
         Parallel(n_jobs=n_jobs)(
