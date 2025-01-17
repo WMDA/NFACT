@@ -1,5 +1,6 @@
 import argparse
 from NFACT.base.utils import colours, no_args, verbose_help_message
+from NFACT.base.base_args import cluster_args, parallel_args, set_up_args
 
 
 def nfactdr_args() -> dict:
@@ -31,21 +32,7 @@ def nfactdr_args() -> dict:
         Prints help message and example usages
       """,
     )
-    set_up_args = base_args.add_argument_group(
-        f"{col['deep_pink']}Set Up Arguments{col['reset']}"
-    )
-    set_up_args.add_argument(
-        "-l",
-        "--list_of_subjects",
-        dest="list_of_subjects",
-        help="Filepath to a list of subjects",
-    )
-    set_up_args.add_argument(
-        "-o",
-        "--outdir",
-        dest="outdir",
-        help="Path to output directory",
-    )
+    set_up_args(base_args, col)
     dr_args = base_args.add_argument_group(
         f"{col['pink']}Dual Regression Arguments{col['reset']}"
     )
@@ -71,13 +58,13 @@ def nfactdr_args() -> dict:
         """,
     )
     dr_args.add_argument(
-        "-n",
+        "-d",
         "--nfact_decomp_dir",
         dest="nfact_decomp_dir",
         help="Filepath to the NFACT_decomp directory. Use this if you have ran NFACT decomp",
     )
     dr_args.add_argument(
-        "-d",
+        "-dd",
         "--decomp_dir",
         dest="decomp_dir",
         help="""Filepath to decomposition components. 
@@ -91,47 +78,8 @@ def nfactdr_args() -> dict:
         default=False,
         help="normalise components by scaling",
     )
-
-    cluster_args = base_args.add_argument_group(
-        f"{col['amethyst']}Cluster Arguments{col['reset']}"
-    )
-
-    cluster_args.add_argument(
-        "-C",
-        "--cluster",
-        dest="cluster",
-        action="store_true",
-        default=False,
-        help="Use cluster enviornment",
-    )
-    cluster_args.add_argument(
-        "-cq",
-        "--queue",
-        dest="cluster_queue",
-        default=None,
-        help="Cluster queue to submit to",
-    )
-    cluster_args.add_argument(
-        "-cr",
-        "--cluster_ram",
-        dest="cluster_ram",
-        default="60",
-        help="Ram that job will take. Default is 60",
-    )
-    cluster_args.add_argument(
-        "-ct",
-        "--cluster_time",
-        dest="cluster_time",
-        default=False,
-        help="Time that job will take. nfact_pp will assign a time if none given",
-    )
-    cluster_args.add_argument(
-        "-cqos",
-        "--cluster_qos",
-        dest="cluster_qos",
-        default=False,
-        help="Set the qos for the cluster",
-    )
+    parallel_args(base_args, col)
+    cluster_args(base_args, col)
 
     no_args(base_args)
     options = base_args.parse_args()

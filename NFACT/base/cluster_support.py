@@ -462,3 +462,46 @@ def find_container_path(container_name: str) -> str:
     return os.path.join(
         current_dir.parents[2], "containers", "builds", f"{container_name}.sif"
     )
+
+
+def cluster_args(base_args: object, col: dict):
+    cluster_args = base_args.add_argument_group(
+        f"{col['amethyst']}Cluster Arguments{col['reset']}"
+    )
+
+    cluster_args.add_argument(
+        "-C",
+        "--cluster",
+        dest="cluster",
+        action="store_true",
+        default=False,
+        help="Use cluster enviornment",
+    )
+    cluster_args.add_argument(
+        "-cq",
+        "--queue",
+        dest="cluster_queue",
+        default=None,
+        help="Cluster queue to submit to",
+    )
+    cluster_args.add_argument(
+        "-cr",
+        "--cluster_ram",
+        dest="cluster_ram",
+        default="60",
+        help="Ram that job will take. Default is 60",
+    )
+    cluster_args.add_argument(
+        "-ct",
+        "--cluster_time",
+        dest="cluster_time",
+        default=False,
+        help="Time that job will take. nfact_pp will assign a time if none given",
+    )
+    cluster_args.add_argument(
+        "-cqos",
+        "--cluster_qos",
+        dest="cluster_qos",
+        default=False,
+        help="Set the qos for the cluster",
+    )

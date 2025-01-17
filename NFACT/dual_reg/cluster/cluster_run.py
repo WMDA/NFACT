@@ -51,7 +51,7 @@ def singulairty_command(
     """
 
     command = f"""
-singularity exec {bind_string} {sif_path} \\
+singularity run --oci {bind_string} {sif_path} \\
     --output_dir {output_dir} \\
     --component_path {component_path} \\
     --group_average_path {group_average_path} \\

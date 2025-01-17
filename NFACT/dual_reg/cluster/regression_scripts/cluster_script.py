@@ -42,7 +42,9 @@ def script_args() -> dict:
     parser.add_argument(
         "--medial_wall", nargs="+", default=False, help="Path to medial wall(s)."
     )
-    parser.add_argument("--parallel", default=None, help="Path to medial wall.")
+    parser.add_argument(
+        "--parallel", default=None, help="Number of cores to parallel with"
+    )
     return vars(parser.parse_args())
 
 
