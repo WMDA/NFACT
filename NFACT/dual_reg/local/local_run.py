@@ -1,11 +1,12 @@
-from ..dual_regression import ica_dual_regression, nmf_dual_regression, get_subject_id
-from ..nfact_dr_functions import get_group_level_components
-from ..nfact_dr_functions import save_dual_regression_images
+from ..dual_regression import ica_dual_regression, nmf_dual_regression, run_decomp
+from ..nfact_dr_functions import (
+    get_group_level_components,
+    get_subject_id,
+    save_dual_regression_images,
+)
 from NFACT.base.utils import nprint, colours
 from NFACT.base.matrix_handling import normalise_components
 from NFACT.base.matrix_handling import load_fdt_matrix
-from NFACT.base.utils import error_and_exit
-
 import numpy as np
 import os
 
@@ -135,16 +136,7 @@ class Dual_regression:
                 f"\n{col['pink']}Dual regressing on subject:{col['reset']} {subject_id}"
             )
             connectivity_matrix = self.__connecitivity_matrix(subject)
-
-            try:
-                components = decomp(connectivity_matrix)
-            except ValueError as e:
-                error_and_exit(
-                    False,
-                    f"Components have incompatable size with connectivity Matrix {e}",
-                )
-            except Exception as e:
-                error_and_exit(False, f"Unable to perform dual regression due to {e}")
+            components = run_decomp(decomp, connectivity_matrix)
             if self.normalise:
                 normalised = normalise_components(
                     components["grey_components"], components["white_components"]

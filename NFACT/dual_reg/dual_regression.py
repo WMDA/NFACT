@@ -1,36 +1,23 @@
+from NFACT.base.utils import error_and_exit
 import numpy as np
 from scipy.optimize import nnls
-import re
-import os
+from joblib import Parallel, delayed
 
 
-def get_subject_id(path: str, number: int) -> str:
+def run_decomp(decomp: object, connectivity_matrix: np.ndarray) -> dict:
     """
-    Function to assign a subjects Id
-
-    Parameters
-    ----------
-    path: str
-        string of path to subjects
-    number: int
-        subject number
-
-    Returns
-    ------
-    str: string
-        subject id either taken from file path
-        or assigned number in the list
+    Function to
     """
     try:
-        return re.findall(r"sub[a-zA-Z0-9]*", path)[0]
-    except IndexError:
-        sub_name = os.path.basename(os.path.dirname(path))
-        if "MR" in sub_name:
-            try:
-                return sub_name.split("_")[0]
-            except IndexError:
-                pass
-        return f"sub-{number}"
+        components = decomp(connectivity_matrix)
+    except ValueError as e:
+        error_and_exit(
+            False,
+            f"Components have incompatable size with connectivity Matrix {e}",
+        )
+    except Exception as e:
+        error_and_exit(False, f"Unable to perform dual regression due to {e}")
+    return components
 
 
 def ica_dual_regression(components: dict, connectivity_matrix: np.ndarray) -> dict:
@@ -71,35 +58,48 @@ def ica_dual_regression(components: dict, connectivity_matrix: np.ndarray) -> di
     }
 
 
-def nmf_dual_regression(components: dict, connectivity_matrix: np.ndarray) -> dict:
+def nmf_dual_regression(
+    components: dict, connectivity_matrix: np.ndarray, n_jobs: int = -1
+) -> dict:
     """
-    Dual regression function for NMF.
+    Dual regression function for NMF with optimized performance.
 
     Parameters
     ----------
     components: dict
-        dictionary of components
+        Dictionary of components.
     connectivity_matrix: np.ndarray
-        subjects loaded connectivity matrix
+        Subjects' loaded connectivity matrix.
+    n_jobs: int
+        Number of parallel jobs for computation.
+        Default is -1 (all available CPUs).
 
     Returns
     -------
-    dict: dictionary
-        dictionary of components
+    dict
+        Dictionary of components.
     """
 
+    grey_components = components["grey_components"]
     wm_component_white_map = np.array(
-        [
-            nnls(components["grey_components"], connectivity_matrix[:, col])[0]
+        Parallel(n_jobs=n_jobs)(
+            delayed(lambda col: nnls(grey_components, connectivity_matrix[:, col])[0])(
+                col
+            )
             for col in range(connectivity_matrix.shape[1])
-        ]
+        )
     ).T
 
+    wm_component_white_map_T = wm_component_white_map.T
     gm_component_grey_map = np.array(
-        [
-            nnls(wm_component_white_map.T, connectivity_matrix.T[:, col])[0]
+        Parallel(n_jobs=n_jobs)(
+            delayed(
+                lambda col: nnls(
+                    wm_component_white_map_T, connectivity_matrix.T[:, col]
+                )[0]
+            )(col)
             for col in range(connectivity_matrix.shape[0])
-        ]
+        )
     )
 
     return {

@@ -8,6 +8,7 @@ import os
 from fsl.data.image import Image
 import nibabel as nb
 from glob import glob
+import re
 
 
 def vol2mat(matvol: np.ndarray, lut_vol: object) -> np.ndarray:
@@ -301,3 +302,32 @@ def get_paths(args: dict) -> dict:
         False,
         "Directory to components not given. Please specify with --nfact_decomp_dir or --decomp_dir",
     )
+
+
+def get_subject_id(path: str, number: int) -> str:
+    """
+    Function to assign a subjects Id
+
+    Parameters
+    ----------
+    path: str
+        string of path to subjects
+    number: int
+        subject number
+
+    Returns
+    ------
+    str: string
+        subject id either taken from file path
+        or assigned number in the list
+    """
+    try:
+        return re.findall(r"sub[a-zA-Z0-9]*", path)[0]
+    except IndexError:
+        sub_name = os.path.basename(os.path.dirname(path))
+        if "MR" in sub_name:
+            try:
+                return sub_name.split("_")[0]
+            except IndexError:
+                pass
+        return f"sub-{number}"
