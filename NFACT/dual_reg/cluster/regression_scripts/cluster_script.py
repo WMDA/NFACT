@@ -36,10 +36,10 @@ def script_args() -> dict:
     parser.add_argument(
         "--group_average_path", required=True, help="Path to group averages."
     )
-    parser.add_argument("--algo", required=True, help="Which algo to run")
-    parser.add_argument("--seeds", required=True, help="Path to seeds.")
+    parser.add_argument("--algo", required=True, help="Which algo has been run")
+    parser.add_argument("--seeds", nargs="+", required=True, help="Path to seed(s).")
     parser.add_argument("--id", required=True, help="Subject ID.")
-    parser.add_argument("--medial_wall", default=False, help="Path to medial wall.")
+    parser.add_argument("--medial_wall", nargs="+", default=False, help="Path to medial wall(s).")
     parser.add_argument("--parallel", default="1", help="Path to medial wall.")
     return vars(parser.parse_args())
 
@@ -57,7 +57,8 @@ def nmf_dual_regression_par(
     connectivity_matrix: np.ndarray
         Subjects' loaded connectivity matrix.
     n_jobs: int
-        Number of parallel jobs for computation. Default is -1 (all available CPUs).
+        Number of parallel jobs for computation. 
+        Default is -1 (all available CPUs).
 
     Returns
     -------
@@ -115,12 +116,6 @@ def main_dr(args: dict) -> None:
     None
     """
 
-    if args["medial_wall"]:
-        args["surface"] = True
-        args = check_medial_wall(args)
-    else:
-        args["surface"] = False
-
     print("Obtaining Group Level Components")
     components = get_group_level_components(
         args["component_path"],
@@ -128,12 +123,14 @@ def main_dr(args: dict) -> None:
         args["seeds"],
         args["medial_wall"],
     )
+    breakpoint()
 
     print("Obtaining FDT Matrix")
     matrix = load_fdt_matrix(args["fdt_path"])
     dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
     print("Running Dual Regression")
     dr_results = nmf_dual_regression_par(components, matrix, 3)
+    breakpoint()
     print("Saving Components")
     save_dual_regression_images(
         dr_results,

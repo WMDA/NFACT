@@ -16,7 +16,6 @@ def bind_string(bind_path) -> str:
 --bind {bind_path}:{bind_path}
 """
 
-
 def singulairty_command(
     bind_string: str,
     sif_path: str,

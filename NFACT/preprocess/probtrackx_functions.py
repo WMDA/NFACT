@@ -1,9 +1,7 @@
 from NFACT.base.filesystem import get_current_date
 from NFACT.base.utils import colours, error_and_exit
 from NFACT.base.cluster_support import (
-    run_fsl_sub,
-    base_command,
-    fsl_sub_cluster_command,
+    cluster_submission,
     Queue_Monitoring,
 )
 import os
@@ -335,6 +333,7 @@ class Probtrackx:
         cluster_queue: str,
         cluster_ram: int,
         cluster_qos: str,
+        gpu: bool,
         parallel: bool = False,
     ) -> None:
         self.col = colours()
@@ -345,6 +344,7 @@ class Probtrackx:
         self.cluster_queue = cluster_queue
         self.cluster_ram = cluster_ram
         self.cluster_qos = cluster_qos
+        self.gpu = gpu
 
     def run(self):
         """
@@ -395,24 +395,17 @@ class Probtrackx:
         """
         Method to submit jobs to cluster
         """
-        bcluster_command = base_command(
+        return cluster_submission(
+            command,
             self.cluster_time,
             self.cluster_ram,
-            os.path.join(nfactpp_directory, "logs"),
-            f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
-        )
-
-        cluster_command = fsl_sub_cluster_command(
-            bcluster_command,
-            command,
             self.cluster_queue,
+            f"nfact_pp_{os.path.basename(os.path.dirname(command[2]))}",
+            os.path.join(nfactpp_directory, "logs"),
             self.cluster_qos,
-            self.cluster_ram,
+            self.gpu
         )
-
-        fsl_sub_rout = run_fsl_sub(cluster_command)
-        return fsl_sub_rout["stdout"]
-
+ 
     def __parallel_mode(self) -> None:
         """
         Method to parallell process
