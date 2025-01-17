@@ -136,14 +136,14 @@ class Dual_regression:
                 f"\n{col['pink']}Dual regressing on subject:{col['reset']} {subject_id}"
             )
             connectivity_matrix = self.__connecitivity_matrix(subject)
-            components = run_decomp(decomp, connectivity_matrix)
+            dr_results = run_decomp(decomp, connectivity_matrix)
             if self.normalise:
                 normalised = normalise_components(
-                    components["grey_components"], components["white_components"]
+                    dr_results["grey_components"], dr_results["white_components"]
                 )
-                components["normalised_white"] = normalised["white_matter"]
-                components["normalised_grey"] = normalised["grey_matter"]
-            self.__save_image(components, subject, subject_id)
+                dr_results["normalised_white"] = normalised["white_matter"]
+                dr_results["normalised_grey"] = normalised["grey_matter"]
+            self.__save_image(dr_results, subject, subject_id)
 
     def __decomp_method(self) -> object:
         """

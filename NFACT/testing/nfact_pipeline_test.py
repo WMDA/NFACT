@@ -7,8 +7,8 @@ from NFACT.decomp.decomposition.decomp import (
     sign_flip,
 )
 from NFACT.decomp.pipes.image_handling import create_wta_map
-from NFACT.base.matrix_handling import normalise_components
-from NFACT.dual_reg.dual_regression import Dual_regression
+from NFACT.base.matrix_handling import normalise_components, load_fdt_matrix
+from NFACT.dual_reg.dual_regression import ica_dual_regression, nmf_dual_regression
 import pytest
 import os
 from pathlib import Path
@@ -26,9 +26,22 @@ def list_of_mat_files():
 
 
 @pytest.fixture
-def test_matrix(list_of_mat_files):
-    fdt_files = [os.path.join(sub, "fdt_matrix2.dot") for sub in list_of_mat_files]
+def fdt_files(list_of_mat_files):
+    return [os.path.join(sub, "fdt_matrix2.dot") for sub in list_of_mat_files]
+
+
+@pytest.fixture
+def test_matrix(fdt_files):
     return avg_fdt(fdt_files)
+
+
+@pytest.fixture
+def single_mat(fdt_files):
+    return load_fdt_matrix(fdt_files[0])
+
+
+def test_single_loading(single_mat):
+    assert isinstance(single_mat, np.ndarray)
 
 
 def test_load_worked(test_matrix):
@@ -99,30 +112,11 @@ def test_wta(test_ica):
     assert isinstance(create_wta_map(test_ica["white_components"], 0, 0.0), np.ndarray)
 
 
-def dual_reg_class(list_of_mat_files, components, method):
-    """'
-    Dual_regresion class takes a lot of
-    variables in its __init__ that aren't
-    needed for testing
-    """
-    return Dual_regression(
-        method, False, False, list_of_mat_files, components, "None", "None", "None"
-    )
-
-
-def test_dual_reg_ICA(list_of_mat_files, test_ica):
-    dr = dual_reg_class(list_of_mat_files, test_ica, "ica")
-    assert "__ica_dual_regression" in f"{dr._Dual_regression__decomp_method()}"
-    connectivity = dr._Dual_regression__connecitivity_matrix(list_of_mat_files[0])
-    assert isinstance(connectivity, np.ndarray)
-    single_subject = dr._Dual_regression__ica_dual_regression(connectivity)
+def test_dual_reg_ICA(test_ica, single_mat):
+    single_subject = ica_dual_regression(test_ica, single_mat)
     assert isinstance(single_subject["white_components"], np.ndarray)
 
 
-def test_dual_reg_nfm(list_of_mat_files, test_nmf):
-    dr = dual_reg_class(list_of_mat_files, test_nmf, "nmf")
-    assert "__nmf_dual_regression" in f"{dr._Dual_regression__decomp_method()}"
-    connectivity = dr._Dual_regression__connecitivity_matrix(list_of_mat_files[1])
-    assert isinstance(connectivity, np.ndarray)
-    single_subject = dr._Dual_regression__nmf_dual_regression(connectivity)
+def test_dual_reg_nfm(test_nmf, single_mat):
+    single_subject = nmf_dual_regression(test_nmf, single_mat, 1)
     assert isinstance(single_subject["white_components"], np.ndarray)
