@@ -2,6 +2,7 @@ import time
 import logging
 import sys
 import importlib.metadata
+import re
 
 
 class Timer:
@@ -86,6 +87,7 @@ def error_and_exit(
     """
     if not bool_statement:
         if error_message:
+            error_message = re.sub(r"\[Errno 2\]", "", error_message)
             col = colours()
             message = col["red"] + error_message + col["reset"]
             if log_message:
