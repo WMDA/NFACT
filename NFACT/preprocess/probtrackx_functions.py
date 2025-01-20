@@ -386,7 +386,8 @@ class Probtrackx:
 
             job = run_probtractkx["command"](sub_command, nfactpp_directory)
             submitted_jobs.append(job)
-        breakpoint()
+
+        submitted_jobs = [job for job in submitted_jobs if job is not None]
         if submitted_jobs:
             queue = Queue_Monitoring()
             queue.monitor(submitted_jobs)
@@ -485,4 +486,3 @@ class Probtrackx:
             error_and_exit(False, f"The following error occured: {e}")
         if run.returncode != 0:
             error_and_exit(False, f"Error in {command[0]} please check log files")
-        return None
