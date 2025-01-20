@@ -64,6 +64,7 @@ def check_subject_exist(list_of_subjects: str) -> None:
     -------
     None
     """
+    
     [
         error_and_exit(
             os.path.exists(path),
@@ -101,6 +102,8 @@ def return_list_of_subjects_from_file(path_to_list: str) -> list:
         pass
     try:
         list_of_subjects = read_file_to_list(path_to_list)
+        # Remove empty lines
+        list_of_subjects = [sub for sub in list_of_subjects if sub.strip()]
     except Exception as e:
         error_and_exit(False, f"Unable to open subject list due to: {e}")
     return list_of_subjects
