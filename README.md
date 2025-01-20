@@ -111,13 +111,13 @@ nfact –config /absolute path/nfact_config.config
 
 ```
 ## NFACT PP
-Pre-processing of tractgraphy data for decomposition with NFacT (Non-negative matrix Factorisation of Tractography data)
+Pre-processing of tractography data for decomposition with NFACT (Non-negative matrix Factorisation of Tractography data)
 
 Under the hood NFACT PP is probtrackx2 omatrix2 option to get a seed by target connectivity matrix 
 
 ### Input for nfact_preproc
 
-Required before runing NFACT PP:
+Required before running NFACT PP:
     - crossing-fibre diffusion modelled data (bedpostX)
     - Seeds (either surfaces or volumes)
 
@@ -127,7 +127,7 @@ Required input:
     - List of subjects
     - Output directory
 
-Input needed for filestree mode:
+Input needed for filetree mode:
     - .tree file (NFACT_PP comes with some defaults such as hcp)
 
 Input needed for both surface and volume mode:
@@ -147,13 +147,13 @@ Input needed for volume mode:
 NFACT pp can be used in a folder agnostic way by providing the paths to seeds/bedpostX/target inside a subject folder (i.e --seeds seeds/amygdala.nii.gz).
 
 The other way is to use the --file_tree command with the name of a file tree (see https://open.win.ox.ac.uk/pages/fsl/file-tree/index.html for further details on filetree).
-In this case seeds/rois/bedpostx do not need to be specified as nfact_pp will try and find the appriopriate files.
+In this case seeds/rois/bedpostx do not need to be specified as nfact_pp will try and find the appropriate files.
 
 ```
 nfact_pp --file_tree hcp --list_of_subjects /home/study/list_of_subjects
 ```
 
-Filetrees are saved in filetrees folder in nfact, so custom filetrees can be put there and called similar to the command above. NFACT_PP currently has a built in a filetree for HCP (from qunex output) to perform full brain tractography. 
+Filetrees are saved in filetrees folder in nfact, so custom filetrees can be put there and called similar to the command above. NFACT_PP currently has a built in a filetree for HCP and a hcp_qunex (HCP in qunex format) to perform full brain tractography. 
 
 Use of custom filetree
 -----------------------
@@ -201,7 +201,7 @@ Tractography options: :
   -e EXCLUSION, --exclusion EXCLUSION
                         Path to an exclusion mask. Will reject pathways passing through locations given by this mask
   -S [STOP ...], --stop [STOP ...]
-                        Use wtstop and stop in the tractography. Takes a file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask. Argument can be used with the --filetree, in that case no json file is needed.
+                        Use wtstop and stop in the tractography. Takes a file path to a JSON file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask. Argument can be used with the --filetree, in that case no JSON file is needed.
 
 Parallel Processing arguments:
   -n N_CORES, --n_cores N_CORES
@@ -352,7 +352,7 @@ nfact_dr is independent from nfact_decomp however, nfact_decomp expects a strict
 ```
 ## NFACT Qc
 
-This is a qulaity control module that creates a number of hitmaps that can be used to check for bias in decomposition.
+This is a quality control module that creates a number of hitmaps that can be used to check for bias in decomposition.
 
 Each map contains the number of times that voxel/vertex appears in the decomposition. 
 
@@ -402,9 +402,9 @@ options:
 NFACT config is a util tool for nfact, that creates a variety of config files to be used in nfact.
 
 NFACT config can create:
-1) nfact_config_pipeline.config overview. This config json file is used in the nfact pipeline to have greater control over parameters.  
-2) nfact_config_decomp.config. A config file to control the hypereparameters of the ICA and NMF functions.
-3) nfact_config_sublist. A list of subjects in a folder. 
+1) nfact_config.pipeline overview. This config JSON file is used in the nfact pipeline to have greater control over parameters.  
+2) nfact_config.decomp. A config JSON file to control the hyper-parameters of the ICA and NMF functions.
+3) nfact_config.sublist. A list of subjects(TXT file) in a folder. 
 
 
 ## Usage:
@@ -421,8 +421,8 @@ options:
                         Where to save config file
 
 ```
-Altering a boolean value in a json is done by giving then everything has to be lower case i.e true, false. It is advised that unless you are familar with json 
-files to use a json linter to check they are valid. 
+Altering a Boolean value in a JSON is done by giving then everything has to be lower case i.e true, false. It is advised that unless you are familiar with JSON 
+files to use a JSON linter to check they are valid. 
 
 ### nfact_config_pipeline.config overview
 
@@ -478,7 +478,7 @@ Everything that has says is required must be given. rois, warps and seed must be
 
 This is the nfact_config_decomp.config file.
 
-NFACT does its decomposition using sckit learn's FastICA (https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.FastICA.html#sklearn.decomposition) and NFM (https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.NMF.html) so any of the hyperparameters of these functions can be altered by changing the values in the json file.
+NFACT does its decomposition using sckit-learn's FastICA (https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.FastICA.html#sklearn.decomposition) and NFM (https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.NMF.html) so any of the hyperparameters of these functions can be altered by changing the values in the JSON file.
 
 ```
 {
