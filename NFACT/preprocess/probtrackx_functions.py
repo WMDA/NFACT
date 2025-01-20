@@ -386,7 +386,7 @@ class Probtrackx:
 
             job = run_probtractkx["command"](sub_command, nfactpp_directory)
             submitted_jobs.append(job)
-
+        breakpoint()
         if submitted_jobs:
             queue = Queue_Monitoring()
             queue.monitor(submitted_jobs)
