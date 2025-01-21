@@ -109,7 +109,7 @@ def nmf_dual_regression(
     dict
         Dictionary of components.
     """
-    if n_jobs < 2 or not n_jobs:
+    if int(n_jobs) < 2 or not n_jobs:
         return nnls_non_parallel(components, connectivity_matrix)
     return nnls_parallel(components, connectivity_matrix, n_jobs)
 
@@ -148,6 +148,14 @@ def nnls_non_parallel(components: dict, connectivity_matrix: np.ndarray):
     }
 
 
+def nnls_grey(col, grey_components, connectivity_matrix):
+    return nnls(grey_components, connectivity_matrix[:, col])[0]
+
+
+def nnls_white(col, wm_component_white_map_T, connectivity_matrix):
+    return nnls(wm_component_white_map_T, connectivity_matrix.T[:, col])[0]
+
+
 def nnls_parallel(components: dict, connectivity_matrix: np.ndarray, n_jobs: int = -1):
     """
     Dual regression function for NMF with optimized performance.
@@ -170,9 +178,7 @@ def nnls_parallel(components: dict, connectivity_matrix: np.ndarray, n_jobs: int
     grey_components = components["grey_components"]
     wm_component_white_map = np.array(
         Parallel(n_jobs=n_jobs)(
-            delayed(lambda col: nnls(grey_components, connectivity_matrix[:, col])[0])(
-                col
-            )
+            delayed(nnls_grey)(col, grey_components, connectivity_matrix)
             for col in range(connectivity_matrix.shape[1])
         )
     ).T
@@ -180,11 +186,7 @@ def nnls_parallel(components: dict, connectivity_matrix: np.ndarray, n_jobs: int
     wm_component_white_map_T = wm_component_white_map.T
     gm_component_grey_map = np.array(
         Parallel(n_jobs=n_jobs)(
-            delayed(
-                lambda col: nnls(
-                    wm_component_white_map_T, connectivity_matrix.T[:, col]
-                )[0]
-            )(col)
+            delayed(nnls_white)(col, wm_component_white_map_T, connectivity_matrix)
             for col in range(connectivity_matrix.shape[0])
         )
     )

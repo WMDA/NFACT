@@ -43,7 +43,7 @@ def script_args() -> dict:
         "--medial_wall", nargs="+", default=False, help="Path to medial wall(s)."
     )
     parser.add_argument(
-        "--parallel", default=None, help="Number of cores to parallel with"
+        "--parallel", default=1, type=int, help="Number of cores to parallel with"
     )
     return vars(parser.parse_args())
 
@@ -61,31 +61,34 @@ def main_dr(args: dict) -> None:
     -------
     None
     """
+    try:
+        print(args["parallel"])
+        print("Obtaining Group Level Components")
+        components = get_group_level_components(
+            args["component_path"],
+            args["group_average_path"],
+            args["seeds"],
+            args["medial_wall"],
+        )
 
-    print("Obtaining Group Level Components")
-    components = get_group_level_components(
-        args["component_path"],
-        args["group_average_path"],
-        args["seeds"],
-        args["medial_wall"],
-    )
-
-    print("Obtaining FDT Matrix")
-    matrix = load_fdt_matrix(args["fdt_path"])
-    dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
-    print("Running Dual Regression")
-    dr_results = run_decomp(dr_regression, components, matrix, args["parallel"])
-    print("Saving Components")
-    save_dual_regression_images(
-        dr_results,
-        args["output_dir"],
-        args["seeds"],
-        args["algo"].upper(),
-        dr_results["white_components"].shape[0],
-        args["id"],
-        os.path.dirname(args["fdt_path"]),
-        args["medial_wall"],
-    )
+        print("Obtaining FDT Matrix")
+        matrix = load_fdt_matrix(args["fdt_path"])
+        dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
+        print("Running Dual Regression")
+        dr_results = run_decomp(dr_regression, components, matrix, args["parallel"])
+        print("Saving Components")
+        save_dual_regression_images(
+            dr_results,
+            args["output_dir"],
+            args["seeds"],
+            args["algo"].upper(),
+            dr_results["white_components"].shape[0],
+            args["id"],
+            os.path.dirname(args["fdt_path"]),
+            args["medial_wall"],
+        )
+    except Exception as e:
+        print(e)
     return None
 
 
