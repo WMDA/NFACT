@@ -7,28 +7,6 @@ import re
 from file_tree import FileTree
 
 
-def check_fsl_is_installed():
-    """
-    Function to check that FSL is
-    installed. Checks for FSLDIR
-    in enviormental variables
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    bool: boolean
-        True if installed
-        else False with error message.
-    """
-    fsl_loaded = os.getenv("FSLDIR")
-    if not fsl_loaded:
-        return False
-    return True
-
-
 def check_medial_wall_seed_len(seed: list, medial_wall: list):
     """
     Function to check that the same

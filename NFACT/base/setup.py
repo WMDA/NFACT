@@ -64,7 +64,7 @@ def check_subject_exist(list_of_subjects: str) -> None:
     -------
     None
     """
-    
+
     [
         error_and_exit(
             os.path.exists(path),
@@ -89,7 +89,7 @@ def return_list_of_subjects_from_file(path_to_list: str) -> list:
         list of subjects
     """
     # First check that list of subjects is a txt file.
-    accepted_types =['txt', "sublist"]
+    accepted_types = ["txt", "sublist"]
     try:
         file_name = os.path.basename(path_to_list)
         if file_name.split(".")[1] not in accepted_types:
@@ -313,3 +313,24 @@ def process_dim(dim: str) -> str:
         )
 
     return dim
+
+
+def check_fsl_is_installed():
+    """
+    Function to check that FSL is
+    installed. Checks for FSLDIR
+    in enviormental variables
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    fsl_loaded = os.getenv("FSLDIR")
+    error_and_exit(
+        fsl_loaded,
+        "FSLDIR not in path. Check FSL is installed or has been loaded correctly",
+    )

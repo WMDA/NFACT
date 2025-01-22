@@ -2,7 +2,6 @@ from .nfactpp import pre_processing
 from .probtrackx_functions import to_use_gpu
 from .nfactpp_args import nfact_pp_args
 from .nfactpp_setup import (
-    check_fsl_is_installed,
     check_ptx_options_are_valid,
     check_exclusion_mask,
 )
@@ -14,6 +13,7 @@ from NFACT.base.setup import (
     return_list_of_subjects_from_file,
     does_list_of_subjects_exist,
     check_arguments,
+    check_fsl_is_installed,
 )
 from NFACT.base.cluster_support import processing_cluster
 import os
@@ -48,10 +48,7 @@ def nfact_pp_main(arg: dict = None):
         check_arguments(arg, ["outdir", "list_of_subjects", "seed", "warps"])
 
     # Error handle if FSL not installed or loaded
-    error_and_exit(
-        check_fsl_is_installed(),
-        "FSLDIR not in path. Check FSL is installed or has been loaded correctly",
-    )
+    check_fsl_is_installed()
 
     # Error handle list of subjects
     error_and_exit(

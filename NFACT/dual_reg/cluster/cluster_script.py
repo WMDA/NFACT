@@ -38,7 +38,7 @@ def script_args() -> dict:
     )
     parser.add_argument("--algo", required=True, help="Which algo has been run")
     parser.add_argument("--seeds", nargs="+", required=True, help="Path to seed(s).")
-    parser.add_argument("--id", required=True, help="Subject ID.")
+    parser.add_argument("id", required=True, help="Subject ID.")
     parser.add_argument(
         "--medial_wall", nargs="+", default=False, help="Path to medial wall(s)."
     )
