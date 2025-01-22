@@ -207,9 +207,9 @@ class Queue_Monitoring:
     """
 
     def __init__(self) -> None:
-        self.spinner_running = True
-        self.col = colours()
-        print(f"{self.col['pink']}\nStarting Queue Monitoring{self.col['reset']}")
+        self.__spinner_running = True
+        self.__col = colours()
+        print(f"{self.__col['pink']}\nStarting Queue Monitoring{self.__col['reset']}")
 
     def monitor(self, job_id: list) -> None:
         """
@@ -225,7 +225,7 @@ class Queue_Monitoring:
         None
         """
 
-        self.spinner_running = True
+        self.__spinner_running = True
         spinner_thread = threading.Thread(target=self.__spinner, daemon=True)
         spinner_thread.start()
 
@@ -252,7 +252,7 @@ class Queue_Monitoring:
         except KeyboardInterrupt:
             pbar.close()
         finally:
-            self.spinner_running = False
+            self.__spinner_running = False
             spinner_thread.join()
 
     def __spinner(self) -> None:
@@ -264,7 +264,7 @@ class Queue_Monitoring:
         max_hashes = 50
         adding_hash = True
 
-        while self.spinner_running:
+        while self.__spinner_running:
             if adding_hash:
                 hash_line += "#"
                 if len(hash_line) >= max_hashes:
@@ -275,7 +275,7 @@ class Queue_Monitoring:
                     adding_hash = True
 
             print(
-                f"{self.col['deep_pink']}\033[1B\r{hash_line.ljust(max_hashes)}\033[1A{self.col['reset']}",
+                f"{self.__col['deep_pink']}\033[1B\r{hash_line.ljust(max_hashes)}\033[1A{self.__col['reset']}",
                 end="",
             )
             time.sleep(0.1)
@@ -302,7 +302,7 @@ class Queue_Monitoring:
             return False
         if "Failed" in output["stdout"]:
             tqdm.write(
-                f"{self.col['red']}JOB {job_id} FAILED. CHECK LOGS{self.col['reset']}"
+                f"{self.__col['red']}JOB {job_id} FAILED. CHECK LOGS{self.__col['reset']}"
             )
             return False
         return True
