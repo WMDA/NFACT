@@ -111,9 +111,19 @@ def submit_to_cluster(args: dict, paths: dict) -> list:
     """
     Function to submit jobs to cluster
     using fsl_sub
+    Function to run jobs on cluster
 
     Parameters
     ----------
+    args: dict
+        cmd arguments
+    paths: dict
+        dictionary of paths
+
+    Returns
+    -------
+    job_ids: list
+        list of job ids
     """
     job_ids = []
     for idx, sub in enumerate(args["ptxdir"]):
