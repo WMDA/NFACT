@@ -10,7 +10,7 @@ include-package-data = true
 
 [project]
 name = "NFACT"
-version = "1.0.0"
+version = "0.0.1"
 description = "NFACT"
 readme = "README.md"
 license = { file = "LICENSE" }
