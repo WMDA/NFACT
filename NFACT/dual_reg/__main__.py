@@ -12,7 +12,6 @@ from NFACT.base.setup import (
     process_input_imgs,
     check_seeds_surfaces,
     check_medial_wall,
-    check_fsl_is_installed,
 )
 from NFACT.base.utils import colours, nprint, error_and_exit
 from NFACT.base.logging import NFACT_logs
@@ -47,7 +46,7 @@ def nfact_dr_main(args: dict = None) -> None:
     if not args:
         args = nfactdr_args()
         to_exit = True
-    check_fsl_is_installed()
+
     # Do argument checking
     check_arguments(args, ["seeds", "list_of_subjects", "algo"])
     args["algo"] = check_algo(args["algo"])

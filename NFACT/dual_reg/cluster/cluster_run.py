@@ -1,6 +1,7 @@
 from ..nfact_dr_functions import get_subject_id
 from NFACT.base.utils import nprint, colours
 from NFACT.base.cluster_support import cluster_submission
+from NFACT.base.setup import check_fsl_is_installed
 from pathlib import Path
 import os
 import sys
@@ -123,6 +124,7 @@ def submit_to_cluster(fdt_matricies):
 
 
 def run_on_cluster(args: dict, paths: dict) -> None:
+    check_fsl_is_installed()
     col = colours()
     nprint(f"{col['pink']}Running{col['reset']}: Cluster")
     nprint(f"{col['pink']}Submtting to{col['reset']}: {args['queue']}")
