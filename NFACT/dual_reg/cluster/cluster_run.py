@@ -82,31 +82,32 @@ def build_cluster_command(
     """
     python_path = get_python_path()
     cluster_script = get_cluster_script_path()
-    return [
+    command = [
         python_path,
         cluster_script,
         "--fdt_path",
-        fdt_path,
+        str(fdt_path),
         "--output_dir",
-        output_dir,
+        str(output_dir),
         "--component_path",
-        component_path,
+        str(component_path),
         "--group_average_path",
-        group_average_path,
+        str(group_average_path),
         "--algo",
-        algo,
+        str(algo),
         "--seeds",
-        seeds,
+        str(seeds),
         "--id",
-        sub_id,
+        str(sub_id),
         "--medial_wall",
-        medial_wall,
+        str(medial_wall),
         "--parallel",
-        parallel,
+        str(parallel),
     ]
+    return command
 
 
-def submit_to_cluster(fdt_matricies):
+def submit_to_cluster(args: dict, paths: dict) -> list:
     """
     Function to submit jobs to cluster
     using fsl_sub
@@ -115,10 +116,29 @@ def submit_to_cluster(fdt_matricies):
     ----------
     """
     job_ids = []
-    for sub, idx in enumerate(fdt_matricies):
+    for idx, sub in enumerate(args["ptxdir"]):
         sub_id = get_subject_id(sub, idx)
-        cluster_command = build_cluster_command(sub)
-        id = cluster_submission(cluster_command)
+        cluster_command = build_cluster_command(
+            sub,
+            os.path.join(args["outdir"], "nfact_dr"),
+            paths["component_path"],
+            paths["group_average_path"],
+            args["algo"],
+            args["seeds"],
+            sub_id,
+            args["medial_wall"],
+            args["n_cores"],
+        )
+        id = cluster_submission(
+            cluster_command,
+            args["cluster_time"],
+            args["cluster_ram"],
+            args["cluster_queue"],
+            f"{sub_id}_nfact_dr",
+            os.path.join(args["outdir"], "nfact_dr", "logs"),
+            args["cluster_qos"],
+            False,
+        )
         job_ids.append(id)
     return job_ids
 
@@ -127,6 +147,6 @@ def run_on_cluster(args: dict, paths: dict) -> None:
     check_fsl_is_installed()
     col = colours()
     nprint(f"{col['pink']}Running{col['reset']}: Cluster")
-    nprint(f"{col['pink']}Submtting to{col['reset']}: {args['queue']}")
-    ids = submit_to_cluster()
+    nprint(f"{col['pink']}Submtting to{col['reset']}: {args['cluster_queue']}")
+    ids = submit_to_cluster(args, paths)
     return None

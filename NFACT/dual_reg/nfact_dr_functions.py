@@ -322,7 +322,8 @@ def get_subject_id(path: str, number: int) -> str:
         or assigned number in the list
     """
     try:
-        return re.findall(r"sub[a-zA-Z0-9]*", path)[0]
+        stripped_path = re.sub(r"subjects", "", path)
+        return re.findall(r"sub_[a-zA-Z0-9]*", stripped_path)[0]
     except IndexError:
         sub_name = os.path.basename(os.path.dirname(path))
         if "MR" in sub_name:

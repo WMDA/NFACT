@@ -4,7 +4,6 @@ import subprocess
 import time
 from tqdm import tqdm
 import threading
-from pathlib import Path
 
 
 class Cluster_parameters:
@@ -415,6 +414,7 @@ def cluster_submission(
     cluster_command = fsl_sub_cluster_command(
         bcluster_command, command, cluster_queue, cluster_qos, gpu
     )
+
     fsl_sub_rout = run_fsl_sub(cluster_command)
     return fsl_sub_rout["stdout"]
 
@@ -441,24 +441,3 @@ def processing_cluster(arg: dict) -> dict:
     except NoClusterQueuesException:
         arg["cluster"] = no_cluster_queues()
     return arg
-
-
-def find_container_path(container_name: str) -> str:
-    """
-    Function to return container path
-
-    Parameters
-    ----------
-    container_name: str
-        container name
-
-    Returns
-    -------
-    str: string
-        str to container path
-
-    """
-    current_dir = Path(__file__).resolve().parent
-    return os.path.join(
-        current_dir.parents[2], "containers", "builds", f"{container_name}.sif"
-    )
