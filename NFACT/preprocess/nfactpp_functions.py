@@ -76,9 +76,11 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
     """
     del arg["seed"]
     del arg["medial_wall"]
+
     arg["seed"] = [
         filetree_get_files(arg["file_tree"], sub, hemi, "seed") for hemi in ["L", "R"]
     ]
+
     arg["warps"] = [
         filetree_get_files(arg["file_tree"], sub, "L", "std2diff"),
         filetree_get_files(arg["file_tree"], sub, "L", "diff2std"),
