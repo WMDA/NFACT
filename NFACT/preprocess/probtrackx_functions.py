@@ -415,9 +415,13 @@ class Probtrackx:
         return fsl_sub_rout["stdout"]
 
     def __check_number_of_cores(self):
+        """
+        Method to check number of cores
+        and number of subjects
+        """
+
         number_of_subject = len(self.command)
         if self.parallel > number_of_subject:
-            print("")
             self.parallel = number_of_subject
             if self.parallel == 1:
                 print(f"{self.col['red']}Only single subject given")

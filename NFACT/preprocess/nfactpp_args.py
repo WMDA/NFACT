@@ -163,7 +163,13 @@ def nfact_pp_args() -> dict:
         "-n",
         "--n_cores",
         dest="n_cores",
-        help="If should parallel process and with how many cores",
+        help="""
+        If should parallel process and with how many cores. 
+        This parallelizes the number of subjects. So if n_cores exceeds
+        subjects nfact_pp sets this argument to number of subjects. 
+        If nfact_pp is being used on one subject then this may slow down
+        processing.
+        """,
         default=False,
     )
     cluster_args = base_args.add_argument_group(
