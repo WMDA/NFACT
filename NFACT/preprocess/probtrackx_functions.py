@@ -339,7 +339,7 @@ class Probtrackx:
     ) -> None:
         self.col = colours()
         self.command = command
-        self.parallel = parallel
+        self.parallel = int(parallel)
         self.cluster = cluster
         self.cluster_time = cluster_time
         self.cluster_queue = cluster_queue
@@ -360,7 +360,7 @@ class Probtrackx:
         Method to get single subjects
         """
         return {
-            "command": (self.__cluster if self.cluster else self.__run_probtrackx),
+            "command": (self.__cluster if self.cluster else self._run_probtrackx),
             "print_str": "on cluster" if self.cluster else "locally",
         }
 
@@ -376,15 +376,14 @@ class Probtrackx:
 
         submitted_jobs = []
         for sub_command in self.command:
-            nfactpp_directory = self.__nfact_dir(sub_command)
-            subject = self.__subject_id(nfactpp_directory)
+            subject = self.__subject_id(self.__nfact_dir(sub_command))
             print(
                 "Running",
                 os.path.basename(sub_command[0]),
                 f"on subject {subject}",
             )
 
-            job = run_probtractkx["command"](sub_command, nfactpp_directory)
+            job = run_probtractkx["command"](sub_command)
             submitted_jobs.append(job)
 
         submitted_jobs = [job for job in submitted_jobs if job is not None]
@@ -392,10 +391,11 @@ class Probtrackx:
             queue = Queue_Monitoring()
             queue.monitor(submitted_jobs)
 
-    def __cluster(self, command: list, nfactpp_directory: str):
+    def __cluster(self, command: list):
         """
         Method to submit jobs to cluster
         """
+        nfactpp_directory = self.__nfact_dir(command)
         bcluster_command = base_command(
             self.cluster_time,
             self.cluster_ram,
@@ -414,15 +414,31 @@ class Probtrackx:
         fsl_sub_rout = run_fsl_sub(cluster_command)
         return fsl_sub_rout["stdout"]
 
+    def __check_number_of_cores(self):
+        """
+        Method to check number of cores
+        and number of subjects
+        """
+
+        number_of_subject = len(self.command)
+        if self.parallel > number_of_subject:
+            self.parallel = number_of_subject
+            if self.parallel == 1:
+                print(f"{self.col['red']}Only single subject given")
+                print(
+                    f"This might take longer. Consider removing --number_of_cores{self.col['reset']}"
+                )
+
     def __parallel_mode(self) -> None:
         """
         Method to parallell process
         multiple subjects
         """
+        self.__check_number_of_cores()
         print(
-            f"{self.col['pink']}\nParrellel processing with {self.parallel} cores{self.col['reset']}"
+            f"{self.col['pink']}Parallel processing with {self.parallel} cores{self.col['reset']}"
         )
-        pool = multiprocessing.Pool(processes=int(self.parallel))
+        pool = multiprocessing.Pool(processes=self.parallel)
 
         def kill_pool(sig, frame):
             """
@@ -440,7 +456,7 @@ class Probtrackx:
             exit(0)
 
         signal.signal(signal.SIGINT, kill_pool)
-        pool.map(self.__run_probtrackx, self.command)
+        pool.map(self._run_probtrackx, self.command)
 
     def __log_name(self):
         return "PP_log_" + get_current_date()
@@ -454,7 +470,7 @@ class Probtrackx:
     def __subject_id(self, nfactpp_directory: str):
         return os.path.basename(nfactpp_directory)
 
-    def __run_probtrackx(self, command: list, nfactpp_directory: str) -> None:
+    def _run_probtrackx(self, command: list) -> None:
         """
         Method to run probtrackx
 
@@ -469,7 +485,7 @@ class Probtrackx:
         -------
         None
         """
-
+        nfactpp_directory = self.__nfact_dir(command)
         try:
             with open(self.__log_path(nfactpp_directory), "w") as log_file:
                 run = subprocess.run(
