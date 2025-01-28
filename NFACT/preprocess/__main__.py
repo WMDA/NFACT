@@ -72,10 +72,10 @@ def nfact_pp_main(arg: dict = None):
     )
 
     if arg["cluster"]:
-        print(f"{col['deep_pink']}Checking:{col['reset']} Cluster Availability\n")
+        print(f"{col['deep_pink']}Checking:{col['reset']} Cluster Availability")
         try:
             arg = Cluster_parameters(arg).process_parameters()
-            print(f"{col['amethyst']}Using: Cluster")
+            print(f"{col['amethyst']}Using:{col['reset']} Cluster")
         except NoClusterQueuesException:
             arg["cluster"] = no_cluster_queues()
 
