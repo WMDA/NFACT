@@ -13,7 +13,7 @@ from NFACT.base.setup import (
     check_seeds_surfaces,
     check_medial_wall,
 )
-from NFACT.base.utils import colours, nprint, error_and_exit
+from NFACT.base.utils import colours, nprint
 from NFACT.base.logging import NFACT_logs
 from NFACT.base.signithandler import Signit_handler
 from NFACT.base.cluster_support import processing_cluster
@@ -60,11 +60,6 @@ def nfact_dr_main(args: dict = None) -> None:
     check_nfact_decomp_directory(paths["component_path"], paths["group_average_path"])
 
     if args["cluster"]:
-        args["container_path"] = find_container_path("cluster_dr")
-        error_and_exit(
-            os.path.exists(args["container_path"]),
-            "Cluster container hasn't been built. Please see documentation for further details",
-        )
         args = processing_cluster(args)
 
     # Set up directory
