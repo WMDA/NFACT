@@ -51,6 +51,11 @@ def nfact_pp_main(arg: dict = None):
     if not arg["file_tree"]:
         check_arguments(arg, ["outdir", "list_of_subjects", "seed", "warps"])
 
+    if arg["n_cores"] and arg["cluster"]:
+        error_and_exit(
+            False,
+            "Unclear whether to parallel process locally or to submit to cluster. Remove either --n_cores or --cluster",
+        )
     # Error handle if FSL not installed or loaded
     error_and_exit(
         check_fsl_is_installed(),
