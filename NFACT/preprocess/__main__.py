@@ -54,7 +54,7 @@ def nfact_pp_main(arg: dict = None):
     if arg["n_cores"] and arg["cluster"]:
         error_and_exit(
             False,
-            "Unclear whether to parallell process locally or to submit to cluster. Remove either --n_cores or --cluster",
+            "Unclear whether to parallel process locally or to submit to cluster. Remove either --n_cores or --cluster",
         )
     # Error handle if FSL not installed or loaded
     error_and_exit(
