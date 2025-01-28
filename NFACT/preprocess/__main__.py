@@ -20,7 +20,7 @@ import os
 import shutil
 
 
-def nfact_pp_main(arg: dict = None):
+def nfact_pp_main(arg: dict = None) -> None:
     """
     Main nfact_pp function.
 

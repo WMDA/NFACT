@@ -141,7 +141,17 @@ def nfact_pp_args() -> dict:
         Argument can be used with the --filetree, in that case no json file is needed.
       """,
     )
-    parallel_args(base_args, col)
+    parallel_args(
+        base_args,
+        col,
+        """
+                  If should parallel process locally and with how many cores. 
+                  This parallelizes the number of subjects. If n_cores exceeds
+                  subjects nfact_pp sets this argument to be the number of subjects. 
+                  If nfact_pp is being used on one subject then this may slow down
+                  processing.
+                  """,
+    )
     cluster_args(base_args, col)
 
     no_args(base_args)

@@ -56,7 +56,7 @@ def cluster_args(base_args: object, col: dict) -> None:
     )
 
 
-def parallel_args(base_args: object, col: dict) -> None:
+def parallel_args(base_args: object, col: dict, help_message: str) -> None:
     """
     Function to add in parallel arguments to
     arguments. Adds in argument group
@@ -79,7 +79,7 @@ def parallel_args(base_args: object, col: dict) -> None:
         "-n",
         "--n_cores",
         dest="n_cores",
-        help="If should parallel process and with how many cores",
+        help=help_message,
         default=False,
     )
 

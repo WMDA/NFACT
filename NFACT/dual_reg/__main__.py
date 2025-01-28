@@ -16,7 +16,7 @@ from NFACT.base.setup import (
 from NFACT.base.utils import colours, nprint, error_and_exit
 from NFACT.base.logging import NFACT_logs
 from NFACT.base.signithandler import Signit_handler
-from NFACT.base.cluster_support import processing_cluster, find_container_path
+from NFACT.base.cluster_support import processing_cluster
 from .local.local_run import run_locally
 from .cluster.cluster_run import run_on_cluster
 import os

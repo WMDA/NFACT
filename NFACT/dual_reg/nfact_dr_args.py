@@ -78,7 +78,9 @@ def nfactdr_args() -> dict:
         default=False,
         help="normalise components by scaling",
     )
-    parallel_args(base_args, col)
+    parallel_args(
+        base_args, col, "Run each subject in parallell. One core = one subject"
+    )
     cluster_args(base_args, col)
 
     no_args(base_args)
