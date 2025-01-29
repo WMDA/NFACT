@@ -147,6 +147,9 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
     output_dir = os.path.join(
         arg["outdir"], "nfact_pp", os.path.basename(sub), "omatrix2"
     )
+    warp_options = [f"--xfm={warps[0]}"]
+    if len(warps) > 1:
+        warp_options = warp_options + [f"--invxfm={warps[1]}"]
 
     command = [
         binary,
@@ -155,8 +158,6 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
         "-s",
         bpx,
         f"--mask={mask}",
-        f"--xfm={warps[0]}",
-        f"--invxfm={warps[1]}",
         f"--seedref={arg['ref']}",
         "--omatrix2",
         f"--target2={target_mask}",
@@ -167,6 +168,7 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
         f"--nsamples={arg['nsamples']}",
         f"--dir={output_dir}",
     ]
+    command = command + warp_options
 
     if ptx_options:
         command = command + ptx_options
