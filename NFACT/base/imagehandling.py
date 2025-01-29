@@ -102,7 +102,7 @@ def check_files_are_imaging_files(path: str) -> bool:
             for file in file_details["file_extensions"]
             if file in [".gii", ".nii", ".mat"]
         ],
-        f'{file_details["file"]} for {file_details["subject"]} is an incorrect file type (not gii or nii)',
+        f'{file_details["file"]} for {file_details["subject"]} is an incorrect file type',
     )
 
 
