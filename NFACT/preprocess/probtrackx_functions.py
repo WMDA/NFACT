@@ -96,12 +96,13 @@ def process_command_arguments(arg: dict, sub: str) -> dict:
         arg["warps"],
         arg["bpx_path"],
     )
+
     return {
-        "warps": [os.path.join(sub, warp) for warp in arg["warps"]],
+        "warps": [os.path.join(sub, warp.lstrip("/")) for warp in arg["warps"]],
         "seed": os.path.join(
             arg["outdir"], "nfact_pp", os.path.basename(sub), "seeds.txt"
         ),
-        "bpx_path": os.path.join(sub, arg["bpx_path"]),
+        "bpx_path": os.path.join(sub, arg["bpx_path"].lstrip("/")),
     }
 
 
