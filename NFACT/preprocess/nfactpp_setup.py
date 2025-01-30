@@ -54,7 +54,31 @@ def check_medial_wall_seed_len(seed: list, medial_wall: list):
     )
 
 
-def check_ptx_options_are_valid(ptx_options: list):
+def clean_ptx_options(ptx_options: list) -> list:
+    """
+    Function to clean ptx options
+    from a file.
+
+    Parameters
+    ----------
+    ptx_options: list
+       list of user defined options
+
+    Returns
+    -------
+    ptx_args: list
+        list of ptx args from file
+    """
+    ptx_args = []
+    for ptx in ptx_options:
+        try:
+            ptx_args.append(re.findall(r"(-\w+|--\w+)", ptx)[0])
+        except IndexError:
+            continue
+    return ptx_args
+
+
+def check_ptx_options_are_valid(ptx_options: list) -> None:
     """
     Function to check that ptx options
     valid options. Errors out if
@@ -74,9 +98,11 @@ def check_ptx_options_are_valid(ptx_options: list):
     probtrack_args = re.findall(r"-.*?\t", check_out)
     stripped_args = [arg.rstrip("\t") for arg in probtrack_args]
     probtrack_args = sum([arg.split(",") for arg in stripped_args], [])
+    ptx_options_clean = clean_ptx_options(ptx_options)
+
     [
         error_and_exit(False, f"{arg} is not a probtrackx2 option")
-        for arg in ptx_options
+        for arg in ptx_options_clean
         if arg not in probtrack_args
     ]
 
@@ -126,11 +152,11 @@ def load_file_tree(tree_name: str) -> object:
         error_and_exit(False, f"Unable to load tree file, due to {e}")
 
 
-def check_exclusion_mask(exclusion_mask: str) -> None:
+def check_provided_img(image_to_check: str, error_messgae: str) -> None:
     """
     Wrapper around function to
     check exclusion masks is a file
     and exists.
     """
-    error_and_exit(os.path.isfile(exclusion_mask), "Exclusion mask does not exists")
-    check_files_are_imaging_files(exclusion_mask)
+    error_and_exit(os.path.isfile(image_to_check), error_messgae)
+    check_files_are_imaging_files(image_to_check)

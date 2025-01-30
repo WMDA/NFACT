@@ -108,6 +108,70 @@ def process_command_arguments(arg: dict, sub: str) -> dict:
     }
 
 
+def build_warp_options(warps: list) -> list:
+    """
+    Function to build warp options
+
+    Parameters
+    -----------
+    warps: list
+        list of warps
+    Returns
+    -------
+    warp_options: list
+        lsit of warp options
+    """
+    warp_options = [f"--xfm={warps[0]}"]
+    if len(warps) > 1:
+        warp_options.extend([f"--invxfm={warps[1]}"])
+
+    return warp_options
+
+
+def get_target_mask(sub: str, arg: dict) -> str:
+    """
+    Parameters
+    ----------
+    arg: dict
+        dictionary of arguments from
+        command line
+    sub: str
+        subjects full path
+    output_dir: str
+        path to output directory
+
+    Returns
+    -------
+    str: string object
+        string option to target mask
+    """
+    return (
+        os.path.join(sub, arg["target2"])
+        if arg["target2"]
+        else os.path.join(
+            arg["outdir"], "nfact_pp", os.path.basename(sub), "files", "target2.nii.gz"
+        )
+    )
+
+
+def get_probtrackx_bin(use_gpu: bool) -> str:
+    """
+    Function to get probtrackx binary
+
+    Parameters
+    ----------
+    use_gpu: bool
+        boolean to
+
+    Returns
+    -------
+    str: string object
+        path to probtrackx bin
+    """
+    prob_bin = "probtrackx2_gpu" if use_gpu else "probtrackx2"
+    return os.path.join(os.environ["FSLDIR"], "bin", prob_bin)
+
+
 def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
     """
     Function to build out probtrackx2 arguments
@@ -134,22 +198,13 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
     warps = command_arguments["warps"]
     seeds = command_arguments["seed"]
     mask = os.path.join(command_arguments["bpx_path"], "nodif_brain_mask")
-    target_mask = (
-        os.path.join(sub, arg["target2"])
-        if arg["target2"]
-        else os.path.join(
-            arg["outdir"], "nfact_pp", os.path.basename(sub), "files", "target2.nii.gz"
-        )
-    )
-
+    target_mask = get_target_mask(sub, arg)
     bpx = os.path.join(command_arguments["bpx_path"], "merged")
     check_bpx_dir(bpx, mask)
     output_dir = os.path.join(
         arg["outdir"], "nfact_pp", os.path.basename(sub), "omatrix2"
     )
-    warp_options = [f"--xfm={warps[0]}"]
-    if len(warps) > 1:
-        warp_options = warp_options + [f"--invxfm={warps[1]}"]
+    warp_options = build_warp_options(warps)
 
     command = [
         binary,
@@ -168,10 +223,10 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
         f"--nsamples={arg['nsamples']}",
         f"--dir={output_dir}",
     ]
-    command = command + warp_options
+    command.extend(warp_options)
 
     if ptx_options:
-        command = command + ptx_options
+        command.extend(ptx_options)
     return command
 
 

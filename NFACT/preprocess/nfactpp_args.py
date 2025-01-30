@@ -156,6 +156,13 @@ def nfact_pp_args() -> dict:
         Argument can be used with the --filetree, in that case no json file is needed.
       """,
     )
+    tractography_input.add_argument(
+        "-sr",
+        "--seedref",
+        dest="seedref",
+        default=False,
+        help="Reference volume to define seed space used by probtrackx. Probtrackx default is diffusion space.",
+    )
     parallel_process = base_args.add_argument_group(
         f"{col['darker_pink']}Parallel Processing arguments{col['reset']}"
     )

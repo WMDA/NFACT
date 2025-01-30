@@ -255,7 +255,7 @@ def add_to_ptx_options(commands: list, ptx_options: list) -> list:
     return ptx_options
 
 
-def avoid(arg: dict) -> dict:
+def add_to_ptx(arg: dict, command_to_add: list) -> dict:
     """
     Function to add avoid file to
     probtrackx command
@@ -264,14 +264,14 @@ def avoid(arg: dict) -> dict:
     ----------
     arg: dict
         cmd args
+    command_to_add: list
 
     Returns
     -------
     args: dict
         dict of cmd args with avoid
     """
-    avoid_command = [f"--avoid={arg['exclusion']}"]
-    arg["ptx_options"] = add_to_ptx_options(avoid_command, arg["ptx_options"])
+    arg["ptx_options"] = add_to_ptx_options(command_to_add, arg["ptx_options"])
     return arg
 
 
