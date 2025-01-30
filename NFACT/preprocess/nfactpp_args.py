@@ -158,14 +158,10 @@ def nfact_pp_args() -> dict:
     )
     tractography_input.add_argument(
         "-sr",
-        "--seed_ref",
-        dest="stop",
+        "--seedref",
+        dest="seedref",
         default=False,
-        nargs="*",
-        help="""
-        Use wtstop and stop in the tractography. Takes a file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask.
-        Argument can be used with the --filetree, in that case no json file is needed.
-      """,
+        help="Reference volume to define seed space used by probtrackx. Probtrackx default is diffusion space.",
     )
     parallel_process = base_args.add_argument_group(
         f"{col['darker_pink']}Parallel Processing arguments{col['reset']}"

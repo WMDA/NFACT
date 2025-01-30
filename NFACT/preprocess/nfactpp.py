@@ -11,7 +11,7 @@ from .nfactpp_functions import (
     stop_masks,
     create_files_for_decomp,
     write_options_to_file,
-    avoid,
+    add_to_ptx,
 )
 from .probtrackx_functions import (
     build_probtrackx2_arguments,
@@ -187,7 +187,9 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
         print(
             f"{col['pink']}Processing:{col['reset']} Exclusion mask {arg['exclusion']}"
         )
-        arg = avoid(arg)
+        arg = add_to_ptx(arg, [f"--avoid={arg['exclusion']}"])
+    if arg["seedref"]:
+        arg = add_to_ptx(arg, [f"--seedref={arg['seedref']}"])
     if arg["stop"]:
         print(f"{col['pink']}Processing:{col['reset']} stop and wtstop files")
         arg = stop_masks(arg, nfactpp_diretory, sub, sub_id)

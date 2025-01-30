@@ -109,8 +109,8 @@ def nfact_pp_main(arg: dict = None):
             error_and_exit(False, f"Unable to read ptx_options text file due to {e}")
         check_ptx_options_are_valid(arg["ptx_options"])
 
-    if arg["seed_ref"]:
-        check_provided_img(arg["seed_ref"], "Cannot find seed ref image")
+    if arg["seedref"]:
+        check_provided_img(arg["seedref"], "Cannot find seed ref image")
 
     nfact_pp_directory = os.path.join(arg["outdir"], "nfact_pp")
     if arg["overwrite"]:
