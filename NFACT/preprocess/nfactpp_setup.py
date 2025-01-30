@@ -54,7 +54,31 @@ def check_medial_wall_seed_len(seed: list, medial_wall: list):
     )
 
 
-def check_ptx_options_are_valid(ptx_options: list):
+def clean_ptx_options(ptx_options: list) -> list:
+    """
+    Function to clean ptx options
+    from a file.
+
+    Parameters
+    ----------
+    ptx_options: list
+       list of user defined options
+
+    Returns
+    -------
+    ptx_args: list
+        list of ptx args from file
+    """
+    ptx_args = []
+    for ptx in ptx_options:
+        try:
+            ptx_args.append(re.findall(r"(-[a-zA-Z]|--\w+)", ptx)[0])
+        except IndexError:
+            continue
+    return ptx_args
+
+
+def check_ptx_options_are_valid(ptx_options: list) -> None:
     """
     Function to check that ptx options
     valid options. Errors out if
@@ -74,9 +98,11 @@ def check_ptx_options_are_valid(ptx_options: list):
     probtrack_args = re.findall(r"-.*?\t", check_out)
     stripped_args = [arg.rstrip("\t") for arg in probtrack_args]
     probtrack_args = sum([arg.split(",") for arg in stripped_args], [])
+    ptx_options_clean = clean_ptx_options(ptx_options)
+
     [
         error_and_exit(False, f"{arg} is not a probtrackx2 option")
-        for arg in ptx_options
+        for arg in ptx_options_clean
         if arg not in probtrack_args
     ]
 

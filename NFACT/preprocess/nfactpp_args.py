@@ -156,6 +156,17 @@ def nfact_pp_args() -> dict:
         Argument can be used with the --filetree, in that case no json file is needed.
       """,
     )
+    tractography_input.add_argument(
+        "-sr",
+        "--seed_ref",
+        dest="stop",
+        default=False,
+        nargs="*",
+        help="""
+        Use wtstop and stop in the tractography. Takes a file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask.
+        Argument can be used with the --filetree, in that case no json file is needed.
+      """,
+    )
     parallel_process = base_args.add_argument_group(
         f"{col['darker_pink']}Parallel Processing arguments{col['reset']}"
     )
