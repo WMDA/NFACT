@@ -72,7 +72,7 @@ def clean_ptx_options(ptx_options: list) -> list:
     ptx_args = []
     for ptx in ptx_options:
         try:
-            ptx_args.append(re.findall(r"(-[a-zA-Z]|--\w+)", ptx)[0])
+            ptx_args.append(re.findall(r"(-\w+|--\w+)", ptx)[0])
         except IndexError:
             continue
     return ptx_args
@@ -152,11 +152,11 @@ def load_file_tree(tree_name: str) -> object:
         error_and_exit(False, f"Unable to load tree file, due to {e}")
 
 
-def check_exclusion_mask(exclusion_mask: str) -> None:
+def check_provided_img(image_to_check: str, error_messgae: str) -> None:
     """
     Wrapper around function to
     check exclusion masks is a file
     and exists.
     """
-    error_and_exit(os.path.isfile(exclusion_mask), "Exclusion mask does not exists")
-    check_files_are_imaging_files(exclusion_mask)
+    error_and_exit(os.path.isfile(image_to_check), error_messgae)
+    check_files_are_imaging_files(image_to_check)
