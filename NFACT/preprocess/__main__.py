@@ -3,7 +3,7 @@ from .probtrackx_functions import to_use_gpu
 from .nfactpp_args import nfact_pp_args
 from .nfactpp_setup import (
     check_ptx_options_are_valid,
-    check_exclusion_mask,
+    check_provided_img,
 )
 from NFACT.base.utils import error_and_exit, colours
 from NFACT.base.signithandler import Signit_handler
@@ -86,7 +86,7 @@ def nfact_pp_main(arg: dict = None) -> None:
         arg["stop"] = arg["stop"][0]
 
     if arg["exclusion"]:
-        check_exclusion_mask(arg["exclusion"])
+        check_provided_img(arg["exclusion"], "Cannot find exclusion mask")
 
     if arg["ptx_options"]:
         try:
@@ -96,6 +96,9 @@ def nfact_pp_main(arg: dict = None) -> None:
         except Exception as e:
             error_and_exit(False, f"Unable to read ptx_options text file due to {e}")
         check_ptx_options_are_valid(arg["ptx_options"])
+
+    if arg["seedref"]:
+        check_provided_img(arg["seedref"], "Cannot find seed ref image")
 
     nfact_pp_directory = os.path.join(arg["outdir"], "nfact_pp")
     if arg["overwrite"]:
