@@ -161,7 +161,7 @@ def nfact_pp_args() -> dict:
         "--seedref",
         dest="seedref",
         default=False,
-        help="Reference volume to define seed space used by probtrackx. Probtrackx default is diffusion space.",
+        help="Reference volume to define seed space used by probtrackx. Default is MNI space.",
     )
     parallel_process = base_args.add_argument_group(
         f"{col['darker_pink']}Parallel Processing arguments{col['reset']}"
