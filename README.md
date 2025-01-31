@@ -121,7 +121,7 @@ Required before running NFACT PP:
     - crossing-fibre diffusion modelled data (bedpostX)
     - Seeds (either surfaces or volumes)
 
-NFACT PP has three streams, surface seed, volume, mode and filestree.
+NFACT PP has three modes: surface , volume, and filestree.
 
 Required input:
     - List of subjects
@@ -162,9 +162,6 @@ seed files are aliased as (seed), medial wall as (medial_wall), warps as (diff2s
 ### Usage:
 
 ```
-usage: nfact_pp [-h] [-hh] [-O] [-l LIST_OF_SUBJECTS] [-o OUTDIR] [-f FILE_TREE] [-s SEED [SEED ...]] [-w WARPS [WARPS ...]] [-b BPX_PATH] [-m MEDIAL_WALL [MEDIAL_WALL ...]] [-i REF] [-t TARGET2] [-N NSAMPLES] [-mm MM_RES] [-p PTX_OPTIONS] [-e EXCLUSION]
-                [-S [STOP ...]] [-n N_CORES] [-C] [-cq CLUSTER_QUEUE] [-cr CLUSTER_RAM] [-ct CLUSTER_TIME] [-cqos CLUSTER_QOS]
-
 options:
   -h, --help            show this help message and exit
   -hh, --verbose_help   Prints help message and example usages
@@ -201,11 +198,15 @@ Tractography options: :
   -e EXCLUSION, --exclusion EXCLUSION
                         Path to an exclusion mask. Will reject pathways passing through locations given by this mask
   -S [STOP ...], --stop [STOP ...]
-                        Use wtstop and stop in the tractography. Takes a file path to a JSON file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask. Argument can be used with the --filetree, in that case no JSON file is needed.
+                        Use wtstop and stop in the tractography. Takes a file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask. Argument can be used with the --filetree, in that case
+                        no json file is needed.
+  -sr SEEDREF, --seedref SEEDREF
+                        Reference volume to define seed space used by probtrackx. Default is MNI space.
 
 Parallel Processing arguments:
   -n N_CORES, --n_cores N_CORES
-                        If should parallel process and with how many cores
+                        If should parallel process locally and with how many cores. This parallelizes the number of subjects. If n_cores exceeds subjects nfact_pp sets this argument to be the number of subjects. If nfact_pp is being
+                        used on one subject then this may slow down processing.
 
 Cluster Arguments:
   -C, --cluster         Use cluster enviornment
@@ -242,7 +243,7 @@ Example Usage:
             --list_of_subjects /home/study/sub_list
             --outdir /home/study
             --n_cores 3
-```
+
 ------------------------------------------------------------------------------------------------------------------------------------------
 
 ```
