@@ -60,6 +60,7 @@ def nfact_dr_main(args: dict = None) -> None:
     check_nfact_decomp_directory(paths["component_path"], paths["group_average_path"])
 
     if args["cluster"]:
+        args["gpu"] = False
         args = processing_cluster(args)
 
     # Set up directory

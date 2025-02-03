@@ -24,21 +24,13 @@ def script_args() -> dict:
         dict of cmd options
     """
     parser = argparse.ArgumentParser(description="Run Dual Regression")
-    parser.add_argument(
-        "--fdt_path", required=True, help="Directory to individual subject fdt path"
-    )
-    parser.add_argument(
-        "--output_dir", required=True, help="Directory to save the output components."
-    )
-    parser.add_argument(
-        "--component_path", required=True, help="Directory to components path."
-    )
-    parser.add_argument(
-        "--group_average_path", required=True, help="Path to group averages."
-    )
-    parser.add_argument("--algo", required=True, help="Which algo has been run")
-    parser.add_argument("--seeds", nargs="+", required=True, help="Path to seed(s).")
-    parser.add_argument("id", required=True, help="Subject ID.")
+    parser.add_argument("--fdt_path", help="Directory to individual subject fdt path")
+    parser.add_argument("--output_dir", help="Directory to save the output components.")
+    parser.add_argument("--component_path", help="Directory to components path.")
+    parser.add_argument("--group_average_path", help="Path to group averages.")
+    parser.add_argument("--algo", help="Which algo has been run")
+    parser.add_argument("--seeds", nargs="+", help="Path to seed(s).")
+    parser.add_argument("id", help="Subject ID.")
     parser.add_argument(
         "--medial_wall", nargs="+", default=False, help="Path to medial wall(s)."
     )
