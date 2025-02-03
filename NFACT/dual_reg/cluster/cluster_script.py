@@ -50,7 +50,7 @@ def script_args() -> dict:
 
 def main_dr(args: dict) -> None:
     """
-    Main NMF function.
+    Main cluster function.
 
     Parameters
     ----------
@@ -71,7 +71,7 @@ def main_dr(args: dict) -> None:
             args["medial_wall"],
         )
     except Exception as e:
-        print("Failed to obtain components due to ", e)
+        print("Failed to obtain components due to: ", e)
         exit(1)
     try:
         print("Obtaining FDT Matrix")
