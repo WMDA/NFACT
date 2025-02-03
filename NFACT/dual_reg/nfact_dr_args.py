@@ -32,6 +32,14 @@ def nfactdr_args() -> dict:
         Prints help message and example usages
       """,
     )
+    base_args.add_argument(
+        "-O",
+        "--overwrite",
+        dest="overwrite",
+        action="store_true",
+        default=False,
+        help="Overwrite previous file structure",
+    )
     set_up_args(base_args, col)
     dr_args = base_args.add_argument_group(
         f"{col['pink']}Dual Regression Arguments{col['reset']}"

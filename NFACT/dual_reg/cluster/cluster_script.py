@@ -24,13 +24,21 @@ def script_args() -> dict:
         dict of cmd options
     """
     parser = argparse.ArgumentParser(description="Run Dual Regression")
-    parser.add_argument("--fdt_path", help="Directory to individual subject fdt path")
-    parser.add_argument("--output_dir", help="Directory to save the output components.")
-    parser.add_argument("--component_path", help="Directory to components path.")
-    parser.add_argument("--group_average_path", help="Path to group averages.")
-    parser.add_argument("--algo", help="Which algo has been run")
-    parser.add_argument("--seeds", nargs="+", help="Path to seed(s).")
-    parser.add_argument("id", help="Subject ID.")
+    parser.add_argument(
+        "--fdt_path", required=True, help="Directory to individual subject fdt path"
+    )
+    parser.add_argument(
+        "--output_dir", required=True, help="Directory to save the output components."
+    )
+    parser.add_argument(
+        "--component_path", required=True, help="Directory to components path."
+    )
+    parser.add_argument(
+        "--group_average_path", required=True, help="Path to group averages."
+    )
+    parser.add_argument("--algo", required=True, help="Which algo has been run")
+    parser.add_argument("--seeds", required=True, nargs="+", help="Path to seed(s).")
+    parser.add_argument("--id", required=True, help="Subject ID.")
     parser.add_argument(
         "--medial_wall", nargs="+", default=False, help="Path to medial wall(s)."
     )
@@ -54,7 +62,7 @@ def main_dr(args: dict) -> None:
     None
     """
     try:
-        print(args["parallel"])
+        print("Number of cores: ", args["parallel"])
         print("Obtaining Group Level Components")
         components = get_group_level_components(
             args["component_path"],
@@ -62,7 +70,10 @@ def main_dr(args: dict) -> None:
             args["seeds"],
             args["medial_wall"],
         )
-
+    except Exception as e:
+        print("Failed to obtain components due to ", e)
+        exit(1)
+    try:
         print("Obtaining FDT Matrix")
         matrix = load_fdt_matrix(args["fdt_path"])
         dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression

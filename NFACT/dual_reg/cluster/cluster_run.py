@@ -1,7 +1,6 @@
 from ..nfact_dr_functions import get_subject_id
 from NFACT.base.utils import nprint, colours
 from NFACT.base.cluster_support import cluster_submission, Queue_Monitoring
-from NFACT.base.setup import check_fsl_is_installed
 from pathlib import Path
 import os
 import sys
@@ -101,9 +100,9 @@ def build_cluster_command(
         str(sub_id),
         "--medial_wall",
         str(medial_wall),
-        "--parallel",
-        str(parallel),
     ]
+    if parallel:
+        command.extned(["--parallel", str(parallel)])
     return command
 
 
@@ -128,6 +127,7 @@ def submit_to_cluster(args: dict, paths: dict) -> list:
     job_ids = []
     for idx, sub in enumerate(args["ptxdir"]):
         sub_id = get_subject_id(sub, idx)
+        nprint(f"Submittng {sub_id}")
         cluster_command = build_cluster_command(
             sub,
             os.path.join(args["outdir"], "nfact_dr"),
@@ -168,7 +168,7 @@ def run_on_cluster(args: dict, paths: dict) -> None:
     -------
     None
     """
-    check_fsl_is_installed()
+
     col = colours()
     nprint(f"{col['pink']}Running{col['reset']}: Cluster")
     nprint(f"{col['pink']}Submtting to{col['reset']}: {args['cluster_queue']}")

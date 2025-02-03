@@ -13,10 +13,12 @@ from NFACT.base.setup import (
     check_seeds_surfaces,
     check_medial_wall,
 )
+from NFACT.base.filesystem import delete_folder
 from NFACT.base.utils import colours, nprint
 from NFACT.base.logging import NFACT_logs
 from NFACT.base.signithandler import Signit_handler
 from NFACT.base.cluster_support import processing_cluster
+from NFACT.base.setup import check_fsl_is_installed
 from .local.local_run import run_locally
 from .cluster.cluster_run import run_on_cluster
 import os
@@ -54,12 +56,15 @@ def nfact_dr_main(args: dict = None) -> None:
     # Get component paths
     paths = get_paths(args)
 
+    if args["overwrite"]:
+        delete_folder(os.path.join(args["outdir"], "nfact_dr"))
     # check subjects exist
     args = get_subjects(args)
     check_subject_exist(args["ptxdir"])
     check_nfact_decomp_directory(paths["component_path"], paths["group_average_path"])
 
     if args["cluster"]:
+        check_fsl_is_installed()
         args["gpu"] = False
         args = processing_cluster(args)
 

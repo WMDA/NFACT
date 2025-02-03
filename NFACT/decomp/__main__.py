@@ -1,6 +1,7 @@
 from NFACT.base.logging import NFACT_logs
 from NFACT.base.utils import Timer, colours, nprint
 from NFACT.base.signithandler import Signit_handler
+from NFACT.base.filesystem import delete_folder
 from NFACT.base.setup import (
     check_subject_exist,
     check_algo,
@@ -30,7 +31,6 @@ from .decomposition.matrix_handling import (
 from .pipes.image_handling import winner_takes_all, save_images
 from .setup.arg_check import process_command_args
 import os
-import shutil
 
 
 def nfact_decomp_main(args: dict = None) -> None:
@@ -78,13 +78,8 @@ def nfact_decomp_main(args: dict = None) -> None:
 
     # Build out folder structure
     if args["overwrite"]:
-        if os.path.exists(os.path.join(args["outdir"], "nfact_decomp")):
-            print(
-                f'{col["red"]}Overwrite flag given. {args["outdir"]}/nfact_decomp directory being overwritten{col["reset"]}\n'
-            )
-            shutil.rmtree(
-                os.path.join(args["outdir"], "nfact_decomp"), ignore_errors=True
-            )
+        delete_folder(os.path.join(args["outdir"], "nfact_decomp"))
+
     create_folder_set_up(args["outdir"])
     print(f"{col['plum']}NFACT folder:{col['reset']} {args['outdir']}")
 

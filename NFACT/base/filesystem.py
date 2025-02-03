@@ -2,7 +2,28 @@ import os
 import json
 from datetime import datetime
 import shutil
-from .utils import error_and_exit
+from .utils import error_and_exit, colours
+
+
+def delete_folder(outdir: str) -> None:
+    """
+    Function to delete folder.
+
+    Parameters
+    ----------
+    outdir: str
+        string of directory to delete
+
+    Returns
+    -------
+    None
+    """
+    col = colours()
+    if os.path.exists(outdir):
+        print(
+            f'{col["red"]}Overwrite flag given. {outdir} directory being overwritten{col["reset"]}\n'
+        )
+        shutil.rmtree(outdir, ignore_errors=True)
 
 
 def make_directory(
