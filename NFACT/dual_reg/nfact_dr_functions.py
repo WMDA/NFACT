@@ -214,7 +214,6 @@ def grey_components(
         seed for _, seed in sorted(zip(seeds, grey_matter), key=lambda pair: pair[0])
     ]
     save_type = "gii" if "gii" in sorted_components[0] else "nii"
-
     if save_type == "nii":
         coord_file = np.loadtxt(
             os.path.join(group_averages, "coords_for_fdt_matrix2"),
@@ -281,7 +280,10 @@ def get_paths(args: dict) -> dict:
 
     Returns
     -------
-    str: string of component path.
+    dict: dictionary object 
+        dictionary of paths
+        to component_path and 
+        group_average_path
     """
     if args["nfact_decomp_dir"]:
         return {

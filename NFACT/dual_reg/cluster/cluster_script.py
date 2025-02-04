@@ -9,7 +9,6 @@ from NFACT.dual_reg.nfact_dr_functions import save_dual_regression_images
 import argparse
 import os
 
-
 def script_args() -> dict:
     """
     Script args
@@ -70,12 +69,14 @@ def main_dr(args: dict) -> None:
             args["seeds"],
             args["medial_wall"],
         )
-    except Exception as e:
-        print("Failed to obtain components due to: ", e)
-        exit(1)
-    try:
+
         print("Obtaining FDT Matrix")
-        matrix = load_fdt_matrix(args["fdt_path"])
+        matrix = load_fdt_matrix(
+            os.path.join(
+                args["fdt_path"], 
+                "fdt_matrix2.dot"
+                )
+            )
         dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
         print("Running Dual Regression")
         dr_results = run_decomp(dr_regression, components, matrix, args["parallel"])
@@ -91,7 +92,8 @@ def main_dr(args: dict) -> None:
             args["medial_wall"],
         )
     except Exception as e:
-        print(e)
+        print("Dual regression failed due to: ", e)
+        exit(1)
     return None
 
 

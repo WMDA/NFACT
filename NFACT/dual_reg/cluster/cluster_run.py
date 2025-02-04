@@ -95,14 +95,14 @@ def build_cluster_command(
         "--algo",
         str(algo),
         "--seeds",
-        str(seeds),
+        *seeds,
         "--id",
         str(sub_id),
         "--medial_wall",
-        str(medial_wall),
+        *medial_wall,
     ]
     if parallel:
-        command.extned(["--parallel", str(parallel)])
+        command.extend(["--parallel", str(parallel)])
     return command
 
 
