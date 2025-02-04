@@ -1,7 +1,41 @@
-from NFACT.base.utils import error_and_exit
+from NFACT.base.utils import error_and_exit, colours
 from NFACT.base.imagehandling import check_files_are_imaging_files
 from NFACT.base.filesystem import write_to_file, load_json
 import os
+from .nfactpp_setup import check_provided_img
+
+def seedref(seedref: str) -> str:
+    """
+    Function to provide seedref.
+    Default is human MNI space.
+
+    Parameteres
+    -----------
+    seedref: str
+        path to a seed reference.
+        If None defaults to 
+        FSL MNI152_T1_2mm_brain.nii.gz
+    
+    Returns
+    -------
+    seedref: str
+        path to seed ref
+
+    """
+    col = colours()
+    if seedref:
+        check_provided_img(seedref, "Cannot find seed ref image")
+        print(f"{col['purple']}Seed Reference Space:{col['reset']} {seedref}")
+        return seedref
+    seedref = os.path.join(
+            os.getenv("FSLDIR"), 
+            "data", 
+            "standard", 
+            "MNI152_T1_2mm_brain.nii.gz"
+    )
+    print(f"{col['purple']}Seed Reference Space:{col['reset']} {seedref}")
+    return seedref
+
 
 
 def get_file(img_file: list, sub: str) -> list:

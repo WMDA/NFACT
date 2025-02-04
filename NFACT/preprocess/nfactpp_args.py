@@ -100,12 +100,12 @@ def nfact_pp_args() -> dict:
         help="""REQUIRED FOR SURFACE MODE: Medial wall file. 
         Use when doing whole brain surface tractography to provide medial wall.""",
     )
-
     tractography_input.add_argument(
-        "-i",
-        "--ref",
-        dest="ref",
-        help="Standard space reference image. Default is $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz",
+        "-r",
+        "--seedref",
+        dest="seedref",
+        default=False,
+        help="Reference volume to define seed space used by probtrackx. Default is MNI space.",
     )
     tractography_input.add_argument(
         "-t",
@@ -156,13 +156,7 @@ def nfact_pp_args() -> dict:
         Argument can be used with the --filetree, in that case no json file is needed.
       """,
     )
-    tractography_input.add_argument(
-        "-sr",
-        "--seedref",
-        dest="seedref",
-        default=False,
-        help="Reference volume to define seed space used by probtrackx. Default is MNI space.",
-    )
+
     parallel_process = base_args.add_argument_group(
         f"{col['darker_pink']}Parallel Processing arguments{col['reset']}"
     )
