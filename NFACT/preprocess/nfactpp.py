@@ -112,10 +112,10 @@ def target_generation(arg: dict, nfactpp_diretory: str, col: dict) -> None:
 
     print(f"{col['pink']}Creating:{col['reset']} Target2 Image")
     get_target2(
-        arg["ref"],
+        arg["seedref"],
         os.path.join(nfactpp_diretory, "files", "target2"),
         arg["mm_res"],
-        arg["ref"],
+        arg["seedref"],
         "nearestneighbour",
     )
 
@@ -188,8 +188,6 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
             f"{col['pink']}Processing:{col['reset']} Exclusion mask {arg['exclusion']}"
         )
         arg = add_to_ptx(arg, [f"--avoid={arg['exclusion']}"])
-    if arg["seedref"]:
-        arg = add_to_ptx(arg, [f"--seedref={arg['seedref']}"])
     if arg["stop"]:
         print(f"{col['pink']}Processing:{col['reset']} stop and wtstop files")
         arg = stop_masks(arg, nfactpp_diretory, sub, sub_id)

@@ -213,7 +213,7 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
         "-s",
         bpx,
         f"--mask={mask}",
-        f"--seedref={arg['ref']}",
+        f"--seedref={arg['seedref']}",
         "--omatrix2",
         f"--target2={target_mask}",
         "--loopcheck",
