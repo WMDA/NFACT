@@ -75,9 +75,10 @@ class Cluster_parameters:
         self.arg["cluster_time"] = (
             self.arg["cluster_time"]
             if self.arg["cluster_time"]
-            else "600"
-            if self.arg["gpu"]
-            else "160"
+            else "600")
+            
+        self.arg['cluster_time'] = ("160" if self.arg["gpu"]
+             else self.arg["cluster_time"]
         )
 
     def cluster_queue_check(self):
@@ -437,7 +438,7 @@ def processing_cluster(arg: dict) -> dict:
     print(f"{col['deep_pink']}Checking:{col['reset']} Cluster Availability\n")
     try:
         arg = Cluster_parameters(arg).process_parameters()
-        print(f"{col['amethyst']}Using: Cluster")
+        print(f"{col['amethyst']}Using:{col['reset']} Cluster")
     except NoClusterQueuesException:
         arg["cluster"] = no_cluster_queues()
     return arg
