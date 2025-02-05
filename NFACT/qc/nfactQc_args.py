@@ -72,58 +72,12 @@ def nfact_Qc_splash() -> str:
     """
     col = colours()
     return f"""
-{col['pink']} 
+{col["pink"]} 
  _   _ ______   ___   _____  _____     ___     ____ 
 | \ | ||  ___| / _ \ /  __ \|_   _|   / _ \   / ___|
 |  \| || |_   / /_\ \| /  \/  | |    | | | | | | 
 | . ` ||  _|  |  _  || |      | |    | | | | | |    
 | |\  || |    | | | || \__/\  | |    | |_| | | |___ 
 \_| \_/\_|    \_| |_/ \____/  \_/     \__\_\  \____|
-{col['reset']} 
-"""
-
-
-def nfact_Qc_usage():
-    """
-    Function to return NFACT
-    decomp usage
-
-    Parameteres
-    -----------
-    None
-
-    Returns
-    ------
-    None
-    """
-    col = colours()
-    return f"""
-{col['darker_pink']}Basic NMF with volume seeds usage:{col['reset']}
-    nfact_decomp --list_of_subjects /absolute path/sub_list \ 
-                 --seeds /absolute path/seeds.txt \ 
-                 --dim 50
-
-{col['darker_pink']}Basic NMF usage with surface seeds:{col['reset']}
-    nfact_decomp --list_of_subjects /absolute path/sub_list \ 
-                 --seeds /absolute path/seeds.txt \ 
-                 --medial_wall /path/to/medial/wall
-                 --dim 50
-
-{col['darker_pink']}ICA with config file usage:{col['reset']}
-    nfact_decomp --list_of_subjects /absolute path/sub_list \ 
-                 --seeds /absolute path/seeds.txt \ 
-                 --outdir /absolute path/study_directory \ 
-                 --algo ICA \ 
-                 --nfact_config /path/to/config/file
-
-{col['darker_pink']}Advanced ICA Usage:{col['reset']}
-    nfact_decomp --list_of_subjects /absolute path/sub_list \ 
-                 --seeds /absolute path/seeds.txt \ 
-                 --outdir /absolute path/study_directory \ 
-                 --algo ICA \ 
-                 --migp 1000 \ 
-                 --dim 100 \ 
-                 --normalise \ 
-                 --wta \ 
-                 --wat_zthr 0.5
+{col["reset"]} 
 """

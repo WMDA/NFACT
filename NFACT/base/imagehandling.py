@@ -102,7 +102,7 @@ def check_files_are_imaging_files(path: str) -> bool:
             for file in file_details["file_extensions"]
             if file in [".gii", ".nii", ".mat"]
         ],
-        f'{file_details["file"]} for {file_details["subject"]} is an incorrect file type',
+        f"{file_details['file']} for {file_details['subject']} is an incorrect file type",
     )
 
 
@@ -132,7 +132,7 @@ def save_white_matter(
     if sum(lut_vol.data.flatten() > 0) != white_matter_components.shape[1]:
         error_and_exit(
             False,
-            f"Lookup_tractspace_fdt_matrix2 (size={sum(lut_vol.data.flatten()>0)} is not compatible with output white matter component (size={white_matter_components.shape[1]})",
+            f"Lookup_tractspace_fdt_matrix2 (size={sum(lut_vol.data.flatten() > 0)} is not compatible with output white matter component (size={white_matter_components.shape[1]})",
         )
 
     white_matter_vol = mat2vol(white_matter_components, lut_vol)
@@ -177,7 +177,7 @@ def save_grey_matter_volume(
 
 
 def save_grey_matter_gifit(
-    grey_component: np.array, file_name: str, seed: str, medial_wall: str
+    grey_component: np.array, file_name: str, seed: str, roi: str
 ) -> None:
     """
     Function to save grey matter as gifti
@@ -191,15 +191,15 @@ def save_grey_matter_gifit(
         file name
     seed: str
         path to seed
-    medial_wall: str
-        str to medial wall path
+    roi: str
+        str to roi path
 
     Returns
     -------
     None
     """
     surf = nib.load(seed)
-    m_wall = nib.load(medial_wall).darrays[0].data != 0
+    m_wall = nib.load(roi).darrays[0].data != 0
     grey_matter_component = np.zeros((m_wall.shape[0], grey_component.shape[1]))
     grey_matter_component[m_wall == 1, :] = grey_component
 
@@ -281,7 +281,7 @@ def save_grey_matter_components(
     directory: str,
     dim: int,
     coord_path: str,
-    medial_wall: list,
+    roi: list,
     prefix: str = "G",
 ) -> None:
     """
@@ -302,8 +302,8 @@ def save_grey_matter_components(
     dim: int
         number of dimensions
         used for naming output
-    medial_wall: list
-        list of medial path
+    roi: list
+        list of roi path
     Returns
     -------
     None
@@ -318,8 +318,8 @@ def save_grey_matter_components(
 
         if save_type == "gifti":
             file_name = re.sub("_gii", "", file_name)
-            mw = medial_wall[idx]
-            save_grey_matter_gifit(grey_matter_seed, file_name, seed, mw)
+            roi_idx = roi[idx]
+            save_grey_matter_gifit(grey_matter_seed, file_name, seed, roi_idx)
 
         if save_type == "nifti":
             file_name = re.sub("_nii", "", file_name)

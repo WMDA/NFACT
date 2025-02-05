@@ -5,7 +5,7 @@ from .nfact_pipeline_functions import (
     write_decomp_list,
     compulsory_args_for_config,
     update_nfact_args_in_place,
-    medial_wall_file,
+    roi_file,
 )
 from NFACT.base.config import get_nfact_arguments, process_dictionary_arguments
 from NFACT.base.utils import error_and_exit, colours, Timer
@@ -47,7 +47,7 @@ def nfact_pipeline_main() -> None:
         print(f"{col['plum']}NFACT input:{col['reset']} Command line")
         pipeline_args_check(args)
         global_arguments = get_nfact_arguments()
-        global_arguments["global_input"] = args['input']
+        global_arguments["global_input"] = args["input"]
         nfact_pp_args = build_module_arguments(
             global_arguments["nfact_pp"], args, "pre_process"
         )
@@ -70,8 +70,8 @@ def nfact_pipeline_main() -> None:
         compulsory_args_for_config(global_arguments)
 
     update_nfact_args_in_place(global_arguments)
-    medial_wall_file(global_arguments)
-    print(f'{col["plum"]}NFACT directory:{col["reset"]} {nfact_pp_args["outdir"]}')
+    roi_file(global_arguments)
+    print(f"{col['plum']}NFACT directory:{col['reset']} {nfact_pp_args['outdir']}")
     make_directory(nfact_pp_args["outdir"], ignore_errors=True)
 
     # Build out temporary locations of arguments
@@ -107,14 +107,15 @@ def nfact_pipeline_main() -> None:
         nfact_pp_args["list_of_subjects"], nfact_pp_args["outdir"], nfact_tmp_location
     )
 
+
     # Run NFACT_PP
     if not global_arguments["global_input"]["pp_skip"]:
-        print(f'{col["plum"]}Running:{col["reset"]} NFACT PP')
+        print(f"{col['plum']}Running:{col['reset']} NFACT PP")
         print("-" * 100)
         print(nfact_pp_splash())
         nfact_pp_main(nfact_pp_args)
 
-        print(f'{col["pink"]}\nFinished running NFACT_PP{col["reset"]}')
+        print(f"{col['pink']}\nFinished running NFACT_PP{col['reset']}")
         print("-" * 100)
     else:
         print(f"\n{col['plum']}Skipping:{col['reset']} NFACT_PP")
@@ -123,7 +124,7 @@ def nfact_pipeline_main() -> None:
         )
 
     # Run NFACT_decomp
-    print(f'{col["plum"]}Running:{col["reset"]} NFACT Decomp')
+    print(f"{col['plum']}Running:{col['reset']} NFACT Decomp")
     print("-" * 100)
     try:
         shutil.copy(
@@ -138,7 +139,7 @@ def nfact_pipeline_main() -> None:
 
     print(nfact_decomp_splash())
     nfact_decomp_main(nfact_decomp_args)
-    print(f'{col["plum"]}\nFinished:{col["reset"]} NFACT Decomp')
+    print(f"{col['plum']}\nFinished:{col['reset']} NFACT Decomp")
     print("-" * 100)
 
     # Clean up
@@ -163,27 +164,27 @@ def nfact_pipeline_main() -> None:
         nfact_qc_args["threshold"] = (
             nfact_qc_args["threshold"] if not nfact_qc_args["threshold"] else 2
         )
-        print(f'{col["plum"]}Running:{col["reset"]} NFACT Qc')
+        print(f"{col['plum']}Running:{col['reset']} NFACT Qc")
         print("-" * 100)
         print(nfact_Qc_splash())
         nfactQc_main(nfact_qc_args)
-        print(f'{col["plum"]}\nFinished:{col["reset"]} NFACT Qc')
+        print(f"{col['plum']}\nFinished:{col['reset']} NFACT Qc")
         print("-" * 100)
     else:
-        print(f'{col["plum"]}Skipping: {col["reset"]} NFACT Qc')
+        print(f"{col['plum']}Skipping: {col['reset']} NFACT Qc")
 
     # Run NFACT_DR
     if (len(nfact_pp_args["list_of_subjects"]) > 1) and (
         not global_arguments["global_input"]["dr_skip"]
     ):
-        print(f'\n\n{col["plum"]}Running: {col["reset"]} NFACT DR')
+        print(f"\n\n{col['plum']}Running: {col['reset']} NFACT DR")
         print("-" * 100)
         print(nfact_dr_splash())
         nfact_dr_main(nfact_dr_args)
-        print(f'{col["plum"]}\nFinished:{col["reset"]} NFACT DR')
+        print(f"{col['plum']}\nFinished:{col['reset']} NFACT DR")
         print("-" * 100)
     else:
-        print(f'{col["plum"]}Skipping: {col["reset"]} NFACT DR')
+        print(f"{col['plum']}Skipping: {col['reset']} NFACT DR")
 
     # Exit
     print(f"Decomposition pipeline took {time.how_long()}")

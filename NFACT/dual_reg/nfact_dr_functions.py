@@ -47,7 +47,7 @@ def save_dual_regression_images(
     dim: int,
     sub: str,
     ptx_directory: str,
-    medial_wall: list,
+    roi: list,
 ) -> None:
     """
     Function to save regression images
@@ -93,7 +93,7 @@ def save_dual_regression_images(
                 algo_path,
                 dim,
                 os.path.join(ptx_directory, "coords_for_fdt_matrix2"),
-                medial_wall,
+                roi,
                 grey_prefix,
             )
         if "white" in comp:
@@ -160,7 +160,7 @@ def load_grey_matter_volume(nifti_file: str, x_y_z_coordinates: np.array) -> np.
     return flattened_data[xyz_idx, :]
 
 
-def load_grey_matter_gifti_seed(file_name: str, medial_wall: str) -> np.array:
+def load_grey_matter_gifti_seed(file_name: str, roi: str) -> np.array:
     """
     Load grey matter component from a GIFTI file.
 
@@ -168,8 +168,8 @@ def load_grey_matter_gifti_seed(file_name: str, medial_wall: str) -> np.array:
     ----------
     file_name: str
         Path to the GIFTI file.
-    medial_wall: str
-        str to medial wall path
+    roi: str
+        str to roi path
 
     Returns
     -------
@@ -178,7 +178,7 @@ def load_grey_matter_gifti_seed(file_name: str, medial_wall: str) -> np.array:
     """
 
     gifti_img = nb.load(file_name)
-    m_wall = nb.load(medial_wall).darrays[0].data
+    m_wall = nb.load(roi).darrays[0].data
     non_masked_indices = np.where(m_wall == 1)[0]
     grey_matter_component = np.column_stack(
         [darray.data for darray in gifti_img.darrays]

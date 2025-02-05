@@ -1,5 +1,6 @@
 from .nfactpp import pre_processing
 from .probtrackx_functions import to_use_gpu
+from .nfactpp_functions import seedref
 from .nfactpp_args import nfact_pp_args
 from .nfactpp_setup import (
     check_fsl_is_installed,
@@ -87,10 +88,6 @@ def nfact_pp_main(arg: dict = None):
     print(
         f'{col["darker_pink"]}Filetree:{col["reset"]} {arg["file_tree"].lower()} '
     ) if arg["file_tree"] else None
-    if not arg["ref"]:
-        arg["ref"] = os.path.join(
-            os.getenv("FSLDIR"), "data", "standard", "MNI152_T1_2mm_brain.nii.gz"
-        )
 
     if arg["stop"] == []:
         arg["stop"] = True
@@ -109,9 +106,7 @@ def nfact_pp_main(arg: dict = None):
             error_and_exit(False, f"Unable to read ptx_options text file due to {e}")
         check_ptx_options_are_valid(arg["ptx_options"])
 
-    if arg["seedref"]:
-        check_provided_img(arg["seedref"], "Cannot find seed ref image")
-
+    arg["seedref"] = seedref(arg["seedref"])
     nfact_pp_directory = os.path.join(arg["outdir"], "nfact_pp")
     if arg["overwrite"]:
         if os.path.exists(nfact_pp_directory):

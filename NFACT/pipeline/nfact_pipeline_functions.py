@@ -48,11 +48,9 @@ def get_compulsory_arguments(args):
     """
 
     if args["input"]["pp_skip"]:
-        return non_compulsory_arguments(["ref", "bpx_path", "warps", "medial_wall"])
+        return non_compulsory_arguments(["ref", "bpx_path", "warps", "roi"])
     if args["pre_process"]["file_tree"]:
-        return non_compulsory_arguments(
-            ["ref", "bpx_path", "warps", "seed", "medial_wall"]
-        )
+        return non_compulsory_arguments(["ref", "bpx_path", "warps", "seed", "roi"])
     return non_compulsory_arguments()
 
 
@@ -158,6 +156,7 @@ def write_decomp_list(
     omatrix_2_paths = [
         os.path.join(out_dir_name, "nfact_pp", os.path.basename(file), "omatrix2\n")
         for file in files
+        if os.path.isdir(file)
     ]
     omatrix_2_paths.sort()
 
@@ -169,7 +168,7 @@ def write_decomp_list(
     )
 
 
-def compulsory_args_for_config(args: dict):
+def compulsory_args_for_config(args: dict) -> None:
     """
     Function to check for required
     arguments in nfact config file
@@ -277,9 +276,9 @@ def assign_nfact_dr_in_place(args: dict) -> None:
     args["nfact_dr"]["algo"] = args["nfact_decomp"]["algo"]
 
 
-def medial_wall_file(args: dict) -> None:
+def roi_file(args: dict) -> None:
     """
-    Function to assign medial wall in
+    Function to assign roi in
     place for nfact_ecomp/nfact_dr
 
     Parameters
@@ -291,17 +290,17 @@ def medial_wall_file(args: dict) -> None:
     -------
     None
     """
-    if args["nfact_pp"]["medial_wall"] or args["nfact_pp"]["file_tree"]:
+    if args["nfact_pp"]["roi"] or args["nfact_pp"]["file_tree"]:
         path = os.path.join(
             args["global_input"]["outdir"],
             args["global_input"]["folder_name"],
             "nfact_pp",
-            "mw_for_decomp.txt",
+            "roi_for_decomp.txt",
         )
-        args["nfact_decomp"]["medial_wall"] = path
-        args["nfact_dr"]["medial_wall"] = path
-    if args["nfact_decomp"]["medial_wall"]:
-        args["nfact_dr"]["medial_wall"] = args["nfact_decomp"]["medial_wall"]
+        args["nfact_decomp"]["roi"] = path
+        args["nfact_dr"]["roi"] = path
+    if args["nfact_decomp"]["roi"]:
+        args["nfact_dr"]["roi"] = args["nfact_decomp"]["roi"]
 
 
 def update_nfact_args_in_place(args: dict) -> None:

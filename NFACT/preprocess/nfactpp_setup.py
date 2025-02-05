@@ -29,10 +29,10 @@ def check_fsl_is_installed():
     return True
 
 
-def check_medial_wall_seed_len(seed: list, medial_wall: list):
+def check_roi_seed_len(seed: list, roi: list):
     """
     Function to check that the same
-    amount of seed(s) and medial_wall
+    amount of seed(s) and roi
     are given.
     Parameters
     ----------
@@ -45,11 +45,11 @@ def check_medial_wall_seed_len(seed: list, medial_wall: list):
     None
     """
     error_and_exit(
-        medial_wall,
+        roi,
         "Surfaces given as seeds but no medial wall. Please provide medial wall",
     )
     error_and_exit(
-        len(seed) == len(medial_wall),
+        len(seed) == len(roi),
         "Number of seeds and number of medial wall must match",
     )
 

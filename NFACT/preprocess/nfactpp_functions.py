@@ -1,7 +1,42 @@
-from NFACT.base.utils import error_and_exit
+from NFACT.base.utils import error_and_exit, colours
 from NFACT.base.imagehandling import check_files_are_imaging_files
 from NFACT.base.filesystem import write_to_file, load_json
 import os
+from .nfactpp_setup import check_provided_img
+
+
+def seedref(seedref: str) -> str:
+    """
+    Function to provide seedref.
+    Default is human MNI space.
+
+    Parameteres
+    -----------
+    seedref: str
+        path to a seed reference.
+        If None defaults to
+        FSL MNI152_T1_2mm_brain.nii.gz
+
+    Returns
+    -------
+    seedref: str
+        path to seed ref
+
+    """
+    col = colours()
+    if seedref:
+        check_provided_img(seedref, "Cannot find seed ref image")
+        print(
+            f"{col['darker_pink']}Seed Reference Space:{col['reset']} {os.path.basename(seedref)}"
+        )
+        return seedref
+    seedref = os.path.join(
+        os.getenv("FSLDIR"), "data", "standard", "MNI152_T1_2mm_brain.nii.gz"
+    )
+    print(
+        f"{col['darker_pink']}Seed Reference Space:{col['reset']} {os.path.basename(seedref)}"
+    )
+    return seedref
 
 
 def get_file(img_file: list, sub: str) -> list:
@@ -75,7 +110,7 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
         arguments
     """
     del arg["seed"]
-    del arg["medial_wall"]
+    del arg["roi"]
 
     arg["seed"] = [
         filetree_get_files(arg["file_tree"], sub, hemi, "seed") for hemi in ["L", "R"]
@@ -87,8 +122,8 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
     ]
     arg["bpx_path"] = filetree_get_files(arg["file_tree"], sub, "L", "bedpostX")
     if arg["surface"]:
-        arg["medial_wall"] = [
-            filetree_get_files(arg["file_tree"], sub, hemi, "medial_wall")
+        arg["roi"] = [
+            filetree_get_files(arg["file_tree"], sub, hemi, "roi")
             for hemi in ["L", "R"]
         ]
     return arg
@@ -196,8 +231,8 @@ def stoppage(img_file_path: str, file_directory: str, paths_dict: dict) -> list:
     )
 
     return [
-        f'--stop={os.path.join(file_directory, "stop")}',
-        f'--wtstop={os.path.join(file_directory, "wtstop")}',
+        f"--stop={os.path.join(file_directory, 'stop')}",
+        f"--wtstop={os.path.join(file_directory, 'wtstop')}",
     ]
 
 
@@ -275,11 +310,9 @@ def add_to_ptx(arg: dict, command_to_add: list) -> dict:
     return arg
 
 
-def create_files_for_decomp(
-    nfact_directory: str, seeds: list, medial_wall: list
-) -> None:
+def create_files_for_decomp(nfact_directory: str, seeds: list, roi: list) -> None:
     """
-    Function to write seeds and medial wall for
+    Function to write seeds and roi for
     decomp.
 
     Parameters
@@ -288,11 +321,11 @@ def create_files_for_decomp(
         subjects nfact_directory
     seeds: list
         list of seeds
-    medial_wall: list
-        list of medial wall files
+    roi: list
+        list of roi files
     """
     seed_filename = "seeds_for_decomp"
-    medial_wall_filename = "mw_for_decomp"
+    roi_filename = "roi_for_decomp"
     base_nfact_dir = os.path.dirname(nfact_directory)
     if not os.path.exists(os.path.join(base_nfact_dir, f"{seed_filename}.txt")):
         seed_text = "\n".join(
@@ -303,17 +336,15 @@ def create_files_for_decomp(
         )
         write_options_to_file(base_nfact_dir, seed_text, seed_filename)
 
-    if medial_wall:
-        if not os.path.exists(
-            os.path.join(base_nfact_dir, f"{medial_wall_filename}.txt")
-        ):
+    if roi:
+        if not os.path.exists(os.path.join(base_nfact_dir, f"{roi_filename}.txt")):
             mw_text = "\n".join(
                 [
                     os.path.join(nfact_directory, "files", os.path.basename(mw))
-                    for mw in medial_wall
+                    for mw in roi
                 ]
             )
-            write_options_to_file(base_nfact_dir, mw_text, medial_wall_filename)
+            write_options_to_file(base_nfact_dir, mw_text, roi_filename)
 
 
 def write_options_to_file(file_path: str, text_to_save: str, name_of_file: str):

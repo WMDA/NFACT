@@ -41,45 +41,54 @@ and a pipeline wrapper
 
 This pipeline runs nfact_pp, nfact_decomp and nfact_dr on tractography data that has been processed by bedpostx. 
 
-
-The pipeline first creates the omatrix2 
+The pipeline first creates the omatrix2 before running decompostion, quality control and if multiple subjects provided, then dual regression.
 
 
 ### Usage:
 
 ```
-usage: nfact [-h] [-l LIST_OF_SUBJECTS] [-s SEED [SEED ...]] [-c CONFIG] [-S] [-i REF] [-b BPX_PATH] [-w WARPS [WARPS ...]] [-r ROIS [ROIS ...]] [-t TARGET2] [-d DIM] [-o OUTDIR] [-a ALGO]
-
 options:
   -h, --help            show this help message and exit
 
-Inputs:
+Pipeline inputs:
   -l LIST_OF_SUBJECTS, --list_of_subjects LIST_OF_SUBJECTS
-                        Filepath to a list of subjects.
+                        REQUIRED FOR ALL: Filepath to a list of subjects.
   -s SEED [SEED ...], --seed SEED [SEED ...]
-                        A single or list of seeds
+                        REQUIRED FOR ALL IF NOT USING FILESTREE MODE: A single or list of seeds
+  -o OUTDIR, --outdir OUTDIR
+                        REQUIRED FOR ALL: Path to where to create an output folder
+  -n FOLDER_NAME, --folder_name FOLDER_NAME
+                        Name of nfact folder, default is nfact
   -c CONFIG, --config CONFIG
                         An nfact_config file. If this is provided no other arguments are needed.
-  -S, --skip            Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.
+  -P, --pp_skip         Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.
+  -Q, --qc_skip         Skips NFACT_QC.
+  -D, --dr_skip         Skips NFACT_DR
+  -O, --overwrite       Overwirte existing file structure
 
-PP:
-  -i REF, --image_standard_space REF
-                        Standard space reference image
-  -b BPX_PATH, --bpx BPX_PATH
-                        Path to Bedpostx folder inside a subjects directory.
+nfact_pp inputs:
   -w WARPS [WARPS ...], --warps WARPS [WARPS ...]
-                        Path to warps inside a subjects directory (can accept multiple arguments)
-  -r ROIS [ROIS ...], --rois ROIS [ROIS ...]
-                        A single or list of ROIS
+                        REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE: Path to warps inside a subjects directory (can accept multiple arguments)
+  -b BPX_PATH, --bpx BPX_PATH
+                        REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE: Path to Bedpostx folder inside a subjects directory.
+  -r ROI [ROI ...], --roi ROI [ROI ...]
+                        REQUIRED FOR NFACT_PP SURFACE MODE:  A single or list of ROIS. Use when doing whole brain surface tractography to provide medial wall.
+  -f FILE_TREE, --file_tree FILE_TREE
+                        REQUIRED FOR FILESTREE MODE: Use this option to provide name of predefined file tree to perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.
+  -sr SEEDREF, --seedref SEEDREF
+                        Reference volume to define seed space used by probtrackx. Default is MNI space.
   -t TARGET2, --target TARGET2
                         Path to target image. If not given will create a whole mask from reference image
 
-decomp:
-  -d DIM, --dim DIM     Number of dimensions/components
-  -o OUTDIR, --outdir OUTDIR
-                        Path to where to create an output folder
-  -a ALGO, --algo ALGO  What algorithm to run. Options are: ICA (default), or NMF.
+nfact_decomp/nfact_dr inputs:
+  -d DIM, --dim DIM     REQUIRED FOR NFACT DECOMP: Number of dimensions/components
+  -a ALGO, --algo ALGO  What algorithm to run. Options are: NMF (default) or ICA.
+  -rf ROI, --rf_decomp ROI
+                        File containing rois. Needed if seeds are .gii
 
+nfact_Qc inputs:
+  --threshold THRESHOLD
+                        Z score value to threshold hitmaps.
 ```
 
 example call:
@@ -137,7 +146,7 @@ Input needed for both surface and volume mode:
    
 Input for surface seed mode:
     - Seeds as surfaces
-    - ROIs as surfaces (medial wall)
+    - ROI as surfaces. This is files to restrict seeding to (for example surface files that exclude medial wall) 
     
 Input needed for volume mode:
     - Seeds as volumes 
@@ -157,7 +166,7 @@ Filetrees are saved in filetrees folder in nfact, so custom filetrees can be put
 
 Use of custom filetree
 -----------------------
-seed files are aliased as (seed), medial wall as (medial_wall), warps as (diff2std, std2diff) and bedpostX as (bedpostX). Two seeds are supported if the seeds are bilateral indicated with {hemi}.seed, with the actual seed names being L.seed.nii.gz/R.seed.nii.gz. A singe seed can be given as well.
+seed files are aliased as (seed), roi as (roi), warps as (diff2std, std2diff) and bedpostX as (bedpostX). Two seeds are supported if the seeds are bilateral indicated with {hemi}.seed, with the actual seed names being L.seed.nii.gz/R.seed.nii.gz. A singe seed can be given as well.
 
 ### Usage:
 
@@ -184,12 +193,13 @@ Tractography options: :
                         Path to warps inside a subjects directory (can accept multiple arguments)
   -b BPX_PATH, --bpx BPX_PATH
                         Path to Bedpostx folder inside a subjects directory.
-  -m MEDIAL_WALL [MEDIAL_WALL ...], --medial_wall MEDIAL_WALL [MEDIAL_WALL ...]
-                        REQUIRED FOR SURFACE MODE: Medial wall file. Use when doing whole brain surface tractography to provide medial wall.
-  -i REF, --ref REF     Standard space reference image. Default is $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz
+  -r ROI [ROI ...], --roi ROI [ROI ...]
+                        REQUIRED FOR SURFACE MODE: ROI(s) (.gii files) to restrict seeding to (e.g. medial wall masks).
+  -sr SEEDREF, --seedref SEEDREF
+                        Reference volume to define seed space used by probtrackx. Default is MNI space.
   -t TARGET2, --target TARGET2
                         Name of target. If not given will create a whole mask from reference image
-  -N NSAMPLES, --nsamples NSAMPLES
+  -ns NSAMPLES, --nsamples NSAMPLES
                         Number of samples per seed used in tractography (default = 1000)
   -mm MM_RES, --mm_res MM_RES
                         Resolution of target image (Default = 2 mm)
@@ -198,15 +208,12 @@ Tractography options: :
   -e EXCLUSION, --exclusion EXCLUSION
                         Path to an exclusion mask. Will reject pathways passing through locations given by this mask
   -S [STOP ...], --stop [STOP ...]
-                        Use wtstop and stop in the tractography. Takes a file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask. Argument can be used with the --filetree, in that case
-                        no json file is needed.
-  -sr SEEDREF, --seedref SEEDREF
-                        Reference volume to define seed space used by probtrackx. Default is MNI space.
+                        Use wtstop and stop in the tractography. Takes a file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask. Argument can be used with the --filetree, in that case no json file is needed.
 
 Parallel Processing arguments:
   -n N_CORES, --n_cores N_CORES
-                        If should parallel process locally and with how many cores. This parallelizes the number of subjects. If n_cores exceeds subjects nfact_pp sets this argument to be the number of subjects. If nfact_pp is being
-                        used on one subject then this may slow down processing.
+                        If should parallel process locally and with how many cores. This parallelizes the number of subjects. If n_cores exceeds subjects nfact_pp sets this argument to be the number of subjects. If nfact_pp is being used on one subject then this may
+                        slow down processing.
 
 Cluster Arguments:
   -C, --cluster         Use cluster enviornment
@@ -221,12 +228,12 @@ Cluster Arguments:
 
 
 Example Usage:
-    Seed mode:
+    Surface mode:
            nfact_pp --list_of_subjects /home/study/sub_list
                --outdir /home/study
                --bpx_path /path_to/.bedpostX
                --seeds /path_to/L.white.32k_fs_LR.surf.gii /path_to/R.white.32k_fs_LR.surf.gii
-               --rois /path_to/L.atlasroi.32k_fs_LR.shape.gii /path_to/R.atlasroi.32k_fs_LR.shape.gii
+               --roi /path_to/L.atlasroi.32k_fs_LR.shape.gii /path_to/R.atlasroi.32k_fs_LR.shape.gii
                --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz
                --n_cores 3
 
@@ -243,6 +250,8 @@ Example Usage:
             --list_of_subjects /home/study/sub_list
             --outdir /home/study
             --n_cores 3
+
+```
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -262,9 +271,6 @@ created.
 
 ### Usage
 ```
-usage: nfact [-h] [-l LIST_OF_SUBJECTS] [-o OUTDIR] [-d DIM] [--seeds SEEDS] [-m MIGP] [-a ALGO] [-W] [-z WTA_ZTHR] [-N] [-S] [-O]
-             [-c CONFIG]
-
 options:
   -h, --help            show this help message and exit
   -l LIST_OF_SUBJECTS, --list_of_subjects LIST_OF_SUBJECTS
@@ -274,27 +280,51 @@ options:
   -d DIM, --dim DIM     REQUIRED: Number of dimensions/components
   --seeds SEEDS, -s SEEDS
                         REQUIRED: File of seeds used in NFACT_PP/probtrackx
-  -m MIGP, --migp MIGP  MELODIC's Incremental Group-PCA dimensionality (default is 1000)
-  -a ALGO, --algo ALGO  What algorithm to run. Options are: ICA (default), or NMF.
+  --roi ROI, -r ROI     REQUIRED FOR SURFACE SEEDS: Txt file with ROI(s) paths to restrict seeding to (e.g. medial wall masks).
+  -a ALGO, --algo ALGO  What algorithm to run. Options are: NMF (default), or ICA.
+  -c COMPONENTS, --components COMPONENTS
+                        REQUIRED FOR ICA: Components for the PCA (default is 1000)
+  -p PCA_TYPE, --pca_type PCA_TYPE
+                        REQUIRED FOR ICA: Type of PCA to do before ICA. Default is PCA which is sckitlearn's PCA. Other option is migp (MELODIC's Incremental Group-PCA dimensionality). This is case insensitive
   -W, --wta             Save winner-takes-all maps
   -z WTA_ZTHR, --wta_zthr WTA_ZTHR
                         Winner-takes-all threshold (default=0.)
-  -N, --normalise       normalise components by scaling
-  -S, --sign_flip       sign flip components
-  -O, --overwrite       Overwrite previous file structure. Useful if wanting to perform multiple GLMs or ICA and NFM
-  -c CONFIG, --config CONFIG
-                        Provide config file to change hyperparameters for ICA and NFM. Please see sckit learn documentation for NFM
-                        and FASTICA for further details
-```
+  -N, --normalise       Normalises components by zscoring.
+  -S, --sign_flip       Don't Sign flip components of ICA
+  -O, --overwrite       Overwrite previous file structure
+  -n CONFIG, --nfact_config CONFIG
+                        Provide config file to change hyperparameters for ICA and NMF. Please see sckit learn documentation for NMF and FASTICA for further details
+  -hh, --verbose_help   Prints help message and example usages
 
-An example call
-```
-nfact_decomp --list_of_subjects /absolute path/sub_list \
-          --seeds /absolute path/seeds.txt \
-          --outdir /absolute path/study_directory \
-             --algo ICA \
-             --migp 1000 \
-             --dim 100 --normalise --wta –sign_flip \
+
+Basic NMF with volume seeds usage:
+    nfact_decomp --list_of_subjects /absolute path/sub_list \
+                 --seeds /absolute path/seeds.txt \
+                 --dim 50
+
+Basic NMF usage with surface seeds:
+    nfact_decomp --list_of_subjects /absolute path/sub_list \
+                 --seeds /absolute path/seeds.txt \
+                 --roi /path/to/rois
+                 --dim 50
+
+ICA with config file usage:
+    nfact_decomp --list_of_subjects /absolute path/sub_list \
+                 --seeds /absolute path/seeds.txt \
+                 --outdir /absolute path/study_directory \
+                 --algo ICA \
+                 --nfact_config /path/to/config/file
+
+Advanced ICA Usage:
+    nfact_decomp --list_of_subjects /absolute path/sub_list \
+                 --seeds /absolute path/seeds.txt \
+                 --outdir /absolute path/study_directory \
+                 --algo ICA \
+                 --migp 1000 \
+                 --dim 100 \
+                 --normalise \
+                 --wta \
+                 --wat_zthr 0.5
 
 ```
 ------------------------------------------------------------------------------------------------------------------------------------------
@@ -317,8 +347,6 @@ then it will be standard regression.
 
 ### Usage
 ```
-usage: nfact_dr [-h] [-l LIST_OF_SUBJECTS] [-o OUTDIR] [-a ALGO] [--seeds SEEDS] [-n NFACT_DECOMP_DIR] [-d DECOMP_DIR] [-N]
-
 options:
   -h, --help            show this help message and exit
   -l LIST_OF_SUBJECTS, --list_of_subjects LIST_OF_SUBJECTS
@@ -328,14 +356,36 @@ options:
   -a ALGO, --algo ALGO  REQUIRED: Which NFACT algorithm to perform dual regression on
   --seeds SEEDS, -s SEEDS
                         REQUIRED: File of seeds used in NFACT_PP/probtrackx
+  --roi ROI, -r ROI     RECOMMENDED FOR SURFACE SEEDS: Txt file with ROI(s) paths to restrict seeding to (e.g. medial wall masks).
   -n NFACT_DECOMP_DIR, --nfact_decomp_dir NFACT_DECOMP_DIR
-                        REQUIRED IF NFACT_DECOMP: Filepath to the NFACT_decomp directory. Use this if you have ran
-                        NFACT decomp
+                        REQUIRED IF NFACT_DECOMP: Filepath to the NFACT_decomp directory. Use this if you have ran NFACT decomp
   -d DECOMP_DIR, --decomp_dir DECOMP_DIR
-                        REQUIRED IF NOT NFACT_DECOMP: Filepath to decomposition components. WARNING NFACT decomp
-                        expects components to be named in a set way. See documentation for further info.
+                        REQUIRED IF NOT NFACT_DECOMP: Filepath to decomposition components. WARNING NFACT decomp expects components to be named in a set way. See documentation for further info.
   -N, --normalise       normalise components by scaling
+  -hh, --verbose_help   Prints help message and example usages
 
+
+Dual regression usage:
+    nfact_dr --list_of_subjects /path/to/nfact_config_sublist \
+        --seeds /path/to/seeds.txt \
+        --nfact_decomp_dir /path/to/nfact_decomp \
+        --outdir /path/to/output_directory \
+        --algo NMF
+
+ICA Dual regression usage:
+    nfact_dr --list_of_subjects /path/to/nfact_config_sublist \
+        --seeds /path/to/seeds.txt \
+        --nfact_decomp_dir /path/to/nfact_decomp \
+        --outdir /path/to/output_directory \
+        --algo ICA
+
+Dual regression with roi seeds usage:
+    nfact_dr --list_of_subjects /path/to/nfact_config_sublist \
+        --seeds /path/to/seeds.txt \
+        --nfact_decomp_dir /path/to/nfact_decomp \
+        --outdir /path/to/output_directory \
+        --roi /path/to/roi.txt \
+        --algo NMF
 ```
 
 nfact_dr is independent from nfact_decomp however, nfact_decomp expects a strict naming convention of files. If nfact_decomp has not been ran then group average files and components must all be in the same folder. Components must be named W_dim* and G_dim* with group average files named coords_for_fdt_matrix2, lookup_tractspace_fdt_matrix2.nii.gz. 
@@ -356,7 +406,6 @@ nfact_dr is independent from nfact_decomp however, nfact_decomp expects a strict
 This is a quality control module that creates a number of hitmaps that can be used to check for bias in decomposition.
 
 Each map contains the number of times that voxel/vertex appears in the decomposition. 
-
 
 ## Output:
 
@@ -438,41 +487,55 @@ This is the config file for the nfact pipeline. Please check the individual modu
             "Required unless file_tree specified"
         ],
         "overwrite": false,
-        "skip": false
+        "pp_skip": false,
+        "dr_skip": false,
+        "qc_skip": false,
+        "folder_name": "nfact"
     },
     "nfact_pp": {
+        "file_tree": false,
         "warps": [],
         "bpx_path": false,
-        "rois": [],
-        "file_tree": false,
-        "ref": false,
+        "roi": [],
+        "seedref": false,
         "target2": false,
         "nsamples": "1000",
         "mm_res": "2",
         "ptx_options": false,
+        "exclusion": false,
+        "stop": false,
         "n_cores": false,
-        "cluster": false
+        "cluster": false,
+        "cluster_queue": "None",
+        "cluster_ram": "60",
+        "cluster_time": false,
+        "cluster_qos": false
     },
     "nfact_decomp": {
         "dim": "Required",
-        "migp": "1000",
-        "algo": "ICA",
+        "roi": false,
+        "algo": "NMF",
+        "components": "1000",
+        "pca_type": "pca",
         "wta": false,
         "wta_zthr": "0.0",
         "normalise": false,
-        "sign_flip": false,
+        "sign_flip": true,
         "config": false
     },
     "nfact_dr": {
+        "roi": false,
         "normalise": false
+    },
+    "nfact_qc": {
+        "threshold": "2"
     }
 }
-
 ```
 
 Everything that has says is required must be given. rois, warps and seed must be given in python list format like this
 ```
-"seed": ["l_seed.nii.gz", "r_seed.nii.gz]
+"seed": ["l_seed.nii.gz", "r_seed.nii.gz"]
 ```
 
 ### nfact_config_decomp.config 

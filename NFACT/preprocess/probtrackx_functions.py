@@ -213,7 +213,7 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
         "-s",
         bpx,
         f"--mask={mask}",
-        f"--seedref={arg['ref']}",
+        f"--seedref={arg['seedref']}",
         "--omatrix2",
         f"--target2={target_mask}",
         "--loopcheck",
@@ -292,7 +292,7 @@ def get_target2(
         )
 
 
-def seeds_to_ascii(surfin: str, medial_wall: str, surfout: str) -> None:
+def seeds_to_ascii(surfin: str, roi: str, surfout: str) -> None:
     """
     Function to create seeds from
     surfaces.
@@ -301,8 +301,8 @@ def seeds_to_ascii(surfin: str, medial_wall: str, surfout: str) -> None:
     ----------
     surfin: str
         input surface
-    medial_wall: str,
-        medial wall surface
+    roi: str,
+        roi to restrict seeding
     surfout: str
         name of output surface.
         Needs to be full path
@@ -324,7 +324,7 @@ def seeds_to_ascii(surfin: str, medial_wall: str, surfout: str) -> None:
                 surfin,
                 "-o",
                 surfout,
-                f"--values={medial_wall}",
+                f"--values={roi}",
                 "--outputtype=ASCII",
             ],
             capture_output=True,

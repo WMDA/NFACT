@@ -93,19 +93,18 @@ def nfact_pp_args() -> dict:
         help="Path to Bedpostx folder inside a subjects directory.",
     )
     tractography_input.add_argument(
-        "-m",
-        "--medial_wall",
-        dest="medial_wall",
+        "-r",
+        "--roi",
+        dest="roi",
         nargs="+",
-        help="""REQUIRED FOR SURFACE MODE: Medial wall file. 
-        Use when doing whole brain surface tractography to provide medial wall.""",
+        help="""REQUIRED FOR SURFACE MODE: ROI(s) (.gii files) to restrict seeding to (e.g. medial wall masks).""",
     )
-
     tractography_input.add_argument(
-        "-i",
-        "--ref",
-        dest="ref",
-        help="Standard space reference image. Default is $FSLDIR/data/standard/MNI152_T1_2mm_brain.nii.gz",
+        "-sr",
+        "--seedref",
+        dest="seedref",
+        default=False,
+        help="Reference volume to define seed space used by probtrackx. Default is MNI space.",
     )
     tractography_input.add_argument(
         "-t",
@@ -115,7 +114,7 @@ def nfact_pp_args() -> dict:
         help="Name of target. If not given will create a whole mask from reference image",
     )
     tractography_input.add_argument(
-        "-N",
+        "-ns",
         "--nsamples",
         dest="nsamples",
         default=1000,
@@ -156,13 +155,7 @@ def nfact_pp_args() -> dict:
         Argument can be used with the --filetree, in that case no json file is needed.
       """,
     )
-    tractography_input.add_argument(
-        "-sr",
-        "--seedref",
-        dest="seedref",
-        default=False,
-        help="Reference volume to define seed space used by probtrackx. Default is MNI space.",
-    )
+
     parallel_process = base_args.add_argument_group(
         f"{col['darker_pink']}Parallel Processing arguments{col['reset']}"
     )
@@ -242,14 +235,14 @@ def nfact_pp_splash() -> str:
     """
     col = colours()
     return f"""
-{col['pink']} 
+{col["pink"]} 
  _   _ ______   ___   _____  _____     ______ ______ 
 | \ | ||  ___| /   \ /  __ \|_   _|    | ___ \| ___ \\
 |  \| || |_   / /_\ \| /  \/  | |      | |_/ /| |_/ /
 |     ||  _|  |  _  || |      | |      |  __/ |  __/ 
 | |\  || |    | | | || \__/\  | |      | |    | |    
 \_| \_/\_|    \_| |_/ \____/  \_/      \_|    \_|  
-{col['reset']} 
+{col["reset"]} 
 """
 
 
@@ -268,16 +261,16 @@ def nfact_pp_example_usage() -> str:
     col = colours()
     return f"""
 Example Usage:
-    {col['purple']}Seed mode:{col['reset']}
+    {col["purple"]}Surface mode:{col["reset"]}
            nfact_pp --list_of_subjects /home/study/sub_list
                --outdir /home/study   
                --bpx_path /path_to/.bedpostX 
                --seeds /path_to/L.white.32k_fs_LR.surf.gii /path_to/R.white.32k_fs_LR.surf.gii 
-               --rois /path_to/L.atlasroi.32k_fs_LR.shape.gii /path_to/R.atlasroi.32k_fs_LR.shape.gii 
+               --roi /path_to/L.atlasroi.32k_fs_LR.shape.gii /path_to/R.atlasroi.32k_fs_LR.shape.gii 
                --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz 
                --n_cores 3 
 
-    {col['pink']}Volume mode:{col['reset']}
+    {col["pink"]}Volume mode:{col["reset"]}
             nfact_pp --list_of_subjects /home/study/sub_list  
                 --bpx_path /path_to/.bedpostX 
                 --seeds /path_to/L.white.nii.gz /path_to/R.white.nii.gz 
@@ -285,7 +278,7 @@ Example Usage:
                 --ref MNI152_T1_1mm_brain.nii.gz 
                 --target dlpfc.nii.gz
 
-    {col['darker_pink']}Filestree mode:{col['reset']}
+    {col["darker_pink"]}Filestree mode:{col["reset"]}
         nfact_pp --filestree hcp
             --list_of_subjects /home/study/sub_list  
             --outdir /home/study 

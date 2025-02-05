@@ -38,7 +38,7 @@ def nfact_parser() -> dict:
         nargs="+",
         dest="seed",
         default=False,
-        help=f"""{col['pink']}REQUIRED FOR ALL IF NOT USING FILESTREE MODE:{col['reset']}
+        help=f"""{col["pink"]}REQUIRED FOR ALL IF NOT USING FILESTREE MODE:{col["reset"]}
         A single or list of seeds""",
     )
     input_args.add_argument(
@@ -99,7 +99,7 @@ def nfact_parser() -> dict:
         dest="warps",
         nargs="+",
         default=False,
-        help=f"""{col['pink']}REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE:{col['reset']} 
+        help=f"""{col["pink"]}REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE:{col["reset"]} 
         Path to warps inside a subjects directory (can accept multiple arguments)""",
     )
     nfact_pp_args.add_argument(
@@ -107,16 +107,16 @@ def nfact_parser() -> dict:
         "--bpx",
         dest="bpx_path",
         default=False,
-        help=f"""{col['pink']}REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE:{col['reset']}
+        help=f"""{col["pink"]}REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE:{col["reset"]}
         Path to Bedpostx folder inside a subjects directory.""",
     )
     nfact_pp_args.add_argument(
-        "-m",
-        "--medial_wall",
-        dest="medial_wall",
+        "-r",
+        "--roi",
+        dest="roi",
         nargs="+",
         default=False,
-        help=f"""{col['purple']}REQUIRED FOR NFACT_PP SURFACE MODE: {col['reset']} 
+        help=f"""{col["purple"]}REQUIRED FOR NFACT_PP SURFACE MODE: {col["reset"]} 
         A single or list of ROIS. Use when doing whole brain surface tractography to provide medial wall.""",
     )
     nfact_pp_args.add_argument(
@@ -124,15 +124,15 @@ def nfact_parser() -> dict:
         "--file_tree",
         dest="file_tree",
         default=False,
-        help=f"""{col['plum']}REQUIRED FOR FILESTREE MODE: {col['reset']}Use this option to provide name of predefined file tree to 
+        help=f"""{col["plum"]}REQUIRED FOR FILESTREE MODE: {col["reset"]}Use this option to provide name of predefined file tree to 
         perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.""",
     )
     nfact_pp_args.add_argument(
-        "-i",
-        "--image_standard_space",
-        dest="ref",
+        "-sr",
+        "--seedref",
+        dest="seedref",
         default=False,
-        help="Standard space reference image",
+        help=" Reference volume to define seed space used by probtrackx. Default is MNI space.",
     )
     nfact_pp_args.add_argument(
         "-t",
@@ -159,11 +159,11 @@ def nfact_parser() -> dict:
         help="What algorithm to run. Options are: NMF (default) or ICA.",
     )
     nfact_decomp_args.add_argument(
-        "-mw",
-        "--medial_wall_decomp",
-        dest="medial_wall",
+        "-rf",
+        "--rf_decomp",
+        dest="roi",
         default=False,
-        help="File containing medial wall. Needed if seeds are .gii",
+        help="File containing rois. Needed if seeds are .gii",
     )
     nfact_Qc_args = args.add_argument_group(
         f"{col['darker_pink']}nfact_Qc inputs{col['reset']}"
@@ -172,7 +172,7 @@ def nfact_parser() -> dict:
         "--threshold",
         dest="threshold",
         default=2,
-        help="File containing medial wall. Needed if seeds are .gii",
+        help="Z score value to threshold hitmaps.",
     )
 
     no_args(args)
@@ -280,12 +280,12 @@ def nfact_splash() -> str:
     """
     col = colours()
     return f"""
-{col['pink']} 
+{col["pink"]} 
  _   _ ______   ___   _____  _____    
 | \ | ||  ___| /   \ /  __ \|_   _|    
 |  \| || |_   / /_\ \| /  \/  | |      
 |     ||  _|  |  _  || |      | |    
 | |\  || |    | | | || \__/\  | |    
 \_| \_/\_|    \_| |_/ \____/  \_/ 
-{col['reset']} 
+{col["reset"]} 
 """

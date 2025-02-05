@@ -46,12 +46,13 @@ def nfact_decomp_args() -> dict:
         help=f"{col['red']}REQUIRED:{col['reset']} File of seeds used in NFACT_PP/probtrackx",
     )
     args.add_argument(
-        "--medial_wall",
-        "-m",
-        dest="medial_wall",
+        "--roi",
+        "-r",
+        dest="roi",
         default=False,
         help=f"""
-        {col['red']}REQUIRED FOR SURFACE SEEDS:{col['reset']} Medial wall images if surface seeds given.
+        {col["red"]}REQUIRED FOR SURFACE SEEDS:{col["reset"]}
+        Txt file with ROI(s) paths to restrict seeding to (e.g. medial wall masks).
         """,
     )
     args.add_argument(
@@ -73,7 +74,7 @@ def nfact_decomp_args() -> dict:
         "--pca_type",
         dest="pca_type",
         default="pca",
-        help=f"""{col['darker_pink']}REQUIRED FOR ICA:{col['reset']} Type of PCA to do before ICA. Default is PCA which is sckitlearn's PCA. 
+        help=f"""{col["darker_pink"]}REQUIRED FOR ICA:{col["reset"]} Type of PCA to do before ICA. Default is PCA which is sckitlearn's PCA. 
         Other option is migp (MELODIC's Incremental Group-PCA dimensionality). This is case insensitive""",
     )
 
@@ -154,14 +155,14 @@ def nfact_decomp_splash() -> str:
     """
     col = colours()
     return f"""
-{col['pink']} 
+{col["pink"]} 
  _   _ ______   ___   _____  _____  ______  _____  _____  _____ ___  ___ _____ 
 | \ | ||  ___| / _ \ /  __ \|_   _| |  _  \|  ___|/  __ \|  _  ||  \/  || ___ \\
 |  \| || |_   / /_\ \| /  \/  | |   | | | || |__  | /  \/| | | || .  . || |_/ /
 | . ` ||  _|  |  _  || |      | |   | | | ||  __| | |    | | | || |\/| ||  __/ 
 | |\  || |    | | | || \__/\  | |   | |/ / | |___ | \__/\\\ \_/ /| |  | || |    
 \_| \_/\_|    \_| |_/ \____/  \_/   |___/  \____/  \____/ \___/ \_|  |_/\_| 
-{col['reset']} 
+{col["reset"]} 
 """
 
 
@@ -180,25 +181,25 @@ def nfact_decomp_usage():
     """
     col = colours()
     return f"""
-{col['darker_pink']}Basic NMF with volume seeds usage:{col['reset']}
+{col["darker_pink"]}Basic NMF with volume seeds usage:{col["reset"]}
     nfact_decomp --list_of_subjects /absolute path/sub_list \ 
                  --seeds /absolute path/seeds.txt \ 
                  --dim 50
 
-{col['darker_pink']}Basic NMF usage with surface seeds:{col['reset']}
+{col["darker_pink"]}Basic NMF usage with surface seeds:{col["reset"]}
     nfact_decomp --list_of_subjects /absolute path/sub_list \ 
                  --seeds /absolute path/seeds.txt \ 
-                 --medial_wall /path/to/medial/wall
+                 --roi /path/to/rois
                  --dim 50
 
-{col['darker_pink']}ICA with config file usage:{col['reset']}
+{col["darker_pink"]}ICA with config file usage:{col["reset"]}
     nfact_decomp --list_of_subjects /absolute path/sub_list \ 
                  --seeds /absolute path/seeds.txt \ 
                  --outdir /absolute path/study_directory \ 
                  --algo ICA \ 
                  --nfact_config /path/to/config/file
 
-{col['darker_pink']}Advanced ICA Usage:{col['reset']}
+{col["darker_pink"]}Advanced ICA Usage:{col["reset"]}
     nfact_decomp --list_of_subjects /absolute path/sub_list \ 
                  --seeds /absolute path/seeds.txt \ 
                  --outdir /absolute path/study_directory \ 
