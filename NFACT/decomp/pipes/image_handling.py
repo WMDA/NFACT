@@ -14,7 +14,7 @@ def save_images(
     seeds: list,
     algo: str,
     dim: int,
-    medial_wall: list,
+    roi: list,
 ) -> None:
     """
     Function to save  grey and white
@@ -33,8 +33,8 @@ def save_images(
     dim: int
         number of dimensions
         used for naming output
-    medial_wall: list
-        medial wall. Needed
+    roi: list
+        rois. Needed
         for surface
 
     Returns
@@ -66,7 +66,7 @@ def save_images(
                     os.path.join(
                         nfact_path, "group_averages", "coords_for_fdt_matrix2"
                     ),
-                    medial_wall,
+                    roi,
                     grey_prefix,
                 )
         except Exception as e:
@@ -95,7 +95,7 @@ def winner_takes_all(
     nfact_path: str,
     seeds: list,
     dim: str,
-    medial_wall: str,
+    roi: str,
 ) -> None:
     """
     Wrapper function around creating WTA and saving
@@ -137,7 +137,7 @@ def winner_takes_all(
         os.path.join(nfact_path, "components", algo, "WTA"),
         dim,
         os.path.join(nfact_path, "group_averages", "coords_for_fdt_matrix2"),
-        medial_wall,
+        roi,
         f"G_{algo.upper()}_WTA",
     )
 

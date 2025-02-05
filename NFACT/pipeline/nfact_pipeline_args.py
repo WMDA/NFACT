@@ -128,11 +128,11 @@ def nfact_parser() -> dict:
         perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.""",
     )
     nfact_pp_args.add_argument(
-        "-i",
-        "--image_standard_space",
-        dest="ref",
+        "-sr",
+        "--seedref",
+        dest="seedref",
         default=False,
-        help="Standard space reference image",
+        help=" Reference volume to define seed space used by probtrackx. Default is MNI space.",
     )
     nfact_pp_args.add_argument(
         "-t",
@@ -161,9 +161,9 @@ def nfact_parser() -> dict:
     nfact_decomp_args.add_argument(
         "-rf",
         "--rf_decomp",
-        dest="medial_wall",
+        dest="roi",
         default=False,
-        help="File containing medial wall. Needed if seeds are .gii",
+        help="File containing rois. Needed if seeds are .gii",
     )
     nfact_Qc_args = args.add_argument_group(
         f"{col['darker_pink']}nfact_Qc inputs{col['reset']}"
@@ -172,7 +172,7 @@ def nfact_parser() -> dict:
         "--threshold",
         dest="threshold",
         default=2,
-        help="File containing medial wall. Needed if seeds are .gii",
+        help="Z score value to threshold hitmaps.",
     )
 
     no_args(args)
