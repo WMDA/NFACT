@@ -155,7 +155,8 @@ def write_decomp_list(
     files = read_file_to_list(file_path)
     omatrix_2_paths = [
         os.path.join(out_dir_name, "nfact_pp", os.path.basename(file), "omatrix2\n")
-        for file in files if os.path.isdir(file)
+        for file in files
+        if os.path.isdir(file)
     ]
     omatrix_2_paths.sort()
 
@@ -294,7 +295,7 @@ def roi_file(args: dict) -> None:
             args["global_input"]["outdir"],
             args["global_input"]["folder_name"],
             "nfact_pp",
-            "mw_for_decomp.txt",
+            "roi_for_decomp.txt",
         )
         args["nfact_decomp"]["roi"] = path
         args["nfact_dr"]["roi"] = path
