@@ -1,7 +1,7 @@
 # NFACT functions
 from .nfactpp_setup import (
     nfact_pp_folder_setup,
-    check_medial_wall_seed_len,
+    check_roi_seed_len,
     load_file_tree,
 )
 from .nfactpp_functions import (
@@ -26,9 +26,7 @@ import os
 import shutil
 
 
-def setup_subject_directory(
-    nfactpp_diretory: str, seed: list, medial_wall: list
-) -> None:
+def setup_subject_directory(nfactpp_diretory: str, seed: list, roi: list) -> None:
     """
     Function to set up the subjects
     directory
@@ -50,17 +48,15 @@ def setup_subject_directory(
             seed_location,
             os.path.join(nfactpp_diretory, "files", os.path.basename(seed_location)),
         )
-    if medial_wall:
-        for medial_wall_location in medial_wall:
+    if roi:
+        for roi_location in roi:
             shutil.copyfile(
-                medial_wall_location,
-                os.path.join(
-                    nfactpp_diretory, "files", os.path.basename(medial_wall_location)
-                ),
+                roi_location,
+                os.path.join(nfactpp_diretory, "files", os.path.basename(roi_location)),
             )
 
 
-def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str:
+def process_surface(nfactpp_diretory: str, seed: list, roi: list) -> str:
     """
     Function to process surface seeds
 
@@ -70,8 +66,8 @@ def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str
         nfact_pp path
     seed: list
         list of seeds
-    medial_wall: list
-        list of medial_wall
+    roi: list
+        list of roi
 
     Returns
     -------
@@ -79,10 +75,10 @@ def process_surface(nfactpp_diretory: str, seed: list, medial_wall: list) -> str
         string of seeds names
     """
     seed_names = rename_seed(seed)
-    for img in range(0, len(medial_wall)):
+    for img in range(0, len(roi)):
         seeds_to_ascii(
             seed[img],
-            medial_wall[img],
+            roi[img],
             os.path.join(nfactpp_diretory, "files", f"{seed_names[img]}_surf"),
         )
     asc_seeds = [
@@ -170,12 +166,12 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
     # using this function not to return a file but check it is an imaging file
     get_file(arg["warps"], sub)
     nfactpp_diretory = os.path.join(arg["outdir"], "nfact_pp", sub_id)
-    medial_wall = get_file(arg["medial_wall"], sub) if arg["surface"] else False
-    setup_subject_directory(nfactpp_diretory, seed, medial_wall)
-    create_files_for_decomp(nfactpp_diretory, seed, medial_wall)
+    roi = get_file(arg["roi"], sub) if arg["surface"] else False
+    setup_subject_directory(nfactpp_diretory, seed, roi)
+    create_files_for_decomp(nfactpp_diretory, seed, roi)
 
     if arg["surface"]:
-        seed_text = process_surface(nfactpp_diretory, seed, medial_wall)
+        seed_text = process_surface(nfactpp_diretory, seed, roi)
 
     error_and_exit(write_options_to_file(nfactpp_diretory, seed_text, "seeds"))
 
@@ -227,7 +223,7 @@ def set_up_filestree(arg: dict) -> dict:
         error_and_exit(False, f"Badly defined filetree. Error due to {e}")
 
     # Needed for checking if seed is surface
-    arg["medial_wall"] = ["filestree"]
+    arg["roi"] = ["filestree"]
     return arg
 
 
@@ -254,13 +250,13 @@ def pre_processing(arg: dict, handler: object) -> None:
     arg["surface"] = check_seeds_surfaces(arg["seed"])
 
     if arg["surface"]:
-        print(f'{col["darker_pink"]}Mode:{col["reset"]} Surface')
-        check_medial_wall_seed_len(arg["seed"], arg["medial_wall"])
+        print(f"{col['darker_pink']}Mode:{col['reset']} Surface")
+        check_roi_seed_len(arg["seed"], arg["roi"])
     else:
-        print(f'{col["darker_pink"]}Mode:{col["reset"]}Volume')
+        print(f"{col['darker_pink']}Mode:{col['reset']}Volume")
 
     print(
-        f'{col["darker_pink"]}Number of subjects:{col["reset"]} {len(arg["list_of_subjects"])}'
+        f"{col['darker_pink']}Number of subjects:{col['reset']} {len(arg['list_of_subjects'])}"
     )
 
     print_to_screen("SUBJECT SETUP")

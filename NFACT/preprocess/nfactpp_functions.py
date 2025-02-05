@@ -110,7 +110,7 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
         arguments
     """
     del arg["seed"]
-    del arg["medial_wall"]
+    del arg["roi"]
 
     arg["seed"] = [
         filetree_get_files(arg["file_tree"], sub, hemi, "seed") for hemi in ["L", "R"]
@@ -122,8 +122,8 @@ def process_filetree_args(arg: dict, sub: str) -> dict:
     ]
     arg["bpx_path"] = filetree_get_files(arg["file_tree"], sub, "L", "bedpostX")
     if arg["surface"]:
-        arg["medial_wall"] = [
-            filetree_get_files(arg["file_tree"], sub, hemi, "medial_wall")
+        arg["roi"] = [
+            filetree_get_files(arg["file_tree"], sub, hemi, "roi")
             for hemi in ["L", "R"]
         ]
     return arg
@@ -310,11 +310,9 @@ def add_to_ptx(arg: dict, command_to_add: list) -> dict:
     return arg
 
 
-def create_files_for_decomp(
-    nfact_directory: str, seeds: list, medial_wall: list
-) -> None:
+def create_files_for_decomp(nfact_directory: str, seeds: list, roi: list) -> None:
     """
-    Function to write seeds and medial wall for
+    Function to write seeds and roi for
     decomp.
 
     Parameters
@@ -323,11 +321,11 @@ def create_files_for_decomp(
         subjects nfact_directory
     seeds: list
         list of seeds
-    medial_wall: list
-        list of medial wall files
+    roi: list
+        list of roi files
     """
     seed_filename = "seeds_for_decomp"
-    medial_wall_filename = "mw_for_decomp"
+    roi_filename = "roi_for_decomp"
     base_nfact_dir = os.path.dirname(nfact_directory)
     if not os.path.exists(os.path.join(base_nfact_dir, f"{seed_filename}.txt")):
         seed_text = "\n".join(
@@ -338,17 +336,15 @@ def create_files_for_decomp(
         )
         write_options_to_file(base_nfact_dir, seed_text, seed_filename)
 
-    if medial_wall:
-        if not os.path.exists(
-            os.path.join(base_nfact_dir, f"{medial_wall_filename}.txt")
-        ):
+    if roi:
+        if not os.path.exists(os.path.join(base_nfact_dir, f"{roi}.txt")):
             mw_text = "\n".join(
                 [
                     os.path.join(nfact_directory, "files", os.path.basename(mw))
-                    for mw in medial_wall
+                    for mw in roi
                 ]
             )
-            write_options_to_file(base_nfact_dir, mw_text, medial_wall_filename)
+            write_options_to_file(base_nfact_dir, mw_text, roi)
 
 
 def write_options_to_file(file_path: str, text_to_save: str, name_of_file: str):

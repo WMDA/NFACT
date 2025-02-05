@@ -93,15 +93,15 @@ def nfact_pp_args() -> dict:
         help="Path to Bedpostx folder inside a subjects directory.",
     )
     tractography_input.add_argument(
-        "-m",
-        "--medial_wall",
-        dest="medial_wall",
+        "-r",
+        "--roi",
+        dest="roi",
         nargs="+",
         help="""REQUIRED FOR SURFACE MODE: Medial wall file. 
-        Use when doing whole brain surface tractography to provide medial wall.""",
+        This is a file that provides infomation """,
     )
     tractography_input.add_argument(
-        "-r",
+        "-sr",
         "--seedref",
         dest="seedref",
         default=False,
