@@ -41,45 +41,54 @@ and a pipeline wrapper
 
 This pipeline runs nfact_pp, nfact_decomp and nfact_dr on tractography data that has been processed by bedpostx. 
 
-
-The pipeline first creates the omatrix2 
+The pipeline first creates the omatrix2 before running decompostion, quality control and if multiple subjects provided, then dual regression.
 
 
 ### Usage:
 
 ```
-usage: nfact [-h] [-l LIST_OF_SUBJECTS] [-s SEED [SEED ...]] [-c CONFIG] [-S] [-i REF] [-b BPX_PATH] [-w WARPS [WARPS ...]] [-r ROIS [ROIS ...]] [-t TARGET2] [-d DIM] [-o OUTDIR] [-a ALGO]
-
 options:
   -h, --help            show this help message and exit
 
-Inputs:
+Pipeline inputs:
   -l LIST_OF_SUBJECTS, --list_of_subjects LIST_OF_SUBJECTS
-                        Filepath to a list of subjects.
+                        REQUIRED FOR ALL: Filepath to a list of subjects.
   -s SEED [SEED ...], --seed SEED [SEED ...]
-                        A single or list of seeds
+                        REQUIRED FOR ALL IF NOT USING FILESTREE MODE: A single or list of seeds
+  -o OUTDIR, --outdir OUTDIR
+                        REQUIRED FOR ALL: Path to where to create an output folder
+  -n FOLDER_NAME, --folder_name FOLDER_NAME
+                        Name of nfact folder, default is nfact
   -c CONFIG, --config CONFIG
                         An nfact_config file. If this is provided no other arguments are needed.
-  -S, --skip            Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.
+  -P, --pp_skip         Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.
+  -Q, --qc_skip         Skips NFACT_QC.
+  -D, --dr_skip         Skips NFACT_DR
+  -O, --overwrite       Overwirte existing file structure
 
-PP:
-  -i REF, --image_standard_space REF
-                        Standard space reference image
-  -b BPX_PATH, --bpx BPX_PATH
-                        Path to Bedpostx folder inside a subjects directory.
+nfact_pp inputs:
   -w WARPS [WARPS ...], --warps WARPS [WARPS ...]
-                        Path to warps inside a subjects directory (can accept multiple arguments)
-  -r ROIS [ROIS ...], --rois ROIS [ROIS ...]
-                        A single or list of ROIS
+                        REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE: Path to warps inside a subjects directory (can accept multiple arguments)
+  -b BPX_PATH, --bpx BPX_PATH
+                        REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE: Path to Bedpostx folder inside a subjects directory.
+  -r ROI [ROI ...], --roi ROI [ROI ...]
+                        REQUIRED FOR NFACT_PP SURFACE MODE:  A single or list of ROIS. Use when doing whole brain surface tractography to provide medial wall.
+  -f FILE_TREE, --file_tree FILE_TREE
+                        REQUIRED FOR FILESTREE MODE: Use this option to provide name of predefined file tree to perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.
+  -sr SEEDREF, --seedref SEEDREF
+                        Reference volume to define seed space used by probtrackx. Default is MNI space.
   -t TARGET2, --target TARGET2
                         Path to target image. If not given will create a whole mask from reference image
 
-decomp:
-  -d DIM, --dim DIM     Number of dimensions/components
-  -o OUTDIR, --outdir OUTDIR
-                        Path to where to create an output folder
-  -a ALGO, --algo ALGO  What algorithm to run. Options are: ICA (default), or NMF.
+nfact_decomp/nfact_dr inputs:
+  -d DIM, --dim DIM     REQUIRED FOR NFACT DECOMP: Number of dimensions/components
+  -a ALGO, --algo ALGO  What algorithm to run. Options are: NMF (default) or ICA.
+  -rf ROI, --rf_decomp ROI
+                        File containing rois. Needed if seeds are .gii
 
+nfact_Qc inputs:
+  --threshold THRESHOLD
+                        Z score value to threshold hitmaps.
 ```
 
 example call:
@@ -137,7 +146,7 @@ Input needed for both surface and volume mode:
    
 Input for surface seed mode:
     - Seeds as surfaces
-    - ROIs as surfaces (medial wall)
+    - ROI as surfaces. This is files to restrict seeding to (for example surface files that exclude medial wall) 
     
 Input needed for volume mode:
     - Seeds as volumes 
