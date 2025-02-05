@@ -267,7 +267,7 @@ Example Usage:
                --outdir /home/study   
                --bpx_path /path_to/.bedpostX 
                --seeds /path_to/L.white.32k_fs_LR.surf.gii /path_to/R.white.32k_fs_LR.surf.gii 
-               --rois /path_to/L.atlasroi.32k_fs_LR.shape.gii /path_to/R.atlasroi.32k_fs_LR.shape.gii 
+               --roi /path_to/L.atlasroi.32k_fs_LR.shape.gii /path_to/R.atlasroi.32k_fs_LR.shape.gii 
                --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz 
                --n_cores 3 
 

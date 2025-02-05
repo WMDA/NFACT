@@ -64,7 +64,7 @@ def check_subject_exist(list_of_subjects: str) -> None:
     -------
     None
     """
-    
+
     [
         error_and_exit(
             os.path.exists(path),
@@ -89,7 +89,7 @@ def return_list_of_subjects_from_file(path_to_list: str) -> list:
         list of subjects
     """
     # First check that list of subjects is a txt file.
-    accepted_types =['txt', "sublist"]
+    accepted_types = ["txt", "sublist"]
     try:
         file_name = os.path.basename(path_to_list)
         if file_name.split(".")[1] not in accepted_types:
@@ -262,9 +262,9 @@ def check_seeds_surfaces(seed: list) -> bool:
     return False
 
 
-def check_medial_wall(args) -> dict:
+def check_rois(args) -> dict:
     """
-    Function to check medial wall and
+    Function to check roi and
     process if given.
 
     Parameters
@@ -276,13 +276,13 @@ def check_medial_wall(args) -> dict:
     -------
     arg: dict
         cmd arguments if processed
-        medial wall
+        roi
     """
 
-    if args["surface"] and args["medial_wall"]:
-        args["medial_wall"] = process_input_imgs(args["medial_wall"])
+    if args["surface"] and args["roi"]:
+        args["roi"] = process_input_imgs(args["roi"])
         return args
-    if args["surface"] and not args["medial_wall"]:
+    if args["surface"] and not args["roi"]:
         error_and_exit(False, "Seeds are surface files but no medial wall given.")
 
 
