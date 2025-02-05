@@ -107,6 +107,7 @@ def nfact_pipeline_main() -> None:
         nfact_pp_args["list_of_subjects"], nfact_pp_args["outdir"], nfact_tmp_location
     )
 
+
     # Run NFACT_PP
     if not global_arguments["global_input"]["pp_skip"]:
         print(f"{col['plum']}Running:{col['reset']} NFACT PP")

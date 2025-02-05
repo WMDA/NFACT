@@ -155,7 +155,7 @@ def write_decomp_list(
     files = read_file_to_list(file_path)
     omatrix_2_paths = [
         os.path.join(out_dir_name, "nfact_pp", os.path.basename(file), "omatrix2\n")
-        for file in files
+        for file in files if os.path.isdir(file)
     ]
     omatrix_2_paths.sort()
 
@@ -167,7 +167,7 @@ def write_decomp_list(
     )
 
 
-def compulsory_args_for_config(args: dict):
+def compulsory_args_for_config(args: dict) -> None:
     """
     Function to check for required
     arguments in nfact config file
