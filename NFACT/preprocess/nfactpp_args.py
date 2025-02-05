@@ -115,7 +115,7 @@ def nfact_pp_args() -> dict:
         help="Name of target. If not given will create a whole mask from reference image",
     )
     tractography_input.add_argument(
-        "-N",
+        "-ns",
         "--nsamples",
         dest="nsamples",
         default=1000,
@@ -236,14 +236,14 @@ def nfact_pp_splash() -> str:
     """
     col = colours()
     return f"""
-{col['pink']} 
+{col["pink"]} 
  _   _ ______   ___   _____  _____     ______ ______ 
 | \ | ||  ___| /   \ /  __ \|_   _|    | ___ \| ___ \\
 |  \| || |_   / /_\ \| /  \/  | |      | |_/ /| |_/ /
 |     ||  _|  |  _  || |      | |      |  __/ |  __/ 
 | |\  || |    | | | || \__/\  | |      | |    | |    
 \_| \_/\_|    \_| |_/ \____/  \_/      \_|    \_|  
-{col['reset']} 
+{col["reset"]} 
 """
 
 
@@ -262,7 +262,7 @@ def nfact_pp_example_usage() -> str:
     col = colours()
     return f"""
 Example Usage:
-    {col['purple']}Seed mode:{col['reset']}
+    {col["purple"]}Seed mode:{col["reset"]}
            nfact_pp --list_of_subjects /home/study/sub_list
                --outdir /home/study   
                --bpx_path /path_to/.bedpostX 
@@ -271,7 +271,7 @@ Example Usage:
                --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz 
                --n_cores 3 
 
-    {col['pink']}Volume mode:{col['reset']}
+    {col["pink"]}Volume mode:{col["reset"]}
             nfact_pp --list_of_subjects /home/study/sub_list  
                 --bpx_path /path_to/.bedpostX 
                 --seeds /path_to/L.white.nii.gz /path_to/R.white.nii.gz 
@@ -279,7 +279,7 @@ Example Usage:
                 --ref MNI152_T1_1mm_brain.nii.gz 
                 --target dlpfc.nii.gz
 
-    {col['darker_pink']}Filestree mode:{col['reset']}
+    {col["darker_pink"]}Filestree mode:{col["reset"]}
         nfact_pp --filestree hcp
             --list_of_subjects /home/study/sub_list  
             --outdir /home/study 

@@ -4,6 +4,7 @@ from NFACT.base.filesystem import write_to_file, load_json
 import os
 from .nfactpp_setup import check_provided_img
 
+
 def seedref(seedref: str) -> str:
     """
     Function to provide seedref.
@@ -13,9 +14,9 @@ def seedref(seedref: str) -> str:
     -----------
     seedref: str
         path to a seed reference.
-        If None defaults to 
+        If None defaults to
         FSL MNI152_T1_2mm_brain.nii.gz
-    
+
     Returns
     -------
     seedref: str
@@ -25,17 +26,17 @@ def seedref(seedref: str) -> str:
     col = colours()
     if seedref:
         check_provided_img(seedref, "Cannot find seed ref image")
-        print(f"{col['purple']}Seed Reference Space:{col['reset']} {seedref}")
+        print(
+            f"{col['darker_pink']}Seed Reference Space:{col['reset']} {os.path.basename(seedref)}"
+        )
         return seedref
     seedref = os.path.join(
-            os.getenv("FSLDIR"), 
-            "data", 
-            "standard", 
-            "MNI152_T1_2mm_brain.nii.gz"
+        os.getenv("FSLDIR"), "data", "standard", "MNI152_T1_2mm_brain.nii.gz"
     )
-    print(f"{col['purple']}Seed Reference Space:{col['reset']} {seedref}")
+    print(
+        f"{col['darker_pink']}Seed Reference Space:{col['reset']} {os.path.basename(seedref)}"
+    )
     return seedref
-
 
 
 def get_file(img_file: list, sub: str) -> list:
@@ -230,8 +231,8 @@ def stoppage(img_file_path: str, file_directory: str, paths_dict: dict) -> list:
     )
 
     return [
-        f'--stop={os.path.join(file_directory, "stop")}',
-        f'--wtstop={os.path.join(file_directory, "wtstop")}',
+        f"--stop={os.path.join(file_directory, 'stop')}",
+        f"--wtstop={os.path.join(file_directory, 'wtstop')}",
     ]
 
 
