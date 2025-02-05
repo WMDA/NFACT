@@ -51,7 +51,8 @@ def nfact_decomp_args() -> dict:
         dest="roi",
         default=False,
         help=f"""
-        {col["red"]}REQUIRED FOR SURFACE SEEDS:{col["reset"]}  wall images if surface seeds given.
+        {col["red"]}REQUIRED FOR SURFACE SEEDS:{col["reset"]}
+        Txt file with ROI(s) paths to restrict seeding to (e.g. medial wall masks).
         """,
     )
     args.add_argument(

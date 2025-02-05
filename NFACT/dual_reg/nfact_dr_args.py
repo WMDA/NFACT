@@ -51,7 +51,8 @@ def nfactdr_args() -> dict:
         dest="roi",
         default=False,
         help=f"""
-        {col["pink"]}RECOMMENDED FOR SURFACE SEEDS:{col["reset"]} 
+        {col["pink"]}RECOMMENDED FOR SURFACE SEEDS:{col["reset"]}
+        Txt file with ROI(s) paths to restrict seeding to (e.g. medial wall masks).
         """,
     )
     args.add_argument(
@@ -135,7 +136,7 @@ def nfact_dr_usage() -> str:
     return f"""
 {col["darker_pink"]}Dual regression usage:{col["reset"]}
     nfact_dr --list_of_subjects /path/to/nfact_config_sublist \\
-        --seeds /path/to//seeds.txt \\
+        --seeds /path/to/seeds.txt \\
         --nfact_decomp_dir /path/to/nfact_decomp \\
         --outdir /path/to/output_directory \\
         --algo NMF 

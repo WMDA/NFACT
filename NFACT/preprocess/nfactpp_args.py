@@ -97,8 +97,7 @@ def nfact_pp_args() -> dict:
         "--roi",
         dest="roi",
         nargs="+",
-        help="""REQUIRED FOR SURFACE MODE: Medial wall file. 
-        This is a file that provides infomation """,
+        help="""REQUIRED FOR SURFACE MODE: ROI(s) (.gii files) to restrict seeding to (e.g. medial wall masks).""",
     )
     tractography_input.add_argument(
         "-sr",
@@ -262,7 +261,7 @@ def nfact_pp_example_usage() -> str:
     col = colours()
     return f"""
 Example Usage:
-    {col["purple"]}Seed mode:{col["reset"]}
+    {col["purple"]}Surface mode:{col["reset"]}
            nfact_pp --list_of_subjects /home/study/sub_list
                --outdir /home/study   
                --bpx_path /path_to/.bedpostX 
