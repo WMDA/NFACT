@@ -277,7 +277,7 @@ def assign_nfact_dr_in_place(args: dict) -> None:
     args["nfact_dr"]["algo"] = args["nfact_decomp"]["algo"]
 
 
-def medial_wall_file(args: dict) -> None:
+def roi_file(args: dict) -> None:
     """
     Function to assign medial wall in
     place for nfact_ecomp/nfact_dr

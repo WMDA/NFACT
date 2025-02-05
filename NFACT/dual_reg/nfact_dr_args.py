@@ -46,13 +46,12 @@ def nfactdr_args() -> dict:
         help=f"{col['red']}REQUIRED:{col['reset']} File of seeds used in NFACT_PP/probtrackx",
     )
     args.add_argument(
-        "--medial_wall",
-        "-m",
-        dest="medial_wall",
+        "--roi",
+        "-r",
+        dest="roi",
         default=False,
         help=f"""
-        {col['pink']}RECOMMENDED FOR SURFACE SEEDS:{col['reset']} Medial wall images if surface seeds given.
-        Masks out grey matter components that cross the medial wall.
+        {col["pink"]}RECOMMENDED FOR SURFACE SEEDS:{col["reset"]} 
         """,
     )
     args.add_argument(
@@ -65,7 +64,7 @@ def nfactdr_args() -> dict:
         "-d",
         "--decomp_dir",
         dest="decomp_dir",
-        help=f"""{col['plum']}REQUIRED IF NOT NFACT_DECOMP:{col['reset']} Filepath to decomposition components. 
+        help=f"""{col["plum"]}REQUIRED IF NOT NFACT_DECOMP:{col["reset"]} Filepath to decomposition components. 
         WARNING NFACT decomp expects components to be named in a set way. See documentation for further info.""",
     )
     args.add_argument(
@@ -107,14 +106,14 @@ def nfact_dr_splash() -> str:
     """
     col = colours()
     return f"""
-    {col['pink']} 
+    {col["pink"]} 
  _   _ ______   ___   _____  _____  ______ ______ 
 | \ | ||  ___| / _ \ /  __ \|_   _| |  _  \| ___ \\
 |  \| || |_   / /_\ \| /  \/  | |   | | | || |_/ /
 | . ` ||  _|  |  _  || |      | |   | | | ||    / 
 | |\  || |    | | | || \__/\  | |   | |/ / | |\ \ 
 \_| \_/\_|    \_| |_/ \____/  \_/   |___/  \_| \_|
-{col['reset']}                                                                              
+{col["reset"]}                                                                              
 """
 
 
@@ -134,25 +133,25 @@ def nfact_dr_usage() -> str:
     """
     col = colours()
     return f"""
-{col['darker_pink']}Dual regression usage:{col['reset']}
+{col["darker_pink"]}Dual regression usage:{col["reset"]}
     nfact_dr --list_of_subjects /path/to/nfact_config_sublist \\
         --seeds /path/to//seeds.txt \\
         --nfact_decomp_dir /path/to/nfact_decomp \\
         --outdir /path/to/output_directory \\
         --algo NMF 
 
-{col['darker_pink']}ICA Dual regression usage:{col['reset']}
+{col["darker_pink"]}ICA Dual regression usage:{col["reset"]}
     nfact_dr --list_of_subjects /path/to/nfact_config_sublist \\
         --seeds /path/to//seeds.txt \\
         --nfact_decomp_dir /path/to/nfact_decomp \\
         --outdir /path/to/output_directory \\
         --algo ICA 
 
-{col['darker_pink']}Dual regression with medial wall seeds usage:{col['reset']}
+{col["darker_pink"]}Dual regression with roi seeds usage:{col["reset"]}
     nfact_dr --list_of_subjects /path/to/nfact_config_sublist \\
         --seeds /path/to/seeds.txt \\
         --nfact_decomp_dir /path/to/nfact_decomp \\
         --outdir /path/to/output_directory \\
-        --medial_wall /path/to/medial_wall.txt \\
+        --roi /path/to/roi.txt \\
         --algo NMF 
 """

@@ -84,7 +84,7 @@ def nfact_config_spalsh() -> str:
 
     col = colours()
     return f"""
-{col['pink']} 
+{col["pink"]} 
  _   _______ ___  _____ _____                    __ _       
 | \ | |  ___/ _ \/  __ \_   _|                  / _(_)      
 |  \| | |_ / /_\ \ /  \/ | |     ___ ___  _ __ | |_ _  __ _ 
@@ -93,7 +93,7 @@ def nfact_config_spalsh() -> str:
 \_| \_|_|  \_| |_/\____/ \_/    \___\___/|_| |_|_| |_|\__, |
                                                        __/ |
                                                       |___/ 
-{col['reset']} 
+{col["reset"]} 
 """
 
 
@@ -232,7 +232,7 @@ def process_config_file(args: dict) -> dict:
     args = reorganise_args(args)
     args = process_global_arguments(args)
     args["global_input"]["folder_name"] = "nfact"
-    args["nfact_pp"]["medial_wall"] = []
+    args["nfact_pp"]["roi"] = []
     args["nfact_pp"]["warps"] = []
     args["nfact_qc"] = delete_keys(args["nfact_qc"], ["nfact_folder", "dim", "algo"])
     return {"global_input": args.pop("global_input"), **args}

@@ -13,7 +13,7 @@ from NFACT.base.setup import (
     check_arguments,
     process_input_imgs,
     check_seeds_surfaces,
-    check_medial_wall,
+    check_rois,
 )
 from NFACT.base.utils import colours, nprint
 from NFACT.base.logging import NFACT_logs
@@ -64,7 +64,7 @@ def nfact_dr_main(args: dict = None) -> None:
     # Process seeds
     args["seeds"] = process_input_imgs(args["seeds"])
     args["surface"] = check_seeds_surfaces(args["seeds"])
-    args = check_medial_wall(args)
+    args = check_rois(args)
     # logging
     log = NFACT_logs(args["algo"], "DR", len(args["ptxdir"]))
     log.set_up_logging(os.path.join(args["outdir"], "nfact_dr", "logs"))
@@ -83,7 +83,7 @@ def nfact_dr_main(args: dict = None) -> None:
         paths["component_path"],
         paths["group_average_path"],
         args["seeds"],
-        args["medial_wall"],
+        args["roi"],
     )
     nprint("\nDual Regression\n")
     nprint("-" * 100)
@@ -98,7 +98,7 @@ def nfact_dr_main(args: dict = None) -> None:
         component=components,
         seeds=args["seeds"],
         nfact_directory=os.path.join(args["outdir"], "nfact_dr"),
-        medial_wall=args["medial_wall"],
+        roi=args["roi"],
     )
     dual_reg.run()
 
