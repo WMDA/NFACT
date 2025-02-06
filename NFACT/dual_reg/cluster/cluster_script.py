@@ -9,6 +9,7 @@ from NFACT.dual_reg.nfact_dr_functions import save_dual_regression_images
 import argparse
 import os
 
+
 def script_args() -> dict:
     """
     Script args
@@ -61,8 +62,8 @@ def main_dr(args: dict) -> None:
     None
     """
     try:
-        print("Number of cores: ", args["parallel"])
-        print("Obtaining Group Level Components")
+        print("Number of cores: ", args["parallel"], flush=True)
+        print("Obtaining Group Level Components", flush=True)
         components = get_group_level_components(
             args["component_path"],
             args["group_average_path"],
@@ -71,16 +72,11 @@ def main_dr(args: dict) -> None:
         )
 
         print("Obtaining FDT Matrix")
-        matrix = load_fdt_matrix(
-            os.path.join(
-                args["fdt_path"], 
-                "fdt_matrix2.dot"
-                )
-            )
+        matrix = load_fdt_matrix(os.path.join(args["fdt_path"], "fdt_matrix2.dot"))
         dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
-        print("Running Dual Regression")
+        print("Running Dual Regression", flush=True)
         dr_results = run_decomp(dr_regression, components, matrix, args["parallel"])
-        print("Saving Components")
+        print("Saving Components", flush=True)
         save_dual_regression_images(
             dr_results,
             args["output_dir"],
@@ -92,7 +88,7 @@ def main_dr(args: dict) -> None:
             args["medial_wall"],
         )
     except Exception as e:
-        print("Dual regression failed due to: ", e)
+        print("Dual regression failed due to: ", e, flush=True)
         exit(1)
     return None
 

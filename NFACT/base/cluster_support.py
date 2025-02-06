@@ -73,12 +73,11 @@ class Cluster_parameters:
     def cluster_time(self):
         """Method to assign cluster time"""
         self.arg["cluster_time"] = (
-            self.arg["cluster_time"]
-            if self.arg["cluster_time"]
-            else "600")
-            
-        self.arg['cluster_time'] = ("160" if self.arg["gpu"]
-             else self.arg["cluster_time"]
+            self.arg["cluster_time"] if self.arg["cluster_time"] else "600"
+        )
+
+        self.arg["cluster_time"] = (
+            "160" if self.arg["gpu"] else self.arg["cluster_time"]
         )
 
     def cluster_queue_check(self):
