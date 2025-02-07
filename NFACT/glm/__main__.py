@@ -1,13 +1,6 @@
-<<<<<<< HEAD:NFACT/NFACT_GLM/__main__.py
 from .nfact_glm_args import nfact_glm_args
 from .nfact_glm_setup import check_compulsory_arguments
-import os
-import numpy as np
-from fsl.data.vest import loadVestFile
-from NFACT.NFACT_base.setup import check_algo
-=======
-from NFACT.base.utils import colours
->>>>>>> main:NFACT/glm/__main__.py
+from NFACT.base.setup import check_algo
 
 
 def nfact_glm_main() -> None:
