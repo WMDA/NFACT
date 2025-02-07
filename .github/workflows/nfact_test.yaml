@@ -1,0 +1,33 @@
+name: nfact_test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  nfact_test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['ubuntu-latest']
+        python-version: ['3.9', '3.10', '3.11']
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }} 
+        
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .[dev]
+        
+      - name: Pytest nfact_decomp 
+        run: | 
+          python3 NFACT/testing/generate_connectivity_matrix.py
+          pytest -v NFACT/testing/nfact_pipeline_test.py

@@ -1,7 +1,7 @@
 # pyproject.toml
 
 [build-system]
-requires      = ["setuptools>=44.0.0", "wheel"]
+requires = ["setuptools>=44.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -23,16 +23,21 @@ dependencies = [
     'nibabel',
     'scikit-learn',
     'fslpy',
-    'tqdm'
+    'tqdm',
+    'file-tree'
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 [project.optional-dependencies]
-development = ['ruff']
+dev = [
+    'ruff',
+    'pytest'
+    ]
 
 [project.scripts]
-nfact_decomp = "NFACT.NFACT_decomp.__main__:nfact_decomp_main"
-nfact_pp = "NFACT.NFACT_PP.__main__:nfact_pp_main"
-nfact_config = "NFACT.NFACT_config.__main__:nfact_config_main"
-nfact_glm = "NFACT.NFACT_GLM.__main__:nfact_glm_main"
-nfact_dr = "NFACT.NFACT_DR.__main__:nfact_dr_main"
-nfact = "NFACT.NFACT_pipeline.__main__:nfact_pipeline_main"
+nfact_decomp = "NFACT.decomp.__main__:nfact_decomp_main"
+nfact_pp = "NFACT.preprocess.__main__:nfact_pp_main"
+nfact_config = "NFACT.config.__main__:nfact_config_main"
+nfact_glm = "NFACT.glm.__main__:nfact_glm_main"
+nfact_dr = "NFACT.dual_reg.__main__:nfact_dr_main"
+nfact = "NFACT.pipeline.__main__:nfact_pipeline_main"
+nfact_Qc = "NFACT.qc.__main__:nfactQc_main"
