@@ -16,7 +16,7 @@ def nfact_qc_args() -> dict:
         dictionary of cmd arguments
     """
     args = argparse.ArgumentParser(
-        prog="nfact",
+        prog="nfact_Qc",
         description=print(nfact_Qc_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
