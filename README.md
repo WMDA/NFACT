@@ -604,16 +604,3 @@ NFACT does its decomposition using sckit-learn's FastICA (https://scikit-learn.o
 
 NFACT config will attempt to given a directory work out and write to a file all the subjects in that file. Though nfact will try and filter out 
 folders that aren't subjects, it isn't perfect so please check the subject list. 
-
-------------------------------------------------------------------------------------------------------------------------------------------
-
-```
- _   _ ______   ___   _____  _____   _____  _     ___  ___
-| \ | ||  ___| / _ \ /  __ \|_   _| |  __ \| |    |  \/  |
-|  \| || |_   / /_\ \| /  \/  | |   | |  \/| |    | .  . |
-| . ` ||  _|  |  _  || |      | |   | | __ | |    | |\/| |
-| |\  || |    | | | || \__/\  | |   | |_\ \| |____| |  | |
-\_| \_/\_|    \_| |_/ \____/  \_/    \____/\_____/\_|  |_/
-```
-
-This is currently a work in progress module. The aim is to support hypothesis testing between groups.
