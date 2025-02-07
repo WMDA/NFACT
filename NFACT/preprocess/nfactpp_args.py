@@ -103,7 +103,8 @@ def nfact_pp_args() -> dict:
         "-b",
         "--bpx",
         dest="bpx_path",
-        help="Relative path to Bedpostx folder inside a subjects directory. Must be the same across subjects",
+        help="""Relative path to Bedpostx folder inside a subjects directory. 
+        Must be the same across subjects""",
     )
     tractography_input.add_argument(
         "-r",
