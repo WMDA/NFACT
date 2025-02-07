@@ -23,7 +23,7 @@ def nfact_parser() -> dict:
     )
     col = colours()
     input_args = args.add_argument_group(
-        f"{col['darker_pink']}Pipeline inputs{col['reset']}"
+        f"{col['deep_pink']}Pipeline inputs{col['reset']}"
     )
     input_args.add_argument(
         "-l",
@@ -176,7 +176,7 @@ def nfact_parser() -> dict:
         """,
     )
     nfact_decomp_args = args.add_argument_group(
-        f"{col['darker_pink']}nfact_decomp/nfact_dr inputs{col['reset']}"
+        f"{col['pink']}nfact_decomp/nfact_dr inputs{col['reset']}"
     )
     nfact_decomp_args.add_argument(
         "-d",
@@ -216,7 +216,7 @@ def nfact_parser() -> dict:
         """,
     )
     nfact_Qc_args = args.add_argument_group(
-        f"{col['darker_pink']}nfact_Qc inputs{col['reset']}"
+        f"{col['purple']}nfact_Qc inputs{col['reset']}"
     )
     nfact_Qc_args.add_argument(
         "--threshold",

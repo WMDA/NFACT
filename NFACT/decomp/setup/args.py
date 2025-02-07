@@ -16,7 +16,7 @@ def nfact_decomp_args() -> dict:
         dictionary of cmd arguments
     """
     base_args = argparse.ArgumentParser(
-        prog="nfact",
+        prog="nfact_decomp",
         description=print(nfact_decomp_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -114,7 +114,8 @@ def nfact_decomp_args() -> dict:
         dest="dim",
         help="""
         This is compulsory option. 
-        Number of dimensions/components to retain  
+        Number of dimensions/components to retain
+        after running NMF/ICA.  
         """,
     )
     decomp_args.add_argument(
