@@ -87,7 +87,7 @@ def nfact_pp_args() -> dict:
         dest="seed",
         help="""
         Relative path to either a single or multiple seeds. If multiple seeds given
-        then include a space between paths. Must be the same across subjects
+        then include a space between paths. Must be the same across subjects.
         """,
     )
     tractography_input.add_argument(
@@ -96,7 +96,8 @@ def nfact_pp_args() -> dict:
         dest="warps",
         nargs="+",
         help="""Relative path to warps inside a subjects directory. 
-        Include a space between paths. Must be the same across subjects""",
+        Include a space between paths. Must be the same across subjects.
+        """,
     )
     tractography_input.add_argument(
         "-b",
@@ -111,7 +112,7 @@ def nfact_pp_args() -> dict:
         nargs="+",
         help="""REQUIRED FOR SURFACE MODE: 
         Relative path to a single ROI or multiple ROIS to restrict seeding to (e.g. medial wall masks). 
-        Must be the same across subject. ROIS must match number of seeds
+        Must be the same across subject. ROIS must match number of seeds.
         """,
     )
     tractography_input.add_argument(
@@ -129,8 +130,11 @@ def nfact_pp_args() -> dict:
         "--target",
         dest="target2",
         default=False,
-        help="""Absolute path to a target image. 
-        If not provided will use the seedref. Default is human MNI""",
+        help="""
+        Absolute path to a target image. 
+        If not provided will use the seedref. 
+        Default is human MNI ($FSLDIR/data/standard/MNI152_T1_2mm.nii.gz).
+        """,
     )
     tractography_input.add_argument(
         "-ns",
@@ -144,7 +148,10 @@ def nfact_pp_args() -> dict:
         "--mm_res",
         dest="mm_res",
         default=2,
-        help="Resolution of target image. Default is 2 mm",
+        help="""
+        Resolution of target image. 
+        Default is 2 mm
+        """,
     )
     tractography_input.add_argument(
         "-p",
@@ -229,8 +236,10 @@ def nfact_pp_args() -> dict:
         "--cluster_time",
         dest="cluster_time",
         default=False,
-        help="""The amount of time that job will take. 
-        nfact_pp will assign a time if none given, depending on cluster gpu status""",
+        help="""
+        The amount of time that job will take. 
+        nfact_pp will assign a time if none given, depending on cluster gpu status
+        """,
     )
     cluster_args.add_argument(
         "-cqos",
@@ -289,25 +298,25 @@ def nfact_pp_example_usage() -> str:
     return f"""
 Example Usage:
     {col["purple"]}Surface mode:{col["reset"]}
-           nfact_pp --list_of_subjects /home/study/sub_list
-               --outdir /home/study   
-               --bpx_path /path_to/.bedpostX 
-               --seeds /path_to/L.white.32k_fs_LR.surf.gii /path_to/R.white.32k_fs_LR.surf.gii 
-               --roi /path_to/L.atlasroi.32k_fs_LR.shape.gii /path_to/R.atlasroi.32k_fs_LR.shape.gii 
-               --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz 
+           nfact_pp --list_of_subjects /absolute_path/study/sub_list
+               --outdir absolute_path/study   
+               --bpx_path /relative_path/.bedpostX 
+               --seeds /relative_path/L.surf.gii /path_to/R.surf.gii 
+               --roi /relative_path/L.exclude_medialwall.shape.gii /path_to/R.exclude_medialwall.shape.gii 
+               --warps /relative_path/stand2diff.nii.gz /relative_path/diff2stand.nii.gz 
                --n_cores 3 
 
     {col["pink"]}Volume mode:{col["reset"]}
-            nfact_pp --list_of_subjects /home/study/sub_list  
-                --bpx_path /path_to/.bedpostX 
-                --seeds /path_to/L.white.nii.gz /path_to/R.white.nii.gz 
-                --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz 
-                --ref MNI152_T1_1mm_brain.nii.gz 
-                --target dlpfc.nii.gz
+            nfact_pp --list_of_subjects /absolute_path/study/sub_list
+                --outdir /absolute_path/study   
+                --bpx_path /relative_path/.bedpostX 
+                --seeds /relative_path/L.white.nii.gz /relative_path/R.white.nii.gz 
+                --warps /relative_path/stand2diff.nii.gz /relative_path/diff2stand.nii.gz 
+                --seedref absolute_path/MNI152_T1_1mm_brain.nii.gz 
+                --target absolute_path/dlpfc.nii.gz
 
     {col["darker_pink"]}Filestree mode:{col["reset"]}
         nfact_pp --filestree hcp
-            --list_of_subjects /home/study/sub_list  
-            --outdir /home/study 
-            --n_cores 3 
+            --list_of_subjects /absolute_path/study/sub_list  
+            --outdir /absolute_path/study 
 """
