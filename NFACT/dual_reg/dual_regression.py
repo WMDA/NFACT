@@ -1,7 +1,9 @@
-from NFACT.base.utils import error_and_exit
+from NFACT.base.utils import error_and_exit, nprint, colours
 import numpy as np
 from scipy.optimize import nnls
 from joblib import Parallel, delayed
+from tqdm import tqdm
+import sys
 
 
 def run_decomp(
@@ -130,16 +132,29 @@ def nnls_non_parallel(components: dict, connectivity_matrix: np.ndarray):
     dict
         Dictionary of components.
     """
+    col = colours()
+    nprint(f"{col['pink']}Regression:{col['reset']} White Matter")
     wm_component_white_map = np.array(
         [
             nnls(components["grey_components"], connectivity_matrix[:, col])[0]
-            for col in range(connectivity_matrix.shape[1])
+            for col in tqdm(
+                range(connectivity_matrix.shape[1]),
+                colour="magenta",
+                unit="voxel",
+                file=sys.stdout,
+            )
         ]
     ).T
+    nprint(f"{col['pink']}Regression:{col['reset']} Grey Matter")
     gm_component_grey_map = np.array(
         [
             nnls(wm_component_white_map.T, connectivity_matrix.T[:, col])[0]
-            for col in range(connectivity_matrix.shape[0])
+            for col in tqdm(
+                range(connectivity_matrix.shape[0]),
+                colour="magenta",
+                unit="vertex",
+                file=sys.stdout,
+            )
         ]
     )
     return {

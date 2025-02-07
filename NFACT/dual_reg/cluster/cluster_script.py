@@ -6,6 +6,7 @@ from NFACT.dual_reg.dual_regression import (
     run_decomp,
 )
 from NFACT.dual_reg.nfact_dr_functions import save_dual_regression_images
+from NFACT.base.utils import colours
 import argparse
 import os
 
@@ -61,9 +62,18 @@ def main_dr(args: dict) -> None:
     -------
     None
     """
+    col = colours()
     try:
-        print("Number of cores: ", args["parallel"], flush=True)
-        print("Obtaining Group Level Components", flush=True)
+        print(f"{col['plum']}Subject ID{col['reset']}: {args['id']}")
+        print(
+            f"{col['plum']}Number of cores{col['reset']}: ",
+            args["parallel"],
+            flush=True,
+        )
+        print("-" * 100)
+        print(
+            f"{col['pink']}Obtaining{col['reset']}: Group Level Components", flush=True
+        )
         components = get_group_level_components(
             args["component_path"],
             args["group_average_path"],
@@ -71,12 +81,12 @@ def main_dr(args: dict) -> None:
             args["medial_wall"],
         )
 
-        print("Obtaining FDT Matrix")
+        print(f"{col['pink']}Obtaining{col['reset']}: FDT Matrix")
         matrix = load_fdt_matrix(os.path.join(args["fdt_path"], "fdt_matrix2.dot"))
         dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
-        print("Running Dual Regression", flush=True)
+        print(f"{col['pink']}Running{col['reset']}: Dual Regression", flush=True)
         dr_results = run_decomp(dr_regression, components, matrix, args["parallel"])
-        print("Saving Components", flush=True)
+        print(f"{col['pink']}Saving{col['reset']}: Components", flush=True)
         save_dual_regression_images(
             dr_results,
             args["output_dir"],
@@ -87,8 +97,11 @@ def main_dr(args: dict) -> None:
             os.path.dirname(args["fdt_path"]),
             args["medial_wall"],
         )
+        print(f"{col['pink']}Completed{col['reset']}: {args['id']}", flush=True)
     except Exception as e:
-        print("Dual regression failed due to: ", e, flush=True)
+        print(
+            f"{col['red']}Dual regression failed due to: {e} {col['reset']}", flush=True
+        )
         exit(1)
     return None
 
