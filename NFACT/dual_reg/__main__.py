@@ -67,7 +67,9 @@ def nfact_dr_main(args: dict = None) -> None:
         check_fsl_is_installed()
         args["gpu"] = False
         args = processing_cluster(args)
-   
+        # Needed for high res data. Takes a long time
+        if args["cluster_time"] == "600":
+            args["cluster_time"] = "2880"
 
     # Set up directory
     create_nfact_dr_folder_set_up(args["outdir"])
