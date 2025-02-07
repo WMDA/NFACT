@@ -16,7 +16,7 @@ def nfact_qc_args() -> dict:
         dictionary of cmd arguments
     """
     args = argparse.ArgumentParser(
-        prog="nfact",
+        prog="nfact_Qc",
         description=print(nfact_Qc_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -25,27 +25,42 @@ def nfact_qc_args() -> dict:
         "-n",
         "--nfact_folder",
         dest="nfact_folder",
-        help=f"{col['red']}REQUIRED:{col['reset']} Path to nfact output folder",
+        help=f"""{col['red']}REQUIRED:{col['reset']} 
+        Absolute path to nfact_decomp output folder.
+        nfact_Qc folder is also saved within this
+        folder.
+        """,
     )
     args.add_argument(
         "-d",
         "--dim",
         dest="dim",
-        help=f"{col['red']}REQUIRED:{col['reset']} Number of dimensions/components",
+        help=f"""{col['red']}REQUIRED:{col['reset']} 
+        Number of dimensions/components that 
+        was used to generate nfact_decomp image
+        """,
     )
     args.add_argument(
         "-a",
         "--algo",
         dest="algo",
         default="NMF",
-        help=f"{col['red']}REQUIRED:{col['reset']}What algorithm to qc. Options are: NMF (default), or ICA.",
+        help=f"""{col['red']}REQUIRED:{col['reset']}
+        Which algorithm to run qulatiy control on. 
+        Options are: NMF (default), or ICA.
+        """,
     )
     args.add_argument(
         "-t",
         "--threshold",
         dest="threshold",
         default=2,
-        help="Threshold value for z scoring the normalised image",
+        help="""
+        Threshold value for z scoring the number of times
+        a component comes up in a voxel in the image.
+        Values below this z score are treated as noise and 
+        discarded in the non raw image. 
+        """,
     )
     args.add_argument(
         "-O",

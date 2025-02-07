@@ -40,28 +40,36 @@ def nfact_config_args() -> dict:
         "--decomp_only",
         dest="decomp_only",
         action="store_true",
-        help="Creates a config file for sckitlearn function hyperparameters",
+        help="Creates a config file for hyperparameters for the NMF/ICA",
     )
     args.add_argument(
         "-s",
         "--subject_list",
         dest="subject_list",
         default=False,
-        help="Creates a subject list from a given directory",
+        help="""
+        Creates a subject list from a given directory
+        Needs path to subjects directory. If ran inside
+        an nfact_pp directory will make a subject list 
+        for decompoisition (adds on omatrix2 to file paths)
+        """,
     )
     args.add_argument(
         "-o",
         "--output_dir",
         dest="output_dir",
         default=os.getcwd(),
-        help="Where to save config file",
+        help="File path of where to save config file",
     )
     args.add_argument(
         "-f",
         "--file_name",
         dest="file_name",
         default="nfact_config",
-        help="Name of the nfact config filename",
+        help="""
+        Name of the nfact config filename.
+        Defaults is nfact_config
+        """,
     )
     no_args(args)
 

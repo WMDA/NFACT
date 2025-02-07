@@ -23,14 +23,18 @@ def nfact_parser() -> dict:
     )
     col = colours()
     input_args = args.add_argument_group(
-        f"{col['darker_pink']}Pipeline inputs{col['reset']}"
+        f"{col['deep_pink']}Pipeline inputs{col['reset']}"
     )
     input_args.add_argument(
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
         default=False,
-        help=f"{col['red']}REQUIRED FOR ALL: {col['reset']}Filepath to a list of subjects.",
+        help="""
+        Absolute filepath to a text file containing
+        absolute path to subjects. Consider using
+        nfact_config to create subject list
+        """,
     )
     input_args.add_argument(
         "-s",
@@ -38,49 +42,68 @@ def nfact_parser() -> dict:
         nargs="+",
         dest="seed",
         default=False,
-        help=f"""{col["pink"]}REQUIRED FOR ALL IF NOT USING FILESTREE MODE:{col["reset"]}
-        A single or list of seeds""",
+        help="""
+        Relative path to either a single or multiple seeds. If multiple seeds given
+        then include a space between paths. Must be the same across subjects.
+        """,
     )
     input_args.add_argument(
         "-o",
         "--outdir",
         dest="outdir",
-        help=f"{col['red']}REQUIRED FOR ALL: {col['reset']}Path to where to create an output folder",
+        help="""
+        Absolute path to a directory to save results in.
+        """,
     )
     input_args.add_argument(
         "-n",
         "--folder_name",
         dest="folder_name",
         default="nfact",
-        help="Name of nfact folder, default is nfact",
+        help="""
+        Name of output folder. That contains within it
+        the nfact_pp, nfact_decomp and nfact_dr folders.
+        Default is nfact
+        """,
     )
     input_args.add_argument(
         "-c",
         "--config",
         dest="config",
         default=False,
-        help="An nfact_config file. If this is provided no other arguments are needed.",
+        help="""
+        Provide an nfact_config file instead of using command line arguements.
+        Configuration files provide control over all parameters of modules
+        and can be created using nfact_config -C. 
+        If this is provided no other arguments are needed to run nfact as 
+        arguments are taken from config file rather than command line.
+        """,
     )
     input_args.add_argument(
         "-P",
         "--pp_skip",
         dest="pp_skip",
         action="store_true",
-        help="Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.",
+        help="""
+        Skips nfact_pp. 
+        Pipeline still assumes that data has been pre-processed with nfact_pp before.
+        If data hasn't been pre-processed with nfact_pp consider runing modules 
+        seperately
+        """,
     )
     input_args.add_argument(
         "-Q",
         "--qc_skip",
         dest="qc_skip",
         action="store_true",
-        help="Skips NFACT_QC.",
+        help="Skips nfact_qc.",
     )
     input_args.add_argument(
         "-D",
         "--dr_skip",
         dest="dr_skip",
         action="store_true",
-        help="Skips NFACT_DR",
+        help="Skips nfact_dr so no dual regression is performed.",
     )
     input_args.add_argument(
         "-O",
@@ -99,16 +122,17 @@ def nfact_parser() -> dict:
         dest="warps",
         nargs="+",
         default=False,
-        help=f"""{col["pink"]}REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE:{col["reset"]} 
-        Path to warps inside a subjects directory (can accept multiple arguments)""",
+        help="""Relative path to warps inside a subjects directory. 
+        Include a space between paths. Must be the same across subjects.
+        """,
     )
     nfact_pp_args.add_argument(
         "-b",
         "--bpx",
         dest="bpx_path",
         default=False,
-        help=f"""{col["pink"]}REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE:{col["reset"]}
-        Path to Bedpostx folder inside a subjects directory.""",
+        help="""Relative path to Bedpostx folder inside a subjects directory. 
+        Must be the same across subjects""",
     )
     nfact_pp_args.add_argument(
         "-r",
@@ -116,57 +140,83 @@ def nfact_parser() -> dict:
         dest="roi",
         nargs="+",
         default=False,
-        help=f"""{col["purple"]}REQUIRED FOR NFACT_PP SURFACE MODE: {col["reset"]} 
-        A single or list of ROIS. Use when doing whole brain surface tractography to provide medial wall.""",
+        help="""REQUIRED FOR SURFACE MODE: 
+        Relative path to a single ROI or multiple ROIS to restrict seeding to (e.g. medial wall masks). 
+        Must be the same across subject. ROIS must match number of seeds.
+        """,
     )
     nfact_pp_args.add_argument(
         "-f",
         "--file_tree",
         dest="file_tree",
         default=False,
-        help=f"""{col["plum"]}REQUIRED FOR FILESTREE MODE: {col["reset"]}Use this option to provide name of predefined file tree to 
-        perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.""",
+        help="""Use this option to provide name of predefined file tree to 
+        perform whole brain tractography. nfact_pp currently comes with HCP filetree. 
+        See documentation for further information.""",
     )
     nfact_pp_args.add_argument(
         "-sr",
         "--seedref",
         dest="seedref",
         default=False,
-        help=" Reference volume to define seed space used by probtrackx. Default is MNI space.",
+        help="""
+        Absolute path to a reference volume to define seed space used by probtrackx. 
+        Default is MNI space ($FSLDIR/data/standard/MNI152_T1_2mm.nii.gz).
+        """,
     )
     nfact_pp_args.add_argument(
         "-t",
         "--target",
         dest="target2",
         default=False,
-        help="Path to target image. If not given will create a whole mask from reference image",
+        help="""
+        Absolute path to a target image. 
+        If not provided will use the seedref. 
+        Default is human MNI ($FSLDIR/data/standard/MNI152_T1_2mm.nii.gz).
+        """,
     )
     nfact_decomp_args = args.add_argument_group(
-        f"{col['darker_pink']}nfact_decomp/nfact_dr inputs{col['reset']}"
+        f"{col['pink']}nfact_decomp/nfact_dr inputs{col['reset']}"
     )
     nfact_decomp_args.add_argument(
         "-d",
         "--dim",
         default=False,
         dest="dim",
-        help=f"{col['red']}REQUIRED FOR NFACT DECOMP:{col['reset']} Number of dimensions/components",
+        help="""
+        This is compulsory option. 
+        Number of dimensions/components to retain
+        after running NMF/ICA.  
+        """,
     )
     nfact_decomp_args.add_argument(
         "-a",
         "--algo",
         dest="algo",
         default="NMF",
-        help="What algorithm to run. Options are: NMF (default) or ICA.",
+        help="""
+        Which decomposition algorithm to run. 
+        Options are: NMF (default), or ICA. This is case
+        insensitive
+        """,
     )
     nfact_decomp_args.add_argument(
         "-rf",
         "--rf_decomp",
         dest="roi",
         default=False,
-        help="File containing rois. Needed if seeds are .gii",
+        help="""
+        Absolute path to a text file containing the  
+        absolute path ROI(s) paths to restrict seeding to 
+        (e.g. medial wall masks). This is not needed if
+        seeds are not surfaces. If used nfact_pp then this
+        is the roi_for_decomp.txt file in the nfact_pp
+        directory. This option is not needed if
+        the pipeline is being ran from nfact_pp onwards.
+        """,
     )
     nfact_Qc_args = args.add_argument_group(
-        f"{col['darker_pink']}nfact_Qc inputs{col['reset']}"
+        f"{col['purple']}nfact_Qc inputs{col['reset']}"
     )
     nfact_Qc_args.add_argument(
         "--threshold",

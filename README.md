@@ -43,52 +43,59 @@ This pipeline runs nfact_pp, nfact_decomp and nfact_dr on tractography data that
 
 The pipeline first creates the omatrix2 before running decompostion, quality control and if multiple subjects provided, then dual regression.
 
+Please see further down in readme for further details on modules.
 
 ### Usage:
 
 ```
+usage: nfact [-h] [-l LIST_OF_SUBJECTS] [-s SEED [SEED ...]] [-o OUTDIR] [-n FOLDER_NAME] [-c CONFIG] [-P] [-Q] [-D] [-O] [-w WARPS [WARPS ...]] [-b BPX_PATH] [-r ROI [ROI ...]] [-f FILE_TREE] [-sr SEEDREF] [-t TARGET2] [-d DIM] [-a ALGO] [-rf ROI]
+             [--threshold THRESHOLD]
+
 options:
-  -h, --help            show this help message and exit
+  -h, --help            Shows help message and exit
 
 Pipeline inputs:
   -l LIST_OF_SUBJECTS, --list_of_subjects LIST_OF_SUBJECTS
-                        REQUIRED FOR ALL: Filepath to a list of subjects.
+                        Absolute filepath to a text file containing absolute path to subjects. Consider using nfact_config to create subject list
   -s SEED [SEED ...], --seed SEED [SEED ...]
-                        REQUIRED FOR ALL IF NOT USING FILESTREE MODE: A single or list of seeds
+                        Relative path to either a single or multiple seeds. If multiple seeds given then include a space between paths. Must be the same across subjects.
   -o OUTDIR, --outdir OUTDIR
-                        REQUIRED FOR ALL: Path to where to create an output folder
+                        Absolute path to a directory to save results in.
   -n FOLDER_NAME, --folder_name FOLDER_NAME
-                        Name of nfact folder, default is nfact
+                        Name of output folder. That contains within it the nfact_pp, nfact_decomp and nfact_dr folders. Default is nfact
   -c CONFIG, --config CONFIG
-                        An nfact_config file. If this is provided no other arguments are needed.
-  -P, --pp_skip         Skips NFACT_PP. Pipeline still assumes that NFACT_PP has been ran before.
-  -Q, --qc_skip         Skips NFACT_QC.
-  -D, --dr_skip         Skips NFACT_DR
+                        Provide an nfact_config file instead of using command line arguements. Configuration files provide control over all parameters of modules and can be created using nfact_config -C. If this is provided no other arguments are needed to run nfact
+                        as arguments are taken from config file rather than command line.
+  -P, --pp_skip         Skips nfact_pp. Pipeline still assumes that data has been pre-processed with nfact_pp before. If data hasn't been pre-processed with nfact_pp consider runing modules seperately
+  -Q, --qc_skip         Skips nfact_qc.
+  -D, --dr_skip         Skips nfact_dr so no dual regression is performed.
   -O, --overwrite       Overwirte existing file structure
 
 nfact_pp inputs:
   -w WARPS [WARPS ...], --warps WARPS [WARPS ...]
-                        REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE: Path to warps inside a subjects directory (can accept multiple arguments)
+                        Relative path to warps inside a subjects directory. Include a space between paths. Must be the same across subjects.
   -b BPX_PATH, --bpx BPX_PATH
-                        REQUIRED FOR NFACT_PP VOLUME/SURFACE MODE: Path to Bedpostx folder inside a subjects directory.
+                        Relative path to Bedpostx folder inside a subjects directory. Must be the same across subjects
   -r ROI [ROI ...], --roi ROI [ROI ...]
-                        REQUIRED FOR NFACT_PP SURFACE MODE:  A single or list of ROIS. Use when doing whole brain surface tractography to provide medial wall.
+                        REQUIRED FOR SURFACE MODE: Relative path to a single ROI or multiple ROIS to restrict seeding to (e.g. medial wall masks). Must be the same across subject. ROIS must match number of seeds.
   -f FILE_TREE, --file_tree FILE_TREE
-                        REQUIRED FOR FILESTREE MODE: Use this option to provide name of predefined file tree to perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.
+                        Use this option to provide name of predefined file tree to perform whole brain tractography. nfact_pp currently comes with HCP filetree. See documentation for further information.
   -sr SEEDREF, --seedref SEEDREF
-                        Reference volume to define seed space used by probtrackx. Default is MNI space.
+                        Absolute path to a reference volume to define seed space used by probtrackx. Default is MNI space ($FSLDIR/data/standard/MNI152_T1_2mm.nii.gz).
   -t TARGET2, --target TARGET2
-                        Path to target image. If not given will create a whole mask from reference image
+                        Absolute path to a target image. If not provided will use the seedref. Default is human MNI ($FSLDIR/data/standard/MNI152_T1_2mm.nii.gz).
 
 nfact_decomp/nfact_dr inputs:
-  -d DIM, --dim DIM     REQUIRED FOR NFACT DECOMP: Number of dimensions/components
-  -a ALGO, --algo ALGO  What algorithm to run. Options are: NMF (default) or ICA.
+  -d DIM, --dim DIM     This is compulsory option. Number of dimensions/components to retain after running NMF/ICA.
+  -a ALGO, --algo ALGO  Which decomposition algorithm to run. Options are: NMF (default), or ICA. This is case insensitive
   -rf ROI, --rf_decomp ROI
-                        File containing rois. Needed if seeds are .gii
+                        Absolute path to a text file containing the absolute path ROI(s) paths to restrict seeding to (e.g. medial wall masks). This is not needed if seeds are not surfaces. If used nfact_pp then this is the roi_for_decomp.txt file in the nfact_pp
+                        directory. This option is not needed if the pipeline is being ran from nfact_pp onwards.
 
 nfact_Qc inputs:
   --threshold THRESHOLD
                         Z score value to threshold hitmaps.
+
 ```
 
 example call:
@@ -133,23 +140,23 @@ Required before running NFACT PP:
 NFACT PP has three modes: surface , volume, and filestree.
 
 Required input:
-    - List of subjects
-    - Output directory
+    - List of subjects (absolute path)
+    - Output directory (absolute path)
 
 Input needed for filetree mode:
     - .tree file (NFACT_PP comes with some defaults such as hcp)
 
 Input needed for both surface and volume mode:
-    - Seeds path inside folder
-    - Warps path inside a subjects folder
-    - bedpostx folder path inside a subjects folder
+    - Seeds path inside folder (relative path, must be same across subjects)
+    - Warps path inside a subjects folder (relative path, must be same across subjects)
+    - bedpostx folder path inside a subjects folder (relative path, must be same across subjects)
    
 Input for surface seed mode:
-    - Seeds as surfaces
-    - ROI as surfaces. This is files to restrict seeding to (for example surface files that exclude medial wall) 
+    - Seeds as surfaces (relative path, must be same across subjects)
+    - ROI as surfaces. This is files to restrict seeding to (for example surface files that exclude medial wall, this is a relative path, must be same across subjects)
     
 Input needed for volume mode:
-    - Seeds as volumes 
+    - Seeds as volumes (relative path, must be same across subjects)
 
  ### NFACT PP input folder 
 
@@ -171,44 +178,48 @@ seed files are aliased as (seed), roi as (roi), warps as (diff2std, std2diff) an
 ### Usage:
 
 ```
+usage: nfact_pp [-h] [-hh] [-O] [-l LIST_OF_SUBJECTS] [-o OUTDIR] [-f FILE_TREE] [-s SEED [SEED ...]] [-w WARPS [WARPS ...]] [-b BPX_PATH] [-r ROI [ROI ...]] [-sr SEEDREF] [-t TARGET2] [-ns NSAMPLES] [-mm MM_RES] [-p PTX_OPTIONS] [-e EXCLUSION] [-S [STOP ...]]
+                [-n N_CORES] [-C] [-cq CLUSTER_QUEUE] [-cr CLUSTER_RAM] [-ct CLUSTER_TIME] [-cqos CLUSTER_QOS]
+
 options:
-  -h, --help            show this help message and exit
-  -hh, --verbose_help   Prints help message and example usages
-  -O, --overwrite       Overwrite previous file structure
+  -h, --help            Shows help message and exit
+  -hh, --verbose_help   Verbose help message. Prints help message and example usages
+  -O, --overwrite       Overwrites previous file structure
 
 Compulsory Arguments:
   -l LIST_OF_SUBJECTS, --list_of_subjects LIST_OF_SUBJECTS
-                        A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. All subjects need full file path to subjects directory
+                        Absolute path to a list of subjects in text form. All subjects need the absolute file path to subjects directory. Consider using nfact_config to help create subject list
   -o OUTDIR, --outdir OUTDIR
-                        Directory to save results in
+                        Absolute path to a directory to save results in. nfact_pp creates a folder called nfact_pp in it.
 
 REQUIRED FOR FILETREE MODE: :
   -f FILE_TREE, --file_tree FILE_TREE
-                        Use this option to provide name of predefined file tree to perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.
+                        Use this option to provide name of predefined file tree to perform whole brain tractography. nfact_pp currently comes with HCP filetree. See documentation for further information.
 
 Tractography options: :
   -s SEED [SEED ...], --seed SEED [SEED ...]
-                        A single or list of seeds
+                        Relative path to either a single or multiple seeds. If multiple seeds given then include a space between paths. Must be the same across subjects.
   -w WARPS [WARPS ...], --warps WARPS [WARPS ...]
-                        Path to warps inside a subjects directory (can accept multiple arguments)
+                        Relative path to warps inside a subjects directory. Include a space between paths. Must be the same across subjects.
   -b BPX_PATH, --bpx BPX_PATH
-                        Path to Bedpostx folder inside a subjects directory.
+                        Relative path to Bedpostx folder inside a subjects directory. Must be the same across subjects
   -r ROI [ROI ...], --roi ROI [ROI ...]
-                        REQUIRED FOR SURFACE MODE: ROI(s) (.gii files) to restrict seeding to (e.g. medial wall masks).
+                        REQUIRED FOR SURFACE MODE: Relative path to a single ROI or multiple ROIS to restrict seeding to (e.g. medial wall masks). Must be the same across subject. ROIS must match number of seeds.
   -sr SEEDREF, --seedref SEEDREF
-                        Reference volume to define seed space used by probtrackx. Default is MNI space.
+                        Absolute path to a reference volume to define seed space used by probtrackx. Default is MNI space ($FSLDIR/data/standard/MNI152_T1_2mm.nii.gz).
   -t TARGET2, --target TARGET2
-                        Name of target. If not given will create a whole mask from reference image
+                        Absolute path to a target image. If not provided will use the seedref. Default is human MNI ($FSLDIR/data/standard/MNI152_T1_2mm.nii.gz).
   -ns NSAMPLES, --nsamples NSAMPLES
-                        Number of samples per seed used in tractography (default = 1000)
+                        Number of samples per seed used in tractography. Default is 1000
   -mm MM_RES, --mm_res MM_RES
-                        Resolution of target image (Default = 2 mm)
+                        Resolution of target image. Default is 2 mm
   -p PTX_OPTIONS, --ptx_options PTX_OPTIONS
-                        Path to ptx_options file for additional options
+                        Path to ptx_options file for additional options. Currently doesn't override defaults
   -e EXCLUSION, --exclusion EXCLUSION
-                        Path to an exclusion mask. Will reject pathways passing through locations given by this mask
+                        Absolute path to an exclusion mask. Will reject pathways passing through locations given by this mask
   -S [STOP ...], --stop [STOP ...]
-                        Use wtstop and stop in the tractography. Takes a file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask. Argument can be used with the --filetree, in that case no json file is needed.
+                        Use wtstop and stop in the tractography. Takes an absolute file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask. Argument can be used with the --filetree, in that case no json file is
+                        needed.
 
 Parallel Processing arguments:
   -n N_CORES, --n_cores N_CORES
@@ -216,40 +227,41 @@ Parallel Processing arguments:
                         slow down processing.
 
 Cluster Arguments:
-  -C, --cluster         Use cluster enviornment
+  -C, --cluster         Use the cluster enviornment. nfact_pp will check that
   -cq CLUSTER_QUEUE, --queue CLUSTER_QUEUE
                         Cluster queue to submit to
   -cr CLUSTER_RAM, --cluster_ram CLUSTER_RAM
-                        Ram that job will take. Default is 60
+                        The amount of ram that job will take. Default is 60
   -ct CLUSTER_TIME, --cluster_time CLUSTER_TIME
-                        Time that job will take. nfact_pp will assign a time if none given
+                        The amount of time that job will take. nfact_pp will assign a time if none given, depending on cluster gpu status
   -cqos CLUSTER_QOS, --cluster_qos CLUSTER_QOS
-                        Set the qos for the cluster
+                        Set the qos for the cluster. Usually not needed
 
 
 Example Usage:
     Surface mode:
-           nfact_pp --list_of_subjects /home/study/sub_list
-               --outdir /home/study
-               --bpx_path /path_to/.bedpostX
-               --seeds /path_to/L.white.32k_fs_LR.surf.gii /path_to/R.white.32k_fs_LR.surf.gii
-               --roi /path_to/L.atlasroi.32k_fs_LR.shape.gii /path_to/R.atlasroi.32k_fs_LR.shape.gii
-               --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz
+           nfact_pp --list_of_subjects /absolute_path/study/sub_list
+               --outdir absolute_path/study
+               --bpx_path /relative_path/.bedpostX
+               --seeds /relative_path/L.surf.gii /path_to/R.surf.gii
+               --roi /relative_path/L.exclude_medialwall.shape.gii /path_to/R.exclude_medialwall.shape.gii
+               --warps /relative_path/stand2diff.nii.gz /relative_path/diff2stand.nii.gz
                --n_cores 3
 
     Volume mode:
-            nfact_pp --list_of_subjects /home/study/sub_list
-                --bpx_path /path_to/.bedpostX
-                --seeds /path_to/L.white.nii.gz /path_to/R.white.nii.gz
-                --warps /path_to/stand2diff.nii.gz /path_to/diff2stand.nii.gz
-                --ref MNI152_T1_1mm_brain.nii.gz
-                --target dlpfc.nii.gz
+            nfact_pp --list_of_subjects /absolute_path/study/sub_list
+                --outdir /absolute_path/study
+                --bpx_path /relative_path/.bedpostX
+                --seeds /relative_path/L.white.nii.gz /relative_path/R.white.nii.gz
+                --warps /relative_path/stand2diff.nii.gz /relative_path/diff2stand.nii.gz
+                --seedref absolute_path/MNI152_T1_1mm_brain.nii.gz
+                --target absolute_path/dlpfc.nii.gz
 
     Filestree mode:
         nfact_pp --filestree hcp
-            --list_of_subjects /home/study/sub_list
-            --outdir /home/study
-            --n_cores 3
+            --list_of_subjects /absolute_path/study/sub_list
+            --outdir /absolute_path/study
+
 
 ```
 
@@ -265,36 +277,48 @@ Example Usage:
 
 ```
 ## NFACT decomp
-This is the main decompoisition module of NFACT. Runs either ICA or NMF and saves the components. Components can also be normalised and winner takes all maps
-created.
-
+This is the main decompoisition module of NFACT. Runs either ICA or NMF and saves the components in the nfact_decomp directory. Components can also be normalised with the zscore maps saved, which is useful for visualization. Winner takes all maps can be created with the brain represented by which 
+components are the "winner" in that region
 
 ### Usage
 ```
+usage: nfact_decomp [-h] [-hh] [-O] [-l LIST_OF_SUBJECTS] [-o OUTDIR] [--seeds SEEDS] [--roi ROI] [-n CONFIG] [-d DIM] [-a ALGO] [-W] [-z WTA_ZTHR] [-N] [-c COMPONENTS] [-p PCA_TYPE] [-S]
+
 options:
-  -h, --help            show this help message and exit
-  -l LIST_OF_SUBJECTS, --list_of_subjects LIST_OF_SUBJECTS
-                        REQUIRED: Filepath to a list of subjects. List can contain a single subject.
-  -o OUTDIR, --outdir OUTDIR
-                        REQUIRED: Path to output folder
-  -d DIM, --dim DIM     REQUIRED: Number of dimensions/components
-  --seeds SEEDS, -s SEEDS
-                        REQUIRED: File of seeds used in NFACT_PP/probtrackx
-  --roi ROI, -r ROI     REQUIRED FOR SURFACE SEEDS: Txt file with ROI(s) paths to restrict seeding to (e.g. medial wall masks).
-  -a ALGO, --algo ALGO  What algorithm to run. Options are: NMF (default), or ICA.
-  -c COMPONENTS, --components COMPONENTS
-                        REQUIRED FOR ICA: Components for the PCA (default is 1000)
-  -p PCA_TYPE, --pca_type PCA_TYPE
-                        REQUIRED FOR ICA: Type of PCA to do before ICA. Default is PCA which is sckitlearn's PCA. Other option is migp (MELODIC's Incremental Group-PCA dimensionality). This is case insensitive
-  -W, --wta             Save winner-takes-all maps
-  -z WTA_ZTHR, --wta_zthr WTA_ZTHR
-                        Winner-takes-all threshold (default=0.)
-  -N, --normalise       Normalises components by zscoring.
-  -S, --sign_flip       Don't Sign flip components of ICA
+  -h, --help            Shows help message and exit
+  -hh, --verbose_help   Verbose help message. Prints help message and example usages
   -O, --overwrite       Overwrite previous file structure
+
+Compulsory Arguments:
+  -l LIST_OF_SUBJECTS, --list_of_subjects LIST_OF_SUBJECTS
+                        Absolute path to a list of subjects in text form. All subjects need the absolute file path to subjects omatrix2 directory. Consider using nfact_config to help create subject list.
+  -o OUTDIR, --outdir OUTDIR
+                        Absolute path to a directory to save results in. nfact_decomp creates a folder called nfact_decomp in it.
+
+Decomposition inputs: :
+  --seeds SEEDS, -s SEEDS
+                        Absolute path to a text file of seed(s) used in nfact_pp/probtrackx. If used nfact_pp this is the seeds_for_decomp.txt in the nfact_pp directory.
+  --roi ROI, -r ROI     Absolute path to a text file containing the absolute path ROI(s) paths to restrict seeding to (e.g. medial wall masks). This is not needed if seeds are not surfaces. If used nfact_pp then this is the roi_for_decomp.txt file in the nfact_pp
+                        directory.
   -n CONFIG, --nfact_config CONFIG
-                        Provide config file to change hyperparameters for ICA and NMF. Please see sckit learn documentation for NMF and FASTICA for further details
-  -hh, --verbose_help   Prints help message and example usages
+                        Absolute path to a configuration file. Congifuration file provides available hyperparameters for ICA and NMF. Use nfact_config -D to create a config file. Please see sckit learn documentation for NMF and FASTICA for further details
+
+Decomposition options: :
+  -d DIM, --dim DIM     This is compulsory option. Number of dimensions/components to retain after running NMF/ICA.
+  -a ALGO, --algo ALGO  Which decomposition algorithm to run. Options are: NMF (default), or ICA. This is case insensitive
+
+Output options: :
+  -W, --wta             Option to create and save winner-takes-all maps.
+  -z WTA_ZTHR, --wta_zthr WTA_ZTHR
+                        Winner-takes-all threshold. Default is 0
+  -N, --normalise       Z scores component values and saves map. This is useful for visualization
+
+ICA options: :
+  -c COMPONENTS, --components COMPONENTS
+                        Number of component to be retained following the PCA. Default is 1000
+  -p PCA_TYPE, --pca_type PCA_TYPE
+                        Which type of PCA to do before ICA. Options are 'pca' which is sckit learns default PCA or 'migp' (MELODIC's Incremental Group-PCA dimensionality). Default is 'pca' as for most cases 'migp' is slow and not needed. Option is case insensitive.
+  -S, --sign_flip       nfact_decomp by default sign flips the ICA distribution to reduce the number of negative values. Use this option to stop the sign_flip
 
 
 Basic NMF with volume seeds usage:
@@ -305,7 +329,7 @@ Basic NMF with volume seeds usage:
 Basic NMF usage with surface seeds:
     nfact_decomp --list_of_subjects /absolute path/sub_list \
                  --seeds /absolute path/seeds.txt \
-                 --roi /path/to/rois
+                 --roi /absolute path/rois
                  --dim 50
 
 ICA with config file usage:
@@ -313,18 +337,20 @@ ICA with config file usage:
                  --seeds /absolute path/seeds.txt \
                  --outdir /absolute path/study_directory \
                  --algo ICA \
-                 --nfact_config /path/to/config/file
+                 --nfact_config /absolute path/nfact_config.decomp
 
 Advanced ICA Usage:
     nfact_decomp --list_of_subjects /absolute path/sub_list \
                  --seeds /absolute path/seeds.txt \
                  --outdir /absolute path/study_directory \
                  --algo ICA \
-                 --migp 1000 \
+                 --components 1000 \
+                 --pca_type mipg
                  --dim 100 \
                  --normalise \
                  --wta \
-                 --wat_zthr 0.5
+                 --wta_zthr 0.5
+
 
 ```
 ------------------------------------------------------------------------------------------------------------------------------------------
@@ -420,16 +446,16 @@ Prefix:
 ## Usage:
 
 ```
-usage: nfact [-h] [-n NFACT_FOLDER] [-d DIM] [-a ALGO] [-t THRESHOLD] [-O]
+usage: nfact_Qc [-h] [-n NFACT_FOLDER] [-d DIM] [-a ALGO] [-t THRESHOLD] [-O]
 
 options:
   -h, --help            show this help message and exit
   -n NFACT_FOLDER, --nfact_folder NFACT_FOLDER
-                        REQUIRED: Path to nfact output folder
-  -d DIM, --dim DIM     REQUIRED: Number of dimensions/components
-  -a ALGO, --algo ALGO  REQUIRED:What algorithm to qc. Options are: NMF (default), or ICA.
+                        REQUIRED: Absolute path to nfact_decomp output folder. nfact_Qc folder is also saved within this folder.
+  -d DIM, --dim DIM     REQUIRED: Number of dimensions/components that was used to generate nfact_decomp image
+  -a ALGO, --algo ALGO  REQUIRED: Which algorithm to run qulatiy control on. Options are: NMF (default), or ICA.
   -t THRESHOLD, --threshold THRESHOLD
-                        Threshold value for z scoring the normalised image
+                        Threshold value for z scoring the number of times a component comes up in a voxel in the image. Values below this z score are treated as noise and discarded in the non raw image.
   -O, --overwrite       Overwite previous QC
 
 ```
@@ -454,22 +480,23 @@ NFACT config is a util tool for nfact, that creates a variety of config files to
 NFACT config can create:
 1) nfact_config.pipeline overview. This config JSON file is used in the nfact pipeline to have greater control over parameters.  
 2) nfact_config.decomp. A config JSON file to control the hyper-parameters of the ICA and NMF functions.
-3) nfact_config.sublist. A list of subjects(TXT file) in a folder. 
+3) nfact_config.sublist. A list of subjects(text file) in a folder. 
 
 
 ## Usage:
 ```
-usage: nfact_config [-h] [-C] [-D] [-s SUBJECT_LIST] [-o OUTPUT_DIR]
+usage: nfact_config [-h] [-C] [-D] [-s SUBJECT_LIST] [-o OUTPUT_DIR] [-f FILE_NAME]
 
 options:
-  -h, --help            show this help message and exit
+  -h, --help            Shows help message and exit
   -C, --config          Creates a config file for NFACT pipeline
-  -D, --decomp_only     Creates a config file for sckitlearn function hyperparameters
+  -D, --decomp_only     Creates a config file for hyperparameters for the NMF/ICA
   -s SUBJECT_LIST, --subject_list SUBJECT_LIST
-                        Creates a subject list from a given directory
+                        Creates a subject list from a given directory Needs path to subjects directory. If ran inside an nfact_pp directory will make a subject list for decompoisition (adds on omatrix2 to file paths)
   -o OUTPUT_DIR, --output_dir OUTPUT_DIR
-                        Where to save config file
-
+                        File path of where to save config file
+  -f FILE_NAME, --file_name FILE_NAME
+                        Name of the nfact config filename. Defaults is nfact_config
 ```
 Altering a Boolean value in a JSON is done by giving then everything has to be lower case i.e true, false. It is advised that unless you are familiar with JSON 
 files to use a JSON linter to check they are valid. 
