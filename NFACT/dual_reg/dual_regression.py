@@ -3,7 +3,6 @@ import numpy as np
 from scipy.optimize import nnls
 from joblib import Parallel, delayed
 from tqdm import tqdm
-import sys
 
 
 def run_decomp(
@@ -141,7 +140,6 @@ def nnls_non_parallel(components: dict, connectivity_matrix: np.ndarray):
                 range(connectivity_matrix.shape[1]),
                 colour="magenta",
                 unit="voxel",
-                file=sys.stdout,
             )
         ]
     ).T
@@ -153,7 +151,6 @@ def nnls_non_parallel(components: dict, connectivity_matrix: np.ndarray):
                 range(connectivity_matrix.shape[0]),
                 colour="magenta",
                 unit="vertex",
-                file=sys.stdout,
             )
         ]
     )
