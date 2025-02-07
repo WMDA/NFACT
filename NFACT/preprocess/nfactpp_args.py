@@ -77,27 +77,33 @@ def nfact_pp_args() -> dict:
         "--seed",
         nargs="+",
         dest="seed",
-        help="A single or list of seeds",
+        help="""
+        Relative path to either a single or multiple seed. If multiple seeds given
+        then include a space between paths. Must be the same across subjects
+        """,
     )
     tractography_input.add_argument(
         "-w",
         "--warps",
         dest="warps",
         nargs="+",
-        help="Path to warps inside a subjects directory (can accept multiple arguments)",
+        help="""Relative path to warps inside a subjects directory. 
+        Include a space between paths. Must be the same across subjects""",
     )
     tractography_input.add_argument(
         "-b",
         "--bpx",
         dest="bpx_path",
-        help="Path to Bedpostx folder inside a subjects directory.",
+        help="Relative path to Bedpostx folder inside a subjects directory. Must be the same across subjects",
     )
     tractography_input.add_argument(
         "-r",
         "--roi",
         dest="roi",
         nargs="+",
-        help="""REQUIRED FOR SURFACE MODE: ROI(s) (.gii files) to restrict seeding to (e.g. medial wall masks).""",
+        help="""REQUIRED FOR SURFACE MODE: 
+        Relative path to a single ROI or multiple  to restrict seeding to (e.g. medial wall masks). 
+        Must be the same across subject""",
     )
     tractography_input.add_argument(
         "-sr",
