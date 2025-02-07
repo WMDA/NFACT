@@ -29,6 +29,7 @@ def nfact_pp_args() -> dict:
         default=False,
         action="store_true",
         help="""
+        Verbose help message.
         Prints help message and example usages
       """,
     )
@@ -38,7 +39,7 @@ def nfact_pp_args() -> dict:
         dest="overwrite",
         action="store_true",
         default=False,
-        help="Overwrite previous file structure",
+        help="Overwrites previous file structure",
     )
     compulsory_args = base_args.add_argument_group(
         f"{col['deep_pink']}Compulsory Arguments{col['reset']}"
@@ -47,14 +48,20 @@ def nfact_pp_args() -> dict:
         "-l",
         "--list_of_subjects",
         dest="list_of_subjects",
-        help="""A list of subjects in text form. If not provided NFACT PP will use all subjects in the study folder. 
-        All subjects need full file path to subjects directory""",
+        help="""
+        Absolute path to a  list of subjects in text form. 
+        All subjects need the absolute file path to subjects directory.
+        Consider using nfact_config to help create subject list
+        """,
     )
     compulsory_args.add_argument(
         "-o",
         "--outdir",
         dest="outdir",
-        help=" Directory to save results in",
+        help="""
+        Absolute path to a directory to save results in. 
+        nfact_pp creates a folder called nfact_pp in it.
+        """,
     )
 
     file_tree_input = base_args.add_argument_group(
@@ -66,7 +73,8 @@ def nfact_pp_args() -> dict:
         dest="file_tree",
         default=False,
         help="""Use this option to provide name of predefined file tree to 
-        perform whole brain tractography. NFACT_PP currently comes with HCP filetree. See documentation for further information.""",
+        perform whole brain tractography. nfact_pp currently comes with HCP filetree. 
+        See documentation for further information.""",
     )
     tractography_input = base_args.add_argument_group(
         f"{col['pink']}Tractography options: {col['reset']}"
@@ -78,7 +86,7 @@ def nfact_pp_args() -> dict:
         nargs="+",
         dest="seed",
         help="""
-        Relative path to either a single or multiple seed. If multiple seeds given
+        Relative path to either a single or multiple seeds. If multiple seeds given
         then include a space between paths. Must be the same across subjects
         """,
     )
@@ -102,42 +110,50 @@ def nfact_pp_args() -> dict:
         dest="roi",
         nargs="+",
         help="""REQUIRED FOR SURFACE MODE: 
-        Relative path to a single ROI or multiple  to restrict seeding to (e.g. medial wall masks). 
-        Must be the same across subject""",
+        Relative path to a single ROI or multiple ROIS to restrict seeding to (e.g. medial wall masks). 
+        Must be the same across subject. ROIS must match number of seeds
+        """,
     )
     tractography_input.add_argument(
         "-sr",
         "--seedref",
         dest="seedref",
         default=False,
-        help="Reference volume to define seed space used by probtrackx. Default is MNI space.",
+        help="""
+        Absolute path to a reference volume to define seed space used by probtrackx. 
+        Default is MNI space ($FSLDIR/data/standard/MNI152_T1_2mm.nii.gz).
+        """,
     )
     tractography_input.add_argument(
         "-t",
         "--target",
         dest="target2",
         default=False,
-        help="Name of target. If not given will create a whole mask from reference image",
+        help="""Absolute path to a target image. 
+        If not provided will use the seedref. Default is human MNI""",
     )
     tractography_input.add_argument(
         "-ns",
         "--nsamples",
         dest="nsamples",
         default=1000,
-        help="Number of samples per seed used in tractography (default = 1000)",
+        help="Number of samples per seed used in tractography. Default is 1000",
     )
     tractography_input.add_argument(
         "-mm",
         "--mm_res",
         dest="mm_res",
         default=2,
-        help="Resolution of target image (Default = 2 mm)",
+        help="Resolution of target image. Default is 2 mm",
     )
     tractography_input.add_argument(
         "-p",
         "--ptx_options",
         dest="ptx_options",
-        help="Path to ptx_options file for additional options",
+        help="""
+        Path to ptx_options file for additional options. 
+        Currently doesn't override defaults
+        """,
         default=False,
     )
 
@@ -147,7 +163,8 @@ def nfact_pp_args() -> dict:
         dest="exclusion",
         default=False,
         help="""
-        Path to an exclusion mask. Will reject pathways passing through locations given by this mask
+        Absolute path to an exclusion mask. 
+        Will reject pathways passing through locations given by this mask
       """,
     )
     tractography_input.add_argument(
@@ -157,7 +174,8 @@ def nfact_pp_args() -> dict:
         default=False,
         nargs="*",
         help="""
-        Use wtstop and stop in the tractography. Takes a file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask.
+        Use wtstop and stop in the tractography. 
+        Takes an absolute file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask.
         Argument can be used with the --filetree, in that case no json file is needed.
       """,
     )
@@ -188,7 +206,9 @@ def nfact_pp_args() -> dict:
         dest="cluster",
         action="store_true",
         default=False,
-        help="Use cluster enviornment",
+        help="""Use the cluster enviornment. 
+        nfact_pp will check that 
+        """,
     )
     cluster_args.add_argument(
         "-cq",
@@ -202,21 +222,22 @@ def nfact_pp_args() -> dict:
         "--cluster_ram",
         dest="cluster_ram",
         default="60",
-        help="Ram that job will take. Default is 60",
+        help="The amount of ram that job will take. Default is 60",
     )
     cluster_args.add_argument(
         "-ct",
         "--cluster_time",
         dest="cluster_time",
         default=False,
-        help="Time that job will take. nfact_pp will assign a time if none given",
+        help="""The amount of time that job will take. 
+        nfact_pp will assign a time if none given, depending on cluster gpu status""",
     )
     cluster_args.add_argument(
         "-cqos",
         "--cluster_qos",
         dest="cluster_qos",
         default=False,
-        help="Set the qos for the cluster",
+        help="Set the qos for the cluster. Usually not needed",
     )
 
     no_args(base_args)
