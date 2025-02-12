@@ -46,7 +46,7 @@ def nfact_pp_args() -> dict:
     set_up_args(base_args, col)
 
     file_tree_input = base_args.add_argument_group(
-        f"{col['plum']}REQUIRED FOR FILETREE MODE: {col['reset']}"
+        f"{col['plum']}Filetree option{col['reset']}"
     )
     file_tree_input.add_argument(
         "-f",
@@ -58,7 +58,7 @@ def nfact_pp_args() -> dict:
         See documentation for further information.""",
     )
     tractography_input = base_args.add_argument_group(
-        f"{col['pink']}Tractography options: {col['reset']}"
+        f"{col['pink']}Tractography options{col['reset']}"
     )
 
     tractography_input.add_argument(

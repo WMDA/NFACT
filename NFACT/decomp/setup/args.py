@@ -1,5 +1,6 @@
 import argparse
 from NFACT.base.utils import colours, no_args, verbose_help_message
+from NFACT.base.base_args import set_up_args
 
 
 def nfact_decomp_args() -> dict:
@@ -32,7 +33,6 @@ def nfact_decomp_args() -> dict:
         Prints help message and example usages
       """,
     )
-
     base_args.add_argument(
         "-O",
         "--overwrite",
@@ -41,30 +41,9 @@ def nfact_decomp_args() -> dict:
         default=False,
         help="Overwrite previous file structure",
     )
-    compulsory_args = base_args.add_argument_group(
-        f"{col['deep_pink']}Compulsory Arguments{col['reset']}"
-    )
-    compulsory_args.add_argument(
-        "-l",
-        "--list_of_subjects",
-        dest="list_of_subjects",
-        help="""
-        Absolute path to a list of subjects in text form. 
-        All subjects need the absolute file path to subjects omatrix2 directory.
-        Consider using nfact_config to help create subject list.
-        """,
-    )
-    compulsory_args.add_argument(
-        "-o",
-        "--outdir",
-        dest="outdir",
-        help="""
-        Absolute path to a directory to save results in. 
-        nfact_decomp creates a folder called nfact_decomp in it.
-        """,
-    )
+    set_up_args(base_args, col)
     decomp_input = base_args.add_argument_group(
-        f"{col['plum']}Decomposition inputs: {col['reset']}"
+        f"{col['plum']}Decomposition inputs{col['reset']}"
     )
     decomp_input.add_argument(
         "--seeds",
@@ -103,11 +82,9 @@ def nfact_decomp_args() -> dict:
         Please see sckit learn documentation for NMF and FASTICA for further details
         """,
     )
-
     decomp_args = base_args.add_argument_group(
-        f"{col['pink']}Decomposition options: {col['reset']}"
+        f"{col['pink']}Decomposition options{col['reset']}"
     )
-
     decomp_args.add_argument(
         "-d",
         "--dim",
@@ -129,7 +106,7 @@ def nfact_decomp_args() -> dict:
         """,
     )
     output_args = base_args.add_argument_group(
-        f"{col['darker_pink']}Output options: {col['reset']}"
+        f"{col['darker_pink']}Output options{col['reset']}"
     )
     output_args.add_argument(
         "-W",
@@ -160,7 +137,7 @@ def nfact_decomp_args() -> dict:
         """,
     )
     ica_options = base_args.add_argument_group(
-        f"{col['purple']}ICA options: {col['reset']}"
+        f"{col['purple']}ICA options{col['reset']}"
     )
     ica_options.add_argument(
         "-c",
