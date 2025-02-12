@@ -2,11 +2,7 @@ from .nfactpp import pre_processing
 from .probtrackx_functions import to_use_gpu
 from .nfactpp_functions import seedref
 from .nfactpp_args import nfact_pp_args
-from .nfactpp_setup import (
-    check_fsl_is_installed,
-    check_ptx_options_are_valid,
-    check_provided_img,
-)
+from .nfactpp_setup import check_ptx_options_are_valid, check_provided_img
 from NFACT.base.utils import error_and_exit, colours
 from NFACT.base.signithandler import Signit_handler
 from NFACT.base.filesystem import read_file_to_list, make_directory
@@ -15,12 +11,9 @@ from NFACT.base.setup import (
     return_list_of_subjects_from_file,
     does_list_of_subjects_exist,
     check_arguments,
+    check_fsl_is_installed,
 )
-from NFACT.base.cluster_support import (
-    Cluster_parameters,
-    NoClusterQueuesException,
-    no_cluster_queues,
-)
+from NFACT.base.cluster_support import processing_cluster
 import os
 import shutil
 
@@ -58,10 +51,7 @@ def nfact_pp_main(arg: dict = None):
             "Unclear whether to parallel process locally or to submit to cluster. Remove either --n_cores or --cluster",
         )
     # Error handle if FSL not installed or loaded
-    error_and_exit(
-        check_fsl_is_installed(),
-        "FSLDIR not in path. Check FSL is installed or has been loaded correctly",
-    )
+    check_fsl_is_installed()
 
     # Error handle list of subjects
     error_and_exit(
@@ -78,12 +68,7 @@ def nfact_pp_main(arg: dict = None):
     )
 
     if arg["cluster"]:
-        print(f"{col['deep_pink']}Checking:{col['reset']} Cluster Availability")
-        try:
-            arg = Cluster_parameters(arg).process_parameters()
-            print(f"{col['amethyst']}Using:{col['reset']} Cluster")
-        except NoClusterQueuesException:
-            arg["cluster"] = no_cluster_queues()
+        arg = processing_cluster(arg)
 
     print(
         f'{col["darker_pink"]}Filetree:{col["reset"]} {arg["file_tree"].lower()} '
@@ -107,6 +92,7 @@ def nfact_pp_main(arg: dict = None):
         check_ptx_options_are_valid(arg["ptx_options"])
 
     arg["seedref"] = seedref(arg["seedref"])
+
     nfact_pp_directory = os.path.join(arg["outdir"], "nfact_pp")
     if arg["overwrite"]:
         if os.path.exists(nfact_pp_directory):

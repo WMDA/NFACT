@@ -313,3 +313,24 @@ def process_dim(dim: str) -> str:
         )
 
     return dim
+
+
+def check_fsl_is_installed():
+    """
+    Function to check that FSL is
+    installed. Checks for FSLDIR
+    in enviormental variables
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
+    fsl_loaded = os.getenv("FSLDIR")
+    error_and_exit(
+        fsl_loaded,
+        "FSLDIR not in path. Check FSL is installed or has been loaded correctly",
+    )
