@@ -69,7 +69,7 @@ def nfactdr_args() -> dict:
         default=False,
         help="normalise components by scaling",
     )
-    parallel_args(base_args, col, "To parallelize dula regression")
+    parallel_args(base_args, col, "To parallelize dual regression")
 
     no_args(base_args)
     options = base_args.parse_args()
