@@ -1,6 +1,11 @@
 import argparse
 from NFACT.base.utils import colours, no_args, verbose_help_message
-from NFACT.base.base_args import cluster_args, parallel_args, set_up_args
+from NFACT.base.base_args import (
+    cluster_args,
+    parallel_args,
+    set_up_args,
+    base_arguments,
+)
 
 
 def nfact_pp_args() -> dict:
@@ -23,26 +28,7 @@ def nfact_pp_args() -> dict:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     col = colours()
-    base_args.add_argument(
-        "-hh",
-        "--verbose_help",
-        dest="verbose_help",
-        default=False,
-        action="store_true",
-        help="""
-        Verbose help message.
-        Prints help message and example usages
-      """,
-    )
-    base_args.add_argument(
-        "-O",
-        "--overwrite",
-        dest="overwrite",
-        action="store_true",
-        default=False,
-        help="Overwrites previous file structure",
-    )
-
+    base_arguments(base_args)
     set_up_args(base_args, col)
 
     file_tree_input = base_args.add_argument_group(

@@ -115,3 +115,25 @@ def set_up_args(base_args: object, col: dict) -> None:
         dest="outdir",
         help="Path to output directory",
     )
+
+
+def base_arguments(base_args: object) -> None:
+    base_args.add_argument(
+        "-hh",
+        "--verbose_help",
+        dest="verbose_help",
+        default=False,
+        action="store_true",
+        help="""
+        Verbose help message.
+        Prints help message and example usages
+      """,
+    )
+    base_args.add_argument(
+        "-O",
+        "--overwrite",
+        dest="overwrite",
+        action="store_true",
+        default=False,
+        help="Overwrites previous file structure",
+    )
