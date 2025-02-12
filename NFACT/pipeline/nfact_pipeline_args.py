@@ -1,4 +1,5 @@
 from NFACT.base.utils import colours, no_args
+from NFACT.base.base_args import algo_arg
 import argparse
 
 
@@ -189,17 +190,8 @@ def nfact_parser() -> dict:
         after running NMF/ICA.  
         """,
     )
-    nfact_decomp_args.add_argument(
-        "-a",
-        "--algo",
-        dest="algo",
-        default="NMF",
-        help="""
-        Which decomposition algorithm to run. 
-        Options are: NMF (default), or ICA. This is case
-        insensitive
-        """,
-    )
+    algo_arg(nfact_decomp_args)
+
     nfact_decomp_args.add_argument(
         "-rf",
         "--rf_decomp",

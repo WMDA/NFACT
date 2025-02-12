@@ -1,5 +1,11 @@
 import argparse
 from NFACT.base.utils import colours, no_args, verbose_help_message
+from NFACT.base.base_args import (
+    cluster_args,
+    parallel_args,
+    set_up_args,
+    base_arguments,
+)
 
 
 def nfact_pp_args() -> dict:
@@ -22,50 +28,11 @@ def nfact_pp_args() -> dict:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     col = colours()
-    base_args.add_argument(
-        "-hh",
-        "--verbose_help",
-        dest="verbose_help",
-        default=False,
-        action="store_true",
-        help="""
-        Verbose help message.
-        Prints help message and example usages
-      """,
-    )
-    base_args.add_argument(
-        "-O",
-        "--overwrite",
-        dest="overwrite",
-        action="store_true",
-        default=False,
-        help="Overwrites previous file structure",
-    )
-    compulsory_args = base_args.add_argument_group(
-        f"{col['deep_pink']}Compulsory Arguments{col['reset']}"
-    )
-    compulsory_args.add_argument(
-        "-l",
-        "--list_of_subjects",
-        dest="list_of_subjects",
-        help="""
-        Absolute path to a  list of subjects in text form. 
-        All subjects need the absolute file path to subjects directory.
-        Consider using nfact_config to help create subject list
-        """,
-    )
-    compulsory_args.add_argument(
-        "-o",
-        "--outdir",
-        dest="outdir",
-        help="""
-        Absolute path to a directory to save results in. 
-        nfact_pp creates a folder called nfact_pp in it.
-        """,
-    )
+    base_arguments(base_args)
+    set_up_args(base_args, col)
 
     file_tree_input = base_args.add_argument_group(
-        f"{col['plum']}REQUIRED FOR FILETREE MODE: {col['reset']}"
+        f"{col['plum']}Filetree option{col['reset']}"
     )
     file_tree_input.add_argument(
         "-f",
@@ -77,7 +44,7 @@ def nfact_pp_args() -> dict:
         See documentation for further information.""",
     )
     tractography_input = base_args.add_argument_group(
-        f"{col['pink']}Tractography options: {col['reset']}"
+        f"{col['pink']}Tractography options{col['reset']}"
     )
 
     tractography_input.add_argument(
@@ -187,68 +154,18 @@ def nfact_pp_args() -> dict:
         Argument can be used with the --filetree, in that case no json file is needed.
       """,
     )
-
-    parallel_process = base_args.add_argument_group(
-        f"{col['darker_pink']}Parallel Processing arguments{col['reset']}"
+    parallel_args(
+        base_args,
+        col,
+        """
+                  If should parallel process locally and with how many cores. 
+                  This parallelizes the number of subjects. If n_cores exceeds
+                  subjects nfact_pp sets this argument to be the number of subjects. 
+                  If nfact_pp is being used on one subject then this may slow down
+                  processing.
+                  """,
     )
-    parallel_process.add_argument(
-        "-n",
-        "--n_cores",
-        dest="n_cores",
-        help="""
-        If should parallel process locally and with how many cores. 
-        This parallelizes the number of subjects. If n_cores exceeds
-        subjects nfact_pp sets this argument to be the number of subjects. 
-        If nfact_pp is being used on one subject then this may slow down
-        processing.
-        """,
-        default=False,
-    )
-    cluster_args = base_args.add_argument_group(
-        f"{col['amethyst']}Cluster Arguments{col['reset']}"
-    )
-
-    cluster_args.add_argument(
-        "-C",
-        "--cluster",
-        dest="cluster",
-        action="store_true",
-        default=False,
-        help="""Use the cluster enviornment. 
-        nfact_pp will check that 
-        """,
-    )
-    cluster_args.add_argument(
-        "-cq",
-        "--queue",
-        dest="cluster_queue",
-        default=None,
-        help="Cluster queue to submit to",
-    )
-    cluster_args.add_argument(
-        "-cr",
-        "--cluster_ram",
-        dest="cluster_ram",
-        default="60",
-        help="The amount of ram that job will take. Default is 60",
-    )
-    cluster_args.add_argument(
-        "-ct",
-        "--cluster_time",
-        dest="cluster_time",
-        default=False,
-        help="""
-        The amount of time that job will take. 
-        nfact_pp will assign a time if none given, depending on cluster gpu status
-        """,
-    )
-    cluster_args.add_argument(
-        "-cqos",
-        "--cluster_qos",
-        dest="cluster_qos",
-        default=False,
-        help="Set the qos for the cluster. Usually not needed",
-    )
+    cluster_args(base_args, col)
 
     no_args(base_args)
     args = base_args.parse_args()

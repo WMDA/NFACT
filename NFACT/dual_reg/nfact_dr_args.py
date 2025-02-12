@@ -1,5 +1,12 @@
 import argparse
 from NFACT.base.utils import colours, no_args, verbose_help_message
+from NFACT.base.base_args import (
+    parallel_args,
+    set_up_args,
+    base_arguments,
+    seed_roi_args,
+    algo_arg,
+)
 
 
 def nfactdr_args() -> dict:
@@ -15,60 +22,33 @@ def nfactdr_args() -> dict:
     dict: dictionary
         dictionary of cmd arguments
     """
-    args = argparse.ArgumentParser(
+    base_args = argparse.ArgumentParser(
         prog="nfact_dr",
         description=print(nfact_dr_splash()),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     col = colours()
-    args.add_argument(
-        "-l",
-        "--list_of_subjects",
-        dest="list_of_subjects",
-        help=f"{col['red']}REQUIRED:{col['reset']} Filepath to a list of subjects",
+    base_arguments(base_args)
+    set_up_args(base_args, col)
+    dr_args = base_args.add_argument_group(
+        f"{col['pink']}Dual Regression Arguments{col['reset']}"
     )
-    args.add_argument(
-        "-o",
-        "--outdir",
-        dest="outdir",
-        help=f"{col['red']}REQUIRED:{col['reset']}  Path to output directory",
-    )
-    args.add_argument(
-        "-a",
-        "--algo",
-        dest="algo",
-        help=f"{col['red']}REQUIRED:{col['reset']} Which NFACT algorithm to perform dual regression on",
-    )
-    args.add_argument(
-        "--seeds",
-        "-s",
-        dest="seeds",
-        help=f"{col['red']}REQUIRED:{col['reset']} File of seeds used in NFACT_PP/probtrackx",
-    )
-    args.add_argument(
-        "--roi",
-        "-r",
-        dest="roi",
-        default=False,
-        help=f"""
-        {col["pink"]}RECOMMENDED FOR SURFACE SEEDS:{col["reset"]}
-        Txt file with ROI(s) paths to restrict seeding to (e.g. medial wall masks).
-        """,
-    )
-    args.add_argument(
-        "-n",
+    algo_arg(dr_args)
+    seed_roi_args(dr_args)
+    dr_args.add_argument(
+        "-d",
         "--nfact_decomp_dir",
         dest="nfact_decomp_dir",
-        help=f"{col['plum']}REQUIRED IF NFACT_DECOMP:{col['reset']} Filepath to the NFACT_decomp directory. Use this if you have ran NFACT decomp",
+        help="Filepath to the NFACT_decomp directory. Use this if you have ran NFACT decomp",
     )
-    args.add_argument(
-        "-d",
+    dr_args.add_argument(
+        "-dd",
         "--decomp_dir",
         dest="decomp_dir",
-        help=f"""{col["plum"]}REQUIRED IF NOT NFACT_DECOMP:{col["reset"]} Filepath to decomposition components. 
+        help="""Filepath to decomposition components. 
         WARNING NFACT decomp expects components to be named in a set way. See documentation for further info.""",
     )
-    args.add_argument(
+    dr_args.add_argument(
         "-N",
         "--normalise",
         dest="normalise",
@@ -76,20 +56,12 @@ def nfactdr_args() -> dict:
         default=False,
         help="normalise components by scaling",
     )
-    args.add_argument(
-        "-hh",
-        "--verbose_help",
-        dest="verbose_help",
-        default=False,
-        action="store_true",
-        help="""
-        Prints help message and example usages
-      """,
-    )
-    no_args(args)
-    options = args.parse_args()
+    parallel_args(base_args, col, "To parallelize dual regression")
+
+    no_args(base_args)
+    options = base_args.parse_args()
     if options.verbose_help:
-        verbose_help_message(args, nfact_dr_usage())
+        verbose_help_message(base_args, nfact_dr_usage())
     return vars(options)
 
 

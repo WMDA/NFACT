@@ -1,5 +1,6 @@
 import argparse
 from NFACT.base.utils import colours, no_args, verbose_help_message
+from NFACT.base.base_args import set_up_args, base_arguments, seed_roi_args, algo_arg
 
 
 def nfact_decomp_args() -> dict:
@@ -21,76 +22,13 @@ def nfact_decomp_args() -> dict:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     col = colours()
-    base_args.add_argument(
-        "-hh",
-        "--verbose_help",
-        dest="verbose_help",
-        default=False,
-        action="store_true",
-        help="""
-        Verbose help message.
-        Prints help message and example usages
-      """,
-    )
+    base_arguments(base_args)
+    set_up_args(base_args, col)
 
-    base_args.add_argument(
-        "-O",
-        "--overwrite",
-        dest="overwrite",
-        action="store_true",
-        default=False,
-        help="Overwrite previous file structure",
-    )
-    compulsory_args = base_args.add_argument_group(
-        f"{col['deep_pink']}Compulsory Arguments{col['reset']}"
-    )
-    compulsory_args.add_argument(
-        "-l",
-        "--list_of_subjects",
-        dest="list_of_subjects",
-        help="""
-        Absolute path to a list of subjects in text form. 
-        All subjects need the absolute file path to subjects omatrix2 directory.
-        Consider using nfact_config to help create subject list.
-        """,
-    )
-    compulsory_args.add_argument(
-        "-o",
-        "--outdir",
-        dest="outdir",
-        help="""
-        Absolute path to a directory to save results in. 
-        nfact_decomp creates a folder called nfact_decomp in it.
-        """,
-    )
     decomp_input = base_args.add_argument_group(
-        f"{col['plum']}Decomposition inputs: {col['reset']}"
+        f"{col['plum']}Decomposition inputs{col['reset']}"
     )
-    decomp_input.add_argument(
-        "--seeds",
-        "-s",
-        dest="seeds",
-        help="""
-        Absolute path to a text file of seed(s) 
-        used in nfact_pp/probtrackx.
-        If used nfact_pp this is the seeds_for_decomp.txt
-        in the nfact_pp directory.
-        """,
-    )
-    decomp_input.add_argument(
-        "--roi",
-        "-r",
-        dest="roi",
-        default=False,
-        help="""
-        Absolute path to a text file containing the  
-        absolute path ROI(s) paths to restrict seeding to 
-        (e.g. medial wall masks). This is not needed if
-        seeds are not surfaces. If used nfact_pp then this
-        is the roi_for_decomp.txt file in the nfact_pp
-        directory.
-        """,
-    )
+    seed_roi_args(decomp_input)
     decomp_input.add_argument(
         "-n",
         "--nfact_config",
@@ -103,11 +41,9 @@ def nfact_decomp_args() -> dict:
         Please see sckit learn documentation for NMF and FASTICA for further details
         """,
     )
-
     decomp_args = base_args.add_argument_group(
-        f"{col['pink']}Decomposition options: {col['reset']}"
+        f"{col['pink']}Decomposition options{col['reset']}"
     )
-
     decomp_args.add_argument(
         "-d",
         "--dim",
@@ -118,18 +54,10 @@ def nfact_decomp_args() -> dict:
         after running NMF/ICA.  
         """,
     )
-    decomp_args.add_argument(
-        "-a",
-        "--algo",
-        dest="algo",
-        default="NMF",
-        help="""Which decomposition algorithm to run. 
-        Options are: NMF (default), or ICA. This is case
-        insensitive
-        """,
-    )
+    algo_arg(decomp_args)
+
     output_args = base_args.add_argument_group(
-        f"{col['darker_pink']}Output options: {col['reset']}"
+        f"{col['darker_pink']}Output options{col['reset']}"
     )
     output_args.add_argument(
         "-W",
@@ -160,7 +88,7 @@ def nfact_decomp_args() -> dict:
         """,
     )
     ica_options = base_args.add_argument_group(
-        f"{col['purple']}ICA options: {col['reset']}"
+        f"{col['purple']}ICA options{col['reset']}"
     )
     ica_options.add_argument(
         "-c",
