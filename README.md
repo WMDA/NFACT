@@ -15,16 +15,15 @@ It consists of three "main" decomposition modules:
     
     - nfact_dr (Dual regression on group matrix)
 
-as well as three axillary "modules":
+as well as two axillary "modules":
     
     - nfact_config (creates config files for the pipeline and changing any hyperparameters)
     
     - nfact_Qc (Creates hitmaps to check for bias in decomposition)
 
-    - nfact_glm (To run hypothesis testing)
 and a pipeline wrapper
     
-    - nfact (runs either all three pre-processing modules or just nfact_decomp and nfact_dr)
+    - nfact (runs nfact_pp, nfact_decomp, nfact_Qc and nfact_dr. nfact_pp, nfact_Qc and nfact_dr can all individually be skipped)
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
