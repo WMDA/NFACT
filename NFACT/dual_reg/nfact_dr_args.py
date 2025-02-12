@@ -1,6 +1,12 @@
 import argparse
 from NFACT.base.utils import colours, no_args, verbose_help_message
-from NFACT.base.base_args import parallel_args, set_up_args, base_arguments
+from NFACT.base.base_args import (
+    parallel_args,
+    set_up_args,
+    base_arguments,
+    seed_roi_args,
+    algo_arg,
+)
 
 
 def nfactdr_args() -> dict:
@@ -27,27 +33,8 @@ def nfactdr_args() -> dict:
     dr_args = base_args.add_argument_group(
         f"{col['pink']}Dual Regression Arguments{col['reset']}"
     )
-    dr_args.add_argument(
-        "-a",
-        "--algo",
-        dest="algo",
-        help="Which NFACT algorithm to perform dual regression on",
-    )
-    dr_args.add_argument(
-        "--seeds",
-        "-s",
-        dest="seeds",
-        help="File of seeds used in NFACT_PP/probtrackx",
-    )
-    dr_args.add_argument(
-        "--medial_wall",
-        "-m",
-        dest="medial_wall",
-        default=False,
-        help="""
-        Medial wall images if surface seeds given.
-        """,
-    )
+    algo_arg(dr_args)
+    seed_roi_args(dr_args)
     dr_args.add_argument(
         "-d",
         "--nfact_decomp_dir",

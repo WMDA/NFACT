@@ -1,6 +1,6 @@
 import argparse
 from NFACT.base.utils import colours, no_args, verbose_help_message
-from NFACT.base.base_args import set_up_args, base_arguments
+from NFACT.base.base_args import set_up_args, base_arguments, seed_roi_args, algo_arg
 
 
 def nfact_decomp_args() -> dict:
@@ -28,31 +28,7 @@ def nfact_decomp_args() -> dict:
     decomp_input = base_args.add_argument_group(
         f"{col['plum']}Decomposition inputs{col['reset']}"
     )
-    decomp_input.add_argument(
-        "--seeds",
-        "-s",
-        dest="seeds",
-        help="""
-        Absolute path to a text file of seed(s) 
-        used in nfact_pp/probtrackx.
-        If used nfact_pp this is the seeds_for_decomp.txt
-        in the nfact_pp directory.
-        """,
-    )
-    decomp_input.add_argument(
-        "--roi",
-        "-r",
-        dest="roi",
-        default=False,
-        help="""
-        Absolute path to a text file containing the  
-        absolute path ROI(s) paths to restrict seeding to 
-        (e.g. medial wall masks). This is not needed if
-        seeds are not surfaces. If used nfact_pp then this
-        is the roi_for_decomp.txt file in the nfact_pp
-        directory.
-        """,
-    )
+    seed_roi_args(decomp_input)
     decomp_input.add_argument(
         "-n",
         "--nfact_config",
@@ -78,16 +54,8 @@ def nfact_decomp_args() -> dict:
         after running NMF/ICA.  
         """,
     )
-    decomp_args.add_argument(
-        "-a",
-        "--algo",
-        dest="algo",
-        default="NMF",
-        help="""Which decomposition algorithm to run. 
-        Options are: NMF (default), or ICA. This is case
-        insensitive
-        """,
-    )
+    algo_arg(decomp_args)
+
     output_args = base_args.add_argument_group(
         f"{col['darker_pink']}Output options{col['reset']}"
     )

@@ -118,6 +118,19 @@ def set_up_args(base_args: object, col: dict) -> None:
 
 
 def base_arguments(base_args: object) -> None:
+    """
+    Function to return base
+    arguments for nfact modules.
+
+    Parameters
+    ----------
+    base_args: argparse.ArgumentParser
+        ArgumentParser to add group to
+
+    Returns
+    -------
+    None
+    """
     base_args.add_argument(
         "-hh",
         "--verbose_help",
@@ -136,4 +149,73 @@ def base_arguments(base_args: object) -> None:
         action="store_true",
         default=False,
         help="Overwrites previous file structure",
+    )
+
+
+def seed_roi_args(args: object) -> None:
+    """
+    Function to return seed
+    and roi arguments.
+
+    Parameters
+    ----------
+    args: argparse.ArgumentParser
+        ArgumentParser to add group to
+
+    Returns
+    -------
+    None
+    """
+    args.add_argument(
+        "--seeds",
+        "-s",
+        dest="seeds",
+        help="""
+        Absolute path to a text file of seed(s) 
+        used in nfact_pp/probtrackx.
+        If used nfact_pp this is the seeds_for_decomp.txt
+        in the nfact_pp directory.
+        """,
+    )
+    args.add_argument(
+        "--roi",
+        "-r",
+        dest="roi",
+        default=False,
+        help="""
+        Absolute path to a text file containing the  
+        absolute path ROI(s) paths to restrict seeding to 
+        (e.g. medial wall masks). This is not needed if
+        seeds are not surfaces. If used nfact_pp then this
+        is the roi_for_decomp.txt file in the nfact_pp
+        directory.
+        """,
+    )
+
+
+def algo_arg(arg) -> None:
+    """
+    Function to return
+    algo argument.
+
+    Parameters
+    ----------
+    args: argparse.ArgumentParser
+        ArgumentParser to add group to
+
+    Returns
+    -------
+    None
+    """
+
+    arg.add_argument(
+        "-a",
+        "--algo",
+        dest="algo",
+        default="NMF",
+        help="""
+        Which decomposition algorithm. 
+        Options are: NMF (default), or ICA. This is case
+        insensitive
+        """,
     )
