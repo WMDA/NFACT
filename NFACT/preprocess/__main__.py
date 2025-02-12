@@ -5,7 +5,7 @@ from .nfactpp_args import nfact_pp_args
 from .nfactpp_setup import check_ptx_options_are_valid, check_provided_img
 from NFACT.base.utils import error_and_exit, colours
 from NFACT.base.signithandler import Signit_handler
-from NFACT.base.filesystem import read_file_to_list, make_directory
+from NFACT.base.filesystem import read_file_to_list, make_directory, delete_folder
 from NFACT.base.setup import (
     check_subject_exist,
     return_list_of_subjects_from_file,
@@ -95,9 +95,7 @@ def nfact_pp_main(arg: dict = None):
 
     nfact_pp_directory = os.path.join(arg["outdir"], "nfact_pp")
     if arg["overwrite"]:
-        if os.path.exists(nfact_pp_directory):
-            print(f'{col["red"]}Overwriting:{col["reset"]} {nfact_pp_directory}.')
-            shutil.rmtree(nfact_pp_directory, ignore_errors=True)
+        delete_folder(nfact_pp_directory)
 
     make_directory(nfact_pp_directory)
     pre_processing(arg, handler)
