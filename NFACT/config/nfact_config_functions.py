@@ -220,6 +220,56 @@ def delete_keys(input_dict: dict, keys_to_delete: list) -> dict:
     return input_dict
 
 
+def move_key_to_front(dictionary: dict, dict_key: str) -> dict:
+    """
+    Function to move dictionary key
+    to first place
+
+    Parameters
+    -----------
+    dictionary: dict
+        dictionary to re order
+    dict_key: str
+        string of key to re-order
+
+    Returns
+    -------
+    dictionary: dict
+        dictionary with
+        reordered keys
+    """
+    if dict_key in dictionary:
+        dictionary = {
+            dict_key: dictionary[dict_key],
+            **{key: value for key, value in dictionary.items() if key != dict_key},
+        }
+    return dictionary
+
+
+def process_decomp_dictionary(decomp: dict) -> dict:
+    """
+    Function to process decomp dictionary.
+
+    Parameters
+    -----------
+    decomp: dict
+        decomp dictionary
+
+    Returns
+    -------
+    decomp: dict
+       decomp dictionary
+       re-processed
+    """
+    decomp["algo"] = "NMF"
+    decomp["roi"] = False
+    decomp["dim"] = "Required"
+    decomp = move_key_to_front(decomp, "roi")
+    decomp = move_key_to_front(decomp, "algo")
+    decomp = move_key_to_front(decomp, "dim")
+    return decomp
+
+
 def process_config_file(args: dict) -> dict:
     """
     Function to process arguments
@@ -242,6 +292,8 @@ def process_config_file(args: dict) -> dict:
     args["global_input"]["folder_name"] = "nfact"
     args["nfact_pp"]["roi"] = []
     args["nfact_pp"]["warps"] = []
+    args["nfact_decomp"] = process_decomp_dictionary(args["nfact_decomp"])
+    args["nfact_dr"]["roi"] = False
     args["nfact_qc"] = delete_keys(args["nfact_qc"], ["nfact_folder", "dim", "algo"])
     return {"global_input": args.pop("global_input"), **args}
 

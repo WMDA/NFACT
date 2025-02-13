@@ -73,11 +73,11 @@ class Cluster_parameters:
     def cluster_time(self):
         """Method to assign cluster time"""
         self.arg["cluster_time"] = (
-            self.arg["cluster_time"]
-            if self.arg["cluster_time"]
-            else "600"
-            if self.arg["gpu"]
-            else "160"
+            self.arg["cluster_time"] if self.arg["cluster_time"] else "600"
+        )
+
+        self.arg["cluster_time"] = (
+            "160" if self.arg["gpu"] else self.arg["cluster_time"]
         )
 
     def cluster_queue_check(self):
@@ -207,9 +207,9 @@ class Queue_Monitoring:
     """
 
     def __init__(self) -> None:
-        self.spinner_running = True
-        self.col = colours()
-        print(f"{self.col['pink']}\nStarting Queue Monitoring{self.col['reset']}")
+        self.__spinner_running = True
+        self.__col = colours()
+        print(f"{self.__col['pink']}\nStarting Queue Monitoring{self.__col['reset']}")
 
     def monitor(self, job_id: list) -> None:
         """
@@ -225,7 +225,7 @@ class Queue_Monitoring:
         None
         """
 
-        self.spinner_running = True
+        self.__spinner_running = True
         spinner_thread = threading.Thread(target=self.__spinner, daemon=True)
         spinner_thread.start()
 
@@ -252,7 +252,7 @@ class Queue_Monitoring:
         except KeyboardInterrupt:
             pbar.close()
         finally:
-            self.spinner_running = False
+            self.__spinner_running = False
             spinner_thread.join()
 
     def __spinner(self) -> None:
@@ -264,7 +264,7 @@ class Queue_Monitoring:
         max_hashes = 50
         adding_hash = True
 
-        while self.spinner_running:
+        while self.__spinner_running:
             if adding_hash:
                 hash_line += "#"
                 if len(hash_line) >= max_hashes:
@@ -275,7 +275,7 @@ class Queue_Monitoring:
                     adding_hash = True
 
             print(
-                f"{self.col['deep_pink']}\033[1B\r{hash_line.ljust(max_hashes)}\033[1A{self.col['reset']}",
+                f"{self.__col['deep_pink']}\033[1B\r{hash_line.ljust(max_hashes)}\033[1A{self.__col['reset']}",
                 end="",
             )
             time.sleep(0.1)
@@ -302,7 +302,7 @@ class Queue_Monitoring:
             return False
         if "Failed" in output["stdout"]:
             tqdm.write(
-                f"{self.col['red']}JOB {job_id} FAILED. CHECK LOGS{self.col['reset']}"
+                f"{self.__col['red']}JOB {job_id} FAILED. CHECK LOGS{self.__col['reset']}"
             )
             return False
         return True
@@ -352,7 +352,7 @@ def run_fsl_sub(command: list) -> dict:
         )
 
     except subprocess.CalledProcessError as error:
-        error_and_exit(False, f"Error in calling fsl_sub due to: {error}")
+        error_and_exit(False, f"Error in calling FSL sub due to: {error}")
     except KeyboardInterrupt:
         run.kill()
     output = {
@@ -362,3 +362,82 @@ def run_fsl_sub(command: list) -> dict:
     if output["stderr"]:
         error_and_exit(False, f"FSL sub failed due to {output['stderr']}")
     return output
+
+
+def cluster_submission(
+    command: list,
+    cluster_time: str,
+    cluster_ram: str,
+    cluster_queue: str,
+    log_name: str,
+    log_location: str,
+    cluster_qos: str,
+    gpu: bool,
+) -> str:
+    """
+    Function to submit jobs to cluster.
+
+    Parameters
+    ----------
+    command: list
+        command to run on cluster
+    cluster_time: str,
+        time job will take
+    cluster_ram: str
+        amount of ram needed
+    cluster_queue: str = None
+        Queue to send command to.
+        Can be None as fsl sub
+        can assign queue.
+    log_name: str
+        name of process and lo file
+    log_location: str
+        location of where log should be
+        sent
+    cluster_qos: str = None
+        SLURM qos. Can be None
+    gpu: bool = False
+        To use GPU.
+
+    Returns
+    -------
+    str: string
+        job id of cluster
+        submission
+    """
+    bcluster_command = base_command(
+        cluster_time,
+        cluster_ram,
+        log_location,
+        log_name,
+    )
+    cluster_command = fsl_sub_cluster_command(
+        bcluster_command, command, cluster_queue, cluster_qos, gpu
+    )
+
+    fsl_sub_rout = run_fsl_sub(cluster_command)
+    return fsl_sub_rout["stdout"]
+
+
+def processing_cluster(arg: dict) -> dict:
+    """
+    Function to process cluster.
+
+    Parameters
+    ----------
+    arg: dict
+        dictionary of command line arguments
+
+    Returns
+    -------
+    arg: dict
+       processed command line arguments
+    """
+    col = colours()
+    print(f"{col['deep_pink']}Checking:{col['reset']} Cluster Availability\n")
+    try:
+        arg = Cluster_parameters(arg).process_parameters()
+        print(f"{col['amethyst']}Using:{col['reset']} Cluster")
+    except NoClusterQueuesException:
+        arg["cluster"] = no_cluster_queues()
+    return arg

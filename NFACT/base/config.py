@@ -23,6 +23,7 @@ def get_function_output(function: object) -> dict:
     dict: dictionary object
         dict of arg and default.
     """
+
     source_code = inspect.getsource(function)
     pattern = re.compile(
         r'\.add_argument\([^)]*?dest=["\']([a-zA-Z0-9_]+)["\']'
