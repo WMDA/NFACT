@@ -51,6 +51,7 @@ def nfact_pipeline_main() -> None:
         nfact_pp_args = build_module_arguments(
             global_arguments["nfact_pp"], args, "pre_process"
         )
+        nfact_pp_args["n_cores"] = None
         global_arguments["nfact_decomp"]["algo"] = args["decomp"]["algo"]
         nfact_decomp_args = build_module_arguments(
             global_arguments["nfact_decomp"], args, "decomp"
@@ -71,8 +72,6 @@ def nfact_pipeline_main() -> None:
         compulsory_args_for_config(global_arguments)
 
     update_nfact_args(global_arguments)
-    print(nfact_pp_args)
-    exit()
     roi_file(global_arguments)
     print(f"{col['plum']}NFACT directory:{col['reset']} {nfact_pp_args['outdir']}")
     make_directory(nfact_pp_args["outdir"], ignore_errors=True)

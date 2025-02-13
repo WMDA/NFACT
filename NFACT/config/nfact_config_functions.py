@@ -292,6 +292,7 @@ def process_config_file(args: dict) -> dict:
     args["global_input"]["folder_name"] = "nfact"
     args["nfact_pp"]["roi"] = []
     args["nfact_pp"]["warps"] = []
+    args["nfact_pp"]["n_cores"] = False
     args["nfact_decomp"] = process_decomp_dictionary(args["nfact_decomp"])
     args["nfact_dr"]["roi"] = False
     args["nfact_qc"] = delete_keys(args["nfact_qc"], ["nfact_folder", "dim", "algo"])
