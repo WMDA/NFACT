@@ -30,7 +30,17 @@ def nfact_pp_args() -> dict:
     col = colours()
     base_arguments(base_args)
     set_up_args(base_args, col)
-
+    base_args.add_argument(
+        "-G",
+        "--gpu",
+        dest="gpu",
+        action="store_true",
+        help="""
+        Use this option to overrride nfact_pp check for GPU 
+        and use the GPU. Use this option if submitting to
+        cluster with a GPU from a partition without a GPU.
+        """,
+    )
     file_tree_input = base_args.add_argument_group(
         f"{col['plum']}Filetree option{col['reset']}"
     )
@@ -115,7 +125,7 @@ def nfact_pp_args() -> dict:
         "-mm",
         "--mm_res",
         dest="mm_res",
-        default=2,
+        default=3,
         help="""
         Resolution of target image. 
         Default is 2 mm

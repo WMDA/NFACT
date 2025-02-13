@@ -36,8 +36,9 @@ def nfactQc_main(args: dict = None) -> None:
     col = colours()
     check_arguments(args, ["nfact_folder", "dim", "algo"])
     error_and_exit(
-        os.path.exists(args["nfact_folder"]), "NFACT decomp directory does not exist.",
-        False
+        os.path.exists(args["nfact_folder"]),
+        "NFACT decomp directory does not exist.",
+        False,
     )
 
     args["algo"] = check_algo(args["algo"]).upper()
@@ -49,8 +50,9 @@ def nfactQc_main(args: dict = None) -> None:
         white_name = os.path.basename(images["white_image"][0]).split(".")[0]
     except IndexError:
         error_and_exit(
-            False, "Unable to find imaging files. Please check nfact_decomp directory",
-            False
+            False,
+            "Unable to find imaging files. Please check nfact_decomp directory",
+            False,
         )
     print(f"{col['plum']}nfactQC directory:{col['reset']} {nfactQc_directory}")
     nfactQc_dir(nfactQc_directory, args["overwrite"])

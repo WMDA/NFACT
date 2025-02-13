@@ -314,7 +314,5 @@ def check_Qc_dir(nfactQc_directory: str, white_name: str) -> None:
 
     if f"hitmap_{white_name}.nii.gz" in os.listdir(nfactQc_directory):
         error_and_exit(
-            False, 
-            "QC images aleady exist. Please use --overwrite to continue",
-            False
+            False, "QC images aleady exist. Please use --overwrite to continue", False
         )

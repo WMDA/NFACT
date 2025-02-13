@@ -414,7 +414,6 @@ def cluster_submission(
     cluster_command = fsl_sub_cluster_command(
         bcluster_command, command, cluster_queue, cluster_qos, gpu
     )
-
     fsl_sub_rout = run_fsl_sub(cluster_command)
     return fsl_sub_rout["stdout"]
 
