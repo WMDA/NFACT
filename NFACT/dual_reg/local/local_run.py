@@ -57,24 +57,6 @@ class Dual_regression:
 
     def run(self) -> None:
         """
-        Main method to run dual regression.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-        """
-        if self.parallel:
-            print("Not implemented yet. Running single subject regression")
-            self.__run_dual_regress_single()
-        if not self.parallel:
-            self.__run_dual_regress_single()
-
-    def __run_dual_regress_single(self) -> None:
-        """
         Runs non parallel regression.
 
         Parameters
@@ -93,7 +75,9 @@ class Dual_regression:
                 f"\n{col['pink']}Dual regressing on subject:{col['reset']} {subject_id}"
             )
             connectivity_matrix = self.__connecitivity_matrix(subject)
-            dr_results = run_decomp(decomp, self.component, connectivity_matrix, 1)
+            dr_results = run_decomp(
+                decomp, self.component, connectivity_matrix, self.parallel
+            )
             if self.normalise:
                 normalised = normalise_components(
                     dr_results["grey_components"], dr_results["white_components"]
@@ -197,7 +181,7 @@ def run_locally(args: dict, paths: dict):
     dual_reg = Dual_regression(
         algo=args["algo"],
         normalise=args["normalise"],
-        parallel=False,
+        parallel=args["n_cores"],
         list_of_files=args["ptxdir"],
         component=components,
         seeds=args["seeds"],

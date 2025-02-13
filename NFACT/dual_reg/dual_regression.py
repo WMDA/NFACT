@@ -1,4 +1,4 @@
-from NFACT.base.utils import error_and_exit, nprint, colours
+from NFACT.base.utils import error_and_exit, nprint, colours, Timer
 import numpy as np
 from scipy.optimize import nnls
 from joblib import Parallel, delayed
@@ -110,7 +110,9 @@ def nmf_dual_regression(
     dict
         Dictionary of components.
     """
-    if int(n_jobs) < 2 or not n_jobs:
+
+    if int(n_jobs) <= 1 or not n_jobs:
+        print("running no")
         return nnls_non_parallel(components, connectivity_matrix)
     return nnls_parallel(components, connectivity_matrix, n_jobs)
 
@@ -187,7 +189,12 @@ def nnls_parallel(components: dict, connectivity_matrix: np.ndarray, n_jobs: int
     dict
         Dictionary of components.
     """
+    time = Timer()
+    time.tic()
+
     grey_components = components["grey_components"]
+    col = colours()
+    nprint(f"{col['pink']}Regression:{col['reset']} White Matter")
     wm_component_white_map = np.array(
         Parallel(n_jobs=n_jobs)(
             delayed(nnls_grey)(col, grey_components, connectivity_matrix)
@@ -195,6 +202,8 @@ def nnls_parallel(components: dict, connectivity_matrix: np.ndarray, n_jobs: int
         )
     ).T
 
+    nprint(f"{col['pink']}Regression:{col['reset']} Grey Matter")
+    time.tic()
     wm_component_white_map_T = wm_component_white_map.T
     gm_component_grey_map = np.array(
         Parallel(n_jobs=n_jobs)(
@@ -202,6 +211,7 @@ def nnls_parallel(components: dict, connectivity_matrix: np.ndarray, n_jobs: int
             for col in range(connectivity_matrix.shape[0])
         )
     )
+    nprint(f"Dual regression took {time.how_long()}")
 
     return {
         "grey_components": gm_component_grey_map,
