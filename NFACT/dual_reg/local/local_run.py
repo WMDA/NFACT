@@ -44,7 +44,7 @@ class Dual_regression:
         component: dict,
         seeds: list,
         nfact_directory: str,
-        medial_wall: list,
+        roi: list,
     ) -> None:
         self.algo = algo
         self.normalise = normalise
@@ -53,7 +53,7 @@ class Dual_regression:
         self.component = component
         self.seeds = seeds
         self.nfact_directory = nfact_directory
-        self.medial_wall = medial_wall
+        self.roi = roi
 
     def run(self) -> None:
         """
@@ -160,7 +160,7 @@ class Dual_regression:
             self.component["white_components"].shape[0],
             subject_id,
             subject,
-            self.medial_wall,
+            self.roi,
         )
 
 
@@ -188,7 +188,7 @@ def run_locally(args: dict, paths: dict):
         paths["component_path"],
         paths["group_average_path"],
         args["seeds"],
-        args["medial_wall"],
+        args["roi"],
     )
 
     method = "Regression" if args["algo"] == "ica" else "Non-negative Regression"
@@ -202,6 +202,6 @@ def run_locally(args: dict, paths: dict):
         component=components,
         seeds=args["seeds"],
         nfact_directory=os.path.join(args["outdir"], "nfact_dr"),
-        medial_wall=args["medial_wall"],
+        roi=args["roi"],
     )
     dual_reg.run()
