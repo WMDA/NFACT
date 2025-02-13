@@ -15,7 +15,6 @@ from NFACT.base.setup import (
 )
 from NFACT.base.cluster_support import processing_cluster
 import os
-import shutil
 
 
 def nfact_pp_main(arg: dict = None):
@@ -61,11 +60,16 @@ def nfact_pp_main(arg: dict = None):
     arg["list_of_subjects"] = return_list_of_subjects_from_file(arg["list_of_subjects"])
     check_subject_exist(arg["list_of_subjects"])
 
-    print(f"{col['deep_pink']}Checking:{col['reset']} GPU status")
-    arg["gpu"] = to_use_gpu()
-    print(f"{col['amethyst']}Using:{col['reset']} GPU\n") if arg["gpu"] else print(
-        f"{col['amethyst']}Using:{col['reset']} CPU\n"
-    )
+    if not arg["gpu"]:
+        print(f"{col['deep_pink']}Checking:{col['reset']} GPU status")
+        arg["gpu"] = to_use_gpu()
+        print(f"{col['amethyst']}Using:{col['reset']} GPU\n") if arg["gpu"] else print(
+            f"{col['amethyst']}Using:{col['reset']} CPU\n"
+        )
+    else:
+        print(
+            f"{col['amethyst']}Using:{col['reset']} GPU (Override option given. This may cause nfact_pp to crash if no GPU available)\n"
+        )
 
     if arg["cluster"]:
         arg = processing_cluster(arg)
