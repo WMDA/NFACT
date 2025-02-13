@@ -114,7 +114,7 @@ def nfact_parser() -> dict:
         action="store_true",
         help="Overwirte existing file structure",
     )
-    cluster_args(args, col)
+    cluster_options = cluster_args(args, col)
     nfact_pp_args = args.add_argument_group(
         f"{col['darker_pink']}nfact_pp inputs{col['reset']}"
     )

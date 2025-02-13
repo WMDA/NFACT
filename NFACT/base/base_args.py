@@ -54,6 +54,7 @@ def cluster_args(base_args: object, col: dict) -> None:
         default=False,
         help="Set the qos for the cluster",
     )
+    return cluster_options
 
 
 def parallel_args(base_args: object, col: dict, help_message: str) -> None:
