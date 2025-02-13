@@ -1,11 +1,11 @@
-from .dual_regression import Dual_regression
 from .nfact_dr_args import nfactdr_args, nfact_dr_splash
 from .nfact_dr_set_up import (
     check_nfact_decomp_directory,
     create_nfact_dr_folder_set_up,
 )
-from .nfact_dr_functions import get_group_level_components, get_paths
-
+from .nfact_dr_functions import get_paths
+from .local.local_run import run_locally
+from .cluster.cluster_run import run_on_cluster
 from NFACT.base.setup import (
     check_algo,
     get_subjects,
@@ -15,8 +15,11 @@ from NFACT.base.setup import (
     check_seeds_surfaces,
     check_rois,
 )
+from NFACT.base.filesystem import delete_folder
+from NFACT.base.cluster_support import processing_cluster
 from NFACT.base.utils import colours, nprint
 from NFACT.base.logging import NFACT_logs
+from NFACT.base.setup import check_fsl_is_installed
 from NFACT.base.signithandler import Signit_handler
 import os
 
@@ -53,10 +56,20 @@ def nfact_dr_main(args: dict = None) -> None:
     # Get component paths
     paths = get_paths(args)
 
+    if args["overwrite"]:
+        delete_folder(os.path.join(args["outdir"], "nfact_dr"))
     # check subjects exist
     args = get_subjects(args)
     check_subject_exist(args["ptxdir"])
     check_nfact_decomp_directory(paths["component_path"], paths["group_average_path"])
+
+    if args["cluster"]:
+        check_fsl_is_installed()
+        args["gpu"] = False
+        args = processing_cluster(args)
+        # Needed for high res data. Takes a long time
+        if args["cluster_time"] == "600":
+            args["cluster_time"] = "4320"
 
     # Set up directory
     create_nfact_dr_folder_set_up(args["outdir"])
@@ -65,6 +78,7 @@ def nfact_dr_main(args: dict = None) -> None:
     args["seeds"] = process_input_imgs(args["seeds"])
     args["surface"] = check_seeds_surfaces(args["seeds"])
     args = check_rois(args)
+
     # logging
     log = NFACT_logs(args["algo"], "DR", len(args["ptxdir"]))
     log.set_up_logging(os.path.join(args["outdir"], "nfact_dr", "logs"))
@@ -77,30 +91,13 @@ def nfact_dr_main(args: dict = None) -> None:
     log.log_break("nfact decomp workflow")
     nprint(f"{col['plum']}Number of subject:{col['reset']} {len(args['ptxdir'])} \n")
 
-    nprint("Obtaining components\n")
-    nprint("-" * 100)
-    components = get_group_level_components(
-        paths["component_path"],
-        paths["group_average_path"],
-        args["seeds"],
-        args["roi"],
-    )
     nprint("\nDual Regression\n")
     nprint("-" * 100)
-    method = "Regression" if args["algo"] == "ica" else "Non-negative Regression"
-    nprint(f"{col['pink']}DR Method:{col['reset']} {method}")
 
-    dual_reg = Dual_regression(
-        algo=args["algo"],
-        normalise=args["normalise"],
-        parallel=False,
-        list_of_files=args["ptxdir"],
-        component=components,
-        seeds=args["seeds"],
-        nfact_directory=os.path.join(args["outdir"], "nfact_dr"),
-        roi=args["roi"],
-    )
-    dual_reg.run()
+    if args["cluster"]:
+        run_on_cluster(args, paths)
+    else:
+        run_locally(args, paths)
 
     nprint(f"{col['darker_pink']}NFACT_DR has finished{col['reset']}")
     log.clear_logging()

@@ -1,6 +1,5 @@
 from NFACT.base.setup import creat_subfolder_setup
 from NFACT.base.utils import error_and_exit
-
 import os
 
 
