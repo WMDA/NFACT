@@ -12,13 +12,16 @@ def cluster_args(base_args: object, col: dict) -> None:
 
     Returns
     -------
-    None
+    cluster_options: argparse.ArgumentParser
+        strictly not necessary for return
+        but useful for linting so
+        variables aren't unassigned.
     """
-    cluster_args = base_args.add_argument_group(
+    cluster_options = base_args.add_argument_group(
         f"{col['amethyst']}Cluster Arguments{col['reset']}"
     )
 
-    cluster_args.add_argument(
+    cluster_options.add_argument(
         "-C",
         "--cluster",
         dest="cluster",
@@ -26,34 +29,35 @@ def cluster_args(base_args: object, col: dict) -> None:
         default=False,
         help="Use cluster enviornment",
     )
-    cluster_args.add_argument(
+    cluster_options.add_argument(
         "-cq",
         "--queue",
         dest="cluster_queue",
         default=None,
         help="Cluster queue to submit to",
     )
-    cluster_args.add_argument(
+    cluster_options.add_argument(
         "-cr",
         "--cluster_ram",
         dest="cluster_ram",
         default="60",
         help="Ram that job will take. Default is 60",
     )
-    cluster_args.add_argument(
+    cluster_options.add_argument(
         "-ct",
         "--cluster_time",
         dest="cluster_time",
         default=False,
         help="Time that job will take. nfact_pp will assign a time if none given",
     )
-    cluster_args.add_argument(
+    cluster_options.add_argument(
         "-cqos",
         "--cluster_qos",
         dest="cluster_qos",
         default=False,
         help="Set the qos for the cluster",
     )
+    return cluster_options
 
 
 def parallel_args(base_args: object, col: dict, help_message: str) -> None:

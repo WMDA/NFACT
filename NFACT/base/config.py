@@ -2,6 +2,7 @@ from NFACT.preprocess.nfactpp_args import nfact_pp_args
 from NFACT.decomp.setup.args import nfact_decomp_args
 from NFACT.dual_reg.nfact_dr_args import nfactdr_args
 from NFACT.qc.nfactQc_args import nfact_qc_args
+from .base_args import cluster_args
 import inspect
 import re
 
@@ -59,6 +60,7 @@ def get_nfact_arguments() -> dict:
         dict of module iwth arg, default pair.
     """
     return {
+        "cluster": get_function_output(cluster_args),
         "nfact_pp": get_function_output(nfact_pp_args),
         "nfact_decomp": get_function_output(nfact_decomp_args),
         "nfact_dr": get_function_output(nfactdr_args),

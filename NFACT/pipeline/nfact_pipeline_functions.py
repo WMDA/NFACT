@@ -46,12 +46,20 @@ def get_compulsory_arguments(args):
     None
 
     """
-
+    non_complusory_commands = [key for key in args["cluster"].keys()] + [
+        "roi",
+        "seedref",
+        "target",
+    ]
     if args["input"]["pp_skip"]:
-        return non_compulsory_arguments(["ref", "bpx_path", "warps", "roi"])
+        return non_compulsory_arguments(
+            non_complusory_commands.extend(["bpx_path", "warps"])
+        )
     if args["pre_process"]["file_tree"]:
-        return non_compulsory_arguments(["ref", "bpx_path", "warps", "seed", "roi"])
-    return non_compulsory_arguments()
+        return non_compulsory_arguments(
+            non_complusory_commands.extend["bpx_path", "warps", "seed"]
+        )
+    return non_compulsory_arguments(non_complusory_commands)
 
 
 def pipeline_args_check(args: dict):
@@ -197,7 +205,7 @@ def compulsory_args_for_config(args: dict) -> None:
     ]
 
 
-def assign_nfactpp_in_place(args: dict) -> None:
+def assign_nfactpp(args: dict) -> None:
     """
     Function to assign arguments in
     place for nfact_pp
@@ -214,9 +222,10 @@ def assign_nfactpp_in_place(args: dict) -> None:
     args["nfact_pp"]["seed"] = args["global_input"]["seed"]
     args["nfact_pp"]["list_of_subjects"] = args["global_input"]["list_of_subjects"]
     args["nfact_pp"]["overwrite"] = args["global_input"]["overwrite"]
+    args["nfact_pp"].update(args["cluster"])
 
 
-def assign_outdir_in_place(args: dict) -> None:
+def assign_outdir(args: dict) -> None:
     """
     Function to assign outputdir in
     place for nfact modules
@@ -236,7 +245,7 @@ def assign_outdir_in_place(args: dict) -> None:
         )
 
 
-def assign_nfact_decomp_in_place(args: dict) -> None:
+def assign_nfact_decomp(args: dict) -> None:
     """
     Function to assign outputdir in
     place for nfact_dr
@@ -254,7 +263,7 @@ def assign_nfact_decomp_in_place(args: dict) -> None:
     args["nfact_decomp"]["overwrite"] = args["global_input"]["overwrite"]
 
 
-def assign_nfact_dr_in_place(args: dict) -> None:
+def assign_nfact_dr(args: dict) -> None:
     """
     Function to assign outputdir in
     place for nfact_dr
@@ -303,7 +312,7 @@ def roi_file(args: dict) -> None:
         args["nfact_dr"]["roi"] = args["nfact_decomp"]["roi"]
 
 
-def update_nfact_args_in_place(args: dict) -> None:
+def update_nfact_args(args: dict) -> None:
     """
     Function to update arguments
     in place for nfact modules.
@@ -317,7 +326,7 @@ def update_nfact_args_in_place(args: dict) -> None:
     -------
     None
     """
-    assign_outdir_in_place(args)
-    assign_nfactpp_in_place(args)
-    assign_nfact_dr_in_place(args)
-    assign_nfact_decomp_in_place(args)
+    assign_outdir(args)
+    assign_nfactpp(args)
+    assign_nfact_dr(args)
+    assign_nfact_decomp(args)

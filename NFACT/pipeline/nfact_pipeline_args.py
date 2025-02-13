@@ -1,5 +1,5 @@
 from NFACT.base.utils import colours, no_args
-from NFACT.base.base_args import algo_arg
+from NFACT.base.base_args import algo_arg, cluster_args
 import argparse
 
 
@@ -114,6 +114,7 @@ def nfact_parser() -> dict:
         action="store_true",
         help="Overwirte existing file structure",
     )
+    cluster_options = cluster_args(args, col)
     nfact_pp_args = args.add_argument_group(
         f"{col['darker_pink']}nfact_pp inputs{col['reset']}"
     )
@@ -220,6 +221,7 @@ def nfact_parser() -> dict:
     no_args(args)
     return {
         "args": vars(args.parse_args()),
+        "cluster": cluster_options._group_actions,
         "input": input_args._group_actions,
         "nfact_pp": nfact_pp_args._group_actions,
         "decomp": nfact_decomp_args._group_actions,
@@ -248,6 +250,7 @@ def extract_group_args(group: list, args_dict: dict):
 def sort_args(
     args_dictionary: dict,
     input_args: list,
+    cluster_args: list,
     nfact_pp_args: list,
     decomp_args: list,
     qc_args: list,
@@ -262,6 +265,8 @@ def sort_args(
         dictionary of arguments to sort
         by group
     input_args: list
+        a list of argparse._StoreAction
+    cluster_args: list
         a list of argparse._StoreAction
     nfact_pp_args: list
         a list of argparse._StoreAction
@@ -280,6 +285,7 @@ def sort_args(
 
     return {
         "input": extract_group_args(input_args, args_dictionary),
+        "cluster": extract_group_args(cluster_args, args_dictionary),
         "pre_process": extract_group_args(nfact_pp_args, args_dictionary),
         "decomp": extract_group_args(decomp_args, args_dictionary),
         "qc": extract_group_args(qc_args, args_dictionary),
@@ -304,7 +310,12 @@ def nfact_args():
 
     args = nfact_parser()
     return sort_args(
-        args["args"], args["input"], args["nfact_pp"], args["decomp"], args["qc"]
+        args["args"],
+        args["input"],
+        args["cluster"],
+        args["nfact_pp"],
+        args["decomp"],
+        args["qc"],
     )
 
 
