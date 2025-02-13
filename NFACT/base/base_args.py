@@ -12,7 +12,10 @@ def cluster_args(base_args: object, col: dict) -> None:
 
     Returns
     -------
-    None
+    cluster_options: argparse.ArgumentParser
+        strictly not necessary for return
+        but useful for linting so
+        variables aren't unassigned.
     """
     cluster_options = base_args.add_argument_group(
         f"{col['amethyst']}Cluster Arguments{col['reset']}"
