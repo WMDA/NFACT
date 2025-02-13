@@ -277,6 +277,7 @@ def pre_processing(arg: dict, handler: object) -> None:
         arg["cluster_queue"],
         arg["cluster_ram"],
         arg["cluster_qos"],
+        arg["gpu"],
         arg["n_cores"],
     )
     probtrack.run()
