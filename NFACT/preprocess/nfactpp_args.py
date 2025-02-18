@@ -56,7 +56,6 @@ def nfact_pp_args() -> dict:
     tractography_input = base_args.add_argument_group(
         f"{col['pink']}Tractography options{col['reset']}"
     )
-
     tractography_input.add_argument(
         "-s",
         "--seed",
@@ -162,6 +161,16 @@ def nfact_pp_args() -> dict:
         Use wtstop and stop in the tractography. 
         Takes an absolute file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask.
         Argument can be used with the --filetree, in that case no json file is needed.
+      """,
+    )
+    tractography_input.add_argument(
+        "-D",
+        "--diffusion_space",
+        dest="diffusion_space",
+        default=False,
+        action="store_true",
+        help="""
+      Set the default seed reference space to diffusion space.
       """,
     )
     parallel_args(
