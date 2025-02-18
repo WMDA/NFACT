@@ -212,7 +212,9 @@ def save_grey_matter_gifit(
         )
         for col in grey_matter_component.T
     ]
-    nib.GiftiImage(darrays=darrays).to_filename(f"{file_name}.func.gii")
+    nib.GiftiImage(darrays=darrays, meta=surf.darrays[0].meta).to_filename(
+        f"{file_name}.func.gii"
+    )
 
 
 def rename_seed(seeds: list) -> list:
