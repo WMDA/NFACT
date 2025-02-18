@@ -92,7 +92,7 @@ def main_dr(args: dict) -> None:
             args["algo"].upper(),
             dr_results["white_components"].shape[0],
             args["id"],
-            os.path.dirname(args["fdt_path"]),
+            args["fdt_path"],
             args["roi"],
         )
         print(f"{col['pink']}Completed{col['reset']}: {args['id']}", flush=True)

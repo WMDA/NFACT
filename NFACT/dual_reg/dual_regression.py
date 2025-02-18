@@ -112,7 +112,6 @@ def nmf_dual_regression(
     """
 
     if int(n_jobs) <= 1 or not n_jobs:
-        print("running no")
         return nnls_non_parallel(components, connectivity_matrix)
     return nnls_parallel(components, connectivity_matrix, n_jobs)
 
