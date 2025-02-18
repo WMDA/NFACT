@@ -53,7 +53,7 @@ def build_cluster_command(
     algo: str,
     seeds: str,
     sub_id: str,
-    medial_wall: str,
+    roi: str,
     parallel: str,
 ) -> list:
     """
@@ -71,7 +71,7 @@ def build_cluster_command(
     algo: str,
     seeds: str,
     sub_id: str,
-    medial_wall: str,
+    roi: str,
     parallel: str
 
     Returns
@@ -98,8 +98,8 @@ def build_cluster_command(
         *seeds,
         "--id",
         str(sub_id),
-        "--medial_wall",
-        *medial_wall,
+        "--roi",
+        *roi,
     ]
     if parallel:
         command.extend(["--parallel", str(parallel)])
@@ -136,7 +136,7 @@ def submit_to_cluster(args: dict, paths: dict) -> list:
             args["algo"],
             args["seeds"],
             sub_id,
-            args["medial_wall"],
+            args["roi"],
             args["n_cores"],
         )
         id = cluster_submission(

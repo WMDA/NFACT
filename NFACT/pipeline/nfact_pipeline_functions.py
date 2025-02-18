@@ -283,6 +283,7 @@ def assign_nfact_dr(args: dict) -> None:
         "nfact_decomp",
     )
     args["nfact_dr"]["algo"] = args["nfact_decomp"]["algo"]
+    args["nfact_dr"]["overwrite"] = args["global_input"]["overwrite"]
     args["nfact_dr"].update(args["cluster"])
 
 

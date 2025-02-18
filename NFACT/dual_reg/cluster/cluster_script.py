@@ -40,9 +40,7 @@ def script_args() -> dict:
     parser.add_argument("--algo", required=True, help="Which algo has been run")
     parser.add_argument("--seeds", required=True, nargs="+", help="Path to seed(s).")
     parser.add_argument("--id", required=True, help="Subject ID.")
-    parser.add_argument(
-        "--medial_wall", nargs="+", default=False, help="Path to medial wall(s)."
-    )
+    parser.add_argument("--roi", nargs="+", default=False, help="Path to roi(s).")
     parser.add_argument(
         "--parallel", default=1, type=int, help="Number of cores to parallel with"
     )
@@ -78,7 +76,7 @@ def main_dr(args: dict) -> None:
             args["component_path"],
             args["group_average_path"],
             args["seeds"],
-            args["medial_wall"],
+            args["roi"],
         )
 
         print(f"{col['pink']}Obtaining{col['reset']}: FDT Matrix")
@@ -95,7 +93,7 @@ def main_dr(args: dict) -> None:
             dr_results["white_components"].shape[0],
             args["id"],
             os.path.dirname(args["fdt_path"]),
-            args["medial_wall"],
+            args["roi"],
         )
         print(f"{col['pink']}Completed{col['reset']}: {args['id']}", flush=True)
     except Exception as e:
