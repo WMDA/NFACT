@@ -164,14 +164,16 @@ def nfact_pp_args() -> dict:
       """,
     )
     tractography_input.add_argument(
-        "-D",
-        "--diffusion_space",
-        dest="diffusion_space",
-        default=False,
+        "-A",
+        "--absolute",
         action="store_true",
+        default=False,
+        dest="absolute",
         help="""
-      Set the default seed reference space to diffusion space.
-      """,
+        Treat seeds and rois as absolute paths, 
+        providing one set of seeds and rois for tractography
+        across across all subjects.
+        """,
     )
     parallel_args(
         base_args,
