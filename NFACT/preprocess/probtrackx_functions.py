@@ -222,7 +222,6 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
         f"--dir={output_dir}",
     ]
     command.extend(warp_options)
-
     if ptx_options:
         command.extend(ptx_options)
     return command

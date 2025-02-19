@@ -49,14 +49,13 @@ def nfact_pp_args() -> dict:
         "--file_tree",
         dest="file_tree",
         default=False,
-        help="""Use this option to provide name of predefined file tree to 
-        perform whole brain tractography. nfact_pp currently comes with HCP filetree. 
+        help="""Use this option to provide name of a predefined file tree to 
+        perform whole brain tractography. nfact_pp currently comes with a number of HCP filetree. 
         See documentation for further information.""",
     )
     tractography_input = base_args.add_argument_group(
         f"{col['pink']}Tractography options{col['reset']}"
     )
-
     tractography_input.add_argument(
         "-s",
         "--seed",
@@ -163,6 +162,18 @@ def nfact_pp_args() -> dict:
         Takes an absolute file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask.
         Argument can be used with the --filetree, in that case no json file is needed.
       """,
+    )
+    tractography_input.add_argument(
+        "-A",
+        "--absolute",
+        action="store_true",
+        default=False,
+        dest="absolute",
+        help="""
+        Treat seeds and rois as absolute paths, 
+        providing one set of seeds and rois for tractography
+        across all subjects.
+        """,
     )
     parallel_args(
         base_args,

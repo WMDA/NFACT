@@ -74,7 +74,7 @@ def args():
 
 if __name__ == "__main__":
     arg = args()
-    directories_to_ignore = ["dev", "NFACT_GLM"]
+    directories_to_ignore = ["dev"]
     linting = check_directory_for_bad_variable_names(
         arg["directory"],
         [
