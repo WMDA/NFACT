@@ -289,6 +289,10 @@ def nfactQc_dir(nfactQc_directory: str, overwrite: bool = False) -> None:
         either NMF or ICA
     overwrite: bool
         overwrite directory
+
+    Returns
+    -------
+    None
     """
 
     if os.path.exists(nfactQc_directory) and not overwrite:
