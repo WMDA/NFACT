@@ -214,7 +214,7 @@ def set_up_filestree(arg: dict) -> dict:
     try:
         arg["file_tree"] = load_file_tree(f"{arg['file_tree'].lower()}.tree")
     except Exception as e:
-        error_and_exit(False, f"Unable to load filetree due to {e}")
+        error_and_exit(False, f"Unable to load filetree due to: {e}")
 
     # load a random subjects seed to check its type
     try:

@@ -119,15 +119,10 @@ def load_file_tree(tree_name: str) -> object:
     tree: FileTree object
         filetree object
     """
-    try:
-        tree = FileTree.read(
-            os.path.join(
-                os.path.dirname(os.path.dirname(__file__)), "filetree", tree_name
-            )
-        )
-        return tree
-    except Exception as e:
-        error_and_exit(False, f"Unable to load tree file, due to {e}")
+
+    return FileTree.read(
+        os.path.join(os.path.dirname(os.path.dirname(__file__)), "filetree", tree_name)
+    )
 
 
 def check_provided_img(image_to_check: str, error_messgae: str) -> None:
