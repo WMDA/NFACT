@@ -104,7 +104,7 @@ def avg_fdt(list_of_matfiles: list) -> np.ndarray:
         np.array of sparse matrix.
     """
     sparse_matrix = 0.0
-    for matrix in tqdm(list_of_matfiles, colour="magenta"):
+    for matrix in tqdm(list_of_matfiles, colour="magenta", unit="Matrices"):
         sparse_matrix += load_fdt_matrix(matrix)
 
     sparse_matrix /= len(list_of_matfiles)
