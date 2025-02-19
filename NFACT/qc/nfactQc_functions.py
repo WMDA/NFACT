@@ -33,7 +33,9 @@ def save_gifit(filename: str, seed: object, surf_data: np.array):
             meta=seed.darrays[0].meta,
         )
     ]
-    nib.gifti.GiftiImage(darrays=darrays).to_filename(f"{filename}.func.gii")
+    nib.gifti.GiftiImage(darrays=darrays, meta=seed.darrays[0].meta).to_filename(
+        f"{filename}.func.gii"
+    )
 
 
 def save_nifti(data: np.array, affine: np.array, filename: str) -> None:
