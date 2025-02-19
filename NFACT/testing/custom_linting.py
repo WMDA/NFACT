@@ -16,9 +16,8 @@ class VariableNameChecker(ast.NodeVisitor):
 
     def visit_Name(self, node):
         # Check if the variable name is a single character
-        if isinstance(node.ctx, ast.Store):
-            if len(node.id) == 1 or node.id == "breakpoint":
-                self.bad_variable_names.append((node.id, node.lineno))
+        if isinstance(node.ctx, ast.Store) and len(node.id) == 1:
+            self.bad_variable_names.append((node.id, node.lineno))
         self.generic_visit(node)
 
 
@@ -75,7 +74,7 @@ def args():
 
 if __name__ == "__main__":
     arg = args()
-    directories_to_ignore = ["dev", "NFACT_GLM"]
+    directories_to_ignore = ["dev"]
     linting = check_directory_for_bad_variable_names(
         arg["directory"],
         [
