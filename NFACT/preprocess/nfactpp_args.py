@@ -49,8 +49,8 @@ def nfact_pp_args() -> dict:
         "--file_tree",
         dest="file_tree",
         default=False,
-        help="""Use this option to provide name of predefined file tree to 
-        perform whole brain tractography. nfact_pp currently comes with HCP filetree. 
+        help="""Use this option to provide name of a predefined file tree to 
+        perform whole brain tractography. nfact_pp currently comes with a number of HCP filetree. 
         See documentation for further information.""",
     )
     tractography_input = base_args.add_argument_group(
@@ -172,7 +172,7 @@ def nfact_pp_args() -> dict:
         help="""
         Treat seeds and rois as absolute paths, 
         providing one set of seeds and rois for tractography
-        across across all subjects.
+        across all subjects.
         """,
     )
     parallel_args(

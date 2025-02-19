@@ -160,13 +160,13 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
     if arg["file_tree"]:
         arg = process_filetree_args(arg, sub_id)
 
-    seed = get_file(arg["seed"], sub)
+    seed = get_file(arg["seed"], sub, arg["absolute"])
 
     seed_text = "\n".join(seed)
     # using this function not to return a file but check it is an imaging file
     get_file(arg["warps"], sub)
     nfactpp_diretory = os.path.join(arg["outdir"], "nfact_pp", sub_id)
-    roi = get_file(arg["roi"], sub) if arg["surface"] else False
+    roi = get_file(arg["roi"], sub, arg["absolute"]) if arg["surface"] else False
     setup_subject_directory(nfactpp_diretory, seed, roi)
     create_files_for_decomp(nfactpp_diretory, seed, roi)
 

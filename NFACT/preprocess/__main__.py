@@ -49,6 +49,11 @@ def nfact_pp_main(arg: dict = None):
             False,
             "Unclear whether to parallel process locally or to submit to cluster. Remove either --n_cores or --cluster",
         )
+    if arg["absolute"] and arg["file_tree"]:
+        error_and_exit(
+            False,
+            "Unclear how to process inputs. Please provide either --absolute or --file_tree ",
+        )
     # Error handle if FSL not installed or loaded
     check_fsl_is_installed()
 
@@ -77,6 +82,10 @@ def nfact_pp_main(arg: dict = None):
     print(
         f'{col["darker_pink"]}Filetree:{col["reset"]} {arg["file_tree"].lower()} '
     ) if arg["file_tree"] else None
+
+    print(
+        f'{col["darker_pink"]}Inputs:{col["reset"]} Treated as absolute paths'
+    ) if arg["absolute"] else None
 
     if arg["stop"] == []:
         arg["stop"] = True

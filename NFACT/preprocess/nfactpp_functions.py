@@ -39,7 +39,7 @@ def seedref(seedref: str) -> str:
     return seedref
 
 
-def get_file(img_file: list, sub: str) -> list:
+def get_file(img_file: list, sub: str, absolute: bool = False) -> list:
     """
     Function to get an imaging file
     type and returns it. Checks that file
@@ -50,7 +50,12 @@ def get_file(img_file: list, sub: str) -> list:
     img_file: list
         a list of imaging files
     sub: str
-       path to subjects directory.
+        path to subjects directory.
+    absolute: bool
+        are imaging to be treated
+        as absolute paths. If not
+        then paths are treated as relative
+        and appended to subject path
 
     Returns
     -------
@@ -58,7 +63,8 @@ def get_file(img_file: list, sub: str) -> list:
         list of imging files
 
     """
-    img_files = [os.path.join(sub, file.lstrip("/")) for file in img_file]
+    if not absolute:
+        img_files = [os.path.join(sub, file.lstrip("/")) for file in img_file]
     [
         error_and_exit(
             os.path.exists(path), f"Unable to find {path}. Please check it exists"
