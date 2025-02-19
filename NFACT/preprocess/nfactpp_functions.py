@@ -65,6 +65,8 @@ def get_file(img_file: list, sub: str, absolute: bool = False) -> list:
     """
     if not absolute:
         img_files = [os.path.join(sub, file.lstrip("/")) for file in img_file]
+    else:
+        img_files = img_file
     [
         error_and_exit(
             os.path.exists(path), f"Unable to find {path}. Please check it exists"

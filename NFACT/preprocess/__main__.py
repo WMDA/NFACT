@@ -76,6 +76,11 @@ def nfact_pp_main(arg: dict = None):
             f"{col['amethyst']}Using:{col['reset']} GPU (Override option given. This may cause nfact_pp to crash if no GPU available)\n"
         )
 
+    nfact_pp_directory = os.path.join(arg["outdir"], "nfact_pp")
+    if arg["overwrite"]:
+        delete_folder(nfact_pp_directory)
+    make_directory(nfact_pp_directory)
+
     if arg["cluster"]:
         arg = processing_cluster(arg)
 
@@ -106,11 +111,6 @@ def nfact_pp_main(arg: dict = None):
 
     arg["seedref"] = seedref(arg["seedref"])
 
-    nfact_pp_directory = os.path.join(arg["outdir"], "nfact_pp")
-    if arg["overwrite"]:
-        delete_folder(nfact_pp_directory)
-
-    make_directory(nfact_pp_directory)
     pre_processing(arg, handler)
 
     if to_exit:
