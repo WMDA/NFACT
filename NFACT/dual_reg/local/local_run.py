@@ -4,7 +4,7 @@ from ..nfact_dr_functions import (
     get_subject_id,
     save_dual_regression_images,
 )
-from NFACT.base.utils import nprint, colours
+from NFACT.base.utils import nprint, colours, error_and_exit
 from NFACT.base.matrix_handling import normalise_components
 from NFACT.base.matrix_handling import load_fdt_matrix
 import numpy as np
@@ -168,12 +168,15 @@ def run_locally(args: dict, paths: dict):
     nprint(f"{col['pink']}Running:{col['reset']} Locally")
     nprint(f"{col['pink']}Obtaining:{col['reset']} Components")
     nprint("-" * 100)
-    components = get_group_level_components(
-        paths["component_path"],
-        paths["group_average_path"],
-        args["seeds"],
-        args["roi"],
-    )
+    try:
+        components = get_group_level_components(
+            paths["component_path"],
+            paths["group_average_path"],
+            args["seeds"],
+            args["roi"],
+        )
+    except Exception:
+        error_and_exit(False, "Unable to find components")
 
     method = "Regression" if args["algo"] == "ica" else "Non-negative Regression"
     nprint(f"{col['pink']}DR Method:{col['reset']} {method}")
