@@ -8,10 +8,8 @@ from .nfactpp_functions import (
     get_file,
     filetree_get_files,
     process_filetree_args,
-    stop_masks,
     create_files_for_decomp,
     write_options_to_file,
-    add_to_ptx,
 )
 from .probtrackx_functions import (
     build_probtrackx2_arguments,
@@ -179,14 +177,6 @@ def process_subject(sub: str, arg: dict, col: dict) -> list:
         target_generation(arg, nfactpp_diretory, col)
     else:
         print(f"{col['pink']}Target2 img:{col['reset']} {arg['target2']}")
-    if arg["exclusion"]:
-        print(
-            f"{col['pink']}Processing:{col['reset']} Exclusion mask {arg['exclusion']}"
-        )
-        arg = add_to_ptx(arg, [f"--avoid={arg['exclusion']}"])
-    if arg["stop"]:
-        print(f"{col['pink']}Processing:{col['reset']} stop and wtstop files")
-        arg = stop_masks(arg, nfactpp_diretory, sub, sub_id)
 
     return build_probtrackx2_arguments(
         arg,
