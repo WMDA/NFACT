@@ -190,6 +190,25 @@ def exclsuion_mask(exclusion_path: str) -> list:
 
 
 def add_stoppage_args(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str):
+    """
+    Function to add in stoppage masks
+
+    arg: dict,
+       cmd processes
+    nfactpp_diretory: str
+        path to nfactpp_directory
+    sub: str
+        path to sub dirs
+    sub_id: str
+        subject id
+
+    Returns
+    -------
+    list: list object
+        list of stop and wtstop
+        arguments
+    """
+    # Lazy import needed to stop circular imports
     from NFACT.preprocess.nfactpp_functions import stop_masks
 
     col = colours()
