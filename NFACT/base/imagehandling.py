@@ -29,7 +29,7 @@ def imaging_type(path: str) -> str:
         return "gifti"
 
 
-def mat2vol(matrix: np.array, lut_vol: object) -> np.ndarray:
+def mat2vol(matrix: np.ndarray, lut_vol: object) -> np.ndarray:
     """
     Function to reshape a matrix
     to be saved as a volume.
@@ -107,7 +107,7 @@ def check_files_are_imaging_files(path: str) -> bool:
 
 
 def save_white_matter(
-    white_matter_components: np.array, path_to_lookup_vol: str, out_file: str
+    white_matter_components: np.ndarray, path_to_lookup_vol: str, out_file: str
 ) -> None:
     """
     Function to save white matter compponents
