@@ -1,4 +1,4 @@
-from .utils import colours, nprint
+from NFACT.base.utils import colours, nprint
 from sklearn.preprocessing import StandardScaler
 import scipy.sparse as sps
 import numpy as np

@@ -1,5 +1,5 @@
-from .nfact_pipeline_args import nfact_args
-from .nfact_pipeline_functions import (
+from NFACT.pipeline.nfact_pipeline_args import nfact_args
+from NFACT.pipeline.nfact_pipeline_functions import (
     pipeline_args_check,
     build_module_arguments,
     write_decomp_list,

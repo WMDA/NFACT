@@ -1,11 +1,11 @@
-from .nfact_dr_args import nfactdr_args, nfact_dr_splash
-from .nfact_dr_set_up import (
+from NFACT.dual_reg.nfact_dr_args import nfactdr_args, nfact_dr_splash
+from NFACT.dual_reg.nfact_dr_set_up import (
     check_nfact_decomp_directory,
     create_nfact_dr_folder_set_up,
 )
-from .nfact_dr_functions import get_paths
-from .local.local_run import run_locally
-from .cluster.cluster_run import run_on_cluster
+from NFACT.dual_reg.nfact_dr_functions import get_paths
+from NFACT.dual_reg.local.local_run import run_locally
+from NFACT.dual_reg.cluster.cluster_run import run_on_cluster
 from NFACT.base.setup import (
     check_algo,
     get_subjects,

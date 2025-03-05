@@ -1,4 +1,4 @@
-from .nfact_config_functions import (
+from NFACT.config.nfact_config_functions import (
     nfact_config_args,
     create_combined_algo_dict,
     save_to_json,

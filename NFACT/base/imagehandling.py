@@ -4,7 +4,7 @@ from fsl.data.image import Image
 import nibabel as nib
 import numpy as np
 import re
-from .utils import error_and_exit
+from NFACT.base.utils import error_and_exit
 
 
 def imaging_type(path: str) -> str:

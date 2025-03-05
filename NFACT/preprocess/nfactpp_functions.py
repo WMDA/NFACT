@@ -2,7 +2,7 @@ from NFACT.base.utils import error_and_exit, colours
 from NFACT.base.imagehandling import check_files_are_imaging_files
 from NFACT.base.filesystem import write_to_file, load_json
 import os
-from .nfactpp_setup import check_provided_img
+from NFACT.preprocess.nfactpp_setup import check_provided_img
 
 
 def seedref(seedref: str) -> str:

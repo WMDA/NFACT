@@ -141,6 +141,8 @@ def nnls_non_parallel(components: dict, connectivity_matrix: np.ndarray):
                 range(connectivity_matrix.shape[1]),
                 colour="magenta",
                 unit="voxel",
+                position=0,
+                dynamic_ncols=True,
             )
         ]
     ).T
@@ -152,6 +154,8 @@ def nnls_non_parallel(components: dict, connectivity_matrix: np.ndarray):
                 range(connectivity_matrix.shape[0]),
                 colour="magenta",
                 unit="vertex",
+                position=0,
+                dynamic_ncols=True,
             )
         ]
     )

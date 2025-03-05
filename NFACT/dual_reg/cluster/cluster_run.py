@@ -1,4 +1,4 @@
-from ..nfact_dr_functions import get_subject_id
+from NFACT.dual_reg.nfact_dr_functions import get_subject_id
 from NFACT.base.utils import nprint, colours
 from NFACT.base.cluster_support import cluster_submission, Queue_Monitoring
 from pathlib import Path

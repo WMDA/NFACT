@@ -62,12 +62,13 @@ def main_dr(args: dict) -> None:
     """
     col = colours()
     try:
-        print(f"{col['plum']}Subject ID{col['reset']}: {args['id']}")
+        print(f"{col['plum']}Subject ID{col['reset']}: {args['id']}", flush=True)
         print(
             f"{col['plum']}Number of cores{col['reset']}: ",
             args["parallel"],
             flush=True,
         )
+        print(f"Args Given: {args}", flush=True)
         print("-" * 100)
         print(
             f"{col['pink']}Obtaining{col['reset']}: Group Level Components", flush=True

@@ -1,5 +1,9 @@
-from ..dual_regression import ica_dual_regression, nmf_dual_regression, run_decomp
-from ..nfact_dr_functions import (
+from NFACT.dual_reg.dual_regression import (
+    ica_dual_regression,
+    nmf_dual_regression,
+    run_decomp,
+)
+from NFACT.dual_reg.nfact_dr_functions import (
     get_group_level_components,
     get_subject_id,
     save_dual_regression_images,

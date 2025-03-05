@@ -1,8 +1,11 @@
-from .nfactpp import pre_processing
-from .probtrackx_functions import to_use_gpu
-from .nfactpp_functions import seedref
-from .nfactpp_args import nfact_pp_args
-from .nfactpp_setup import check_ptx_options_are_valid, check_provided_img
+from NFACT.preprocess.nfactpp import pre_processing
+from NFACT.preprocess.probtrackx_functions import to_use_gpu
+from NFACT.preprocess.nfactpp_functions import seedref
+from NFACT.preprocess.nfactpp_args import nfact_pp_args
+from NFACT.preprocess.nfactpp_setup import (
+    check_ptx_options_are_valid,
+    check_provided_img,
+)
 from NFACT.base.utils import error_and_exit, colours
 from NFACT.base.signithandler import Signit_handler
 from NFACT.base.filesystem import read_file_to_list, make_directory, delete_folder

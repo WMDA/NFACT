@@ -11,23 +11,23 @@ from NFACT.base.setup import (
     check_seeds_surfaces,
     check_rois,
 )
-from .setup.args import nfact_decomp_args, nfact_decomp_splash
-from .setup.file_setup import (
+from NFACT.decomp.setup.args import nfact_decomp_args, nfact_decomp_splash
+from NFACT.decomp.setup.file_setup import (
     create_folder_set_up,
     get_group_average_files,
 )
-from .setup.configure_setup import (
+from NFACT.decomp.setup.configure_setup import (
     check_config_file,
     load_config_file,
 )
-from .decomposition.decomp import matrix_decomposition, get_parameters
-from .decomposition.matrix_handling import (
+from NFACT.decomp.decomposition.decomp import matrix_decomposition, get_parameters
+from NFACT.decomp.decomposition.matrix_handling import (
     process_fdt_matrix2,
     load_previous_matrix,
     save_avg_matrix,
 )
-from .pipes.image_handling import winner_takes_all, save_images
-from .setup.arg_check import process_command_args
+from NFACT.decomp.pipes.image_handling import winner_takes_all, save_images
+from NFACT.decomp.setup.arg_check import process_command_args
 import os
 
 
