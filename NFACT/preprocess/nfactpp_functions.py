@@ -244,7 +244,7 @@ def stoppage(img_file_path: str, file_directory: str, paths_dict: dict) -> list:
     ]
 
 
-def stop_masks(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str) -> dict:
+def stop_masks(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str) -> list:
     """
     Function to process stop masks
 
@@ -261,16 +261,15 @@ def stop_masks(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str) -> dict:
 
     Returns
     -------
-    arg: dict
-        dict of cmd lines
+    list: list object
+        list of stop and wtstop
+        arguments
     """
     if arg["file_tree"]:
         stop_files = get_stop_files_filestree(arg["file_tree"], sub_id)
     else:
         stop_files = load_json(arg["stop"])
-    stop_ptx = stoppage(sub, os.path.join(nfactpp_diretory, "files"), stop_files)
-    arg["ptx_options"] = add_to_ptx_options(stop_ptx, arg["ptx_options"])
-    return arg
+    return stoppage(sub, os.path.join(nfactpp_diretory, "files"), stop_files)
 
 
 def add_to_ptx_options(commands: list, ptx_options: list) -> list:
