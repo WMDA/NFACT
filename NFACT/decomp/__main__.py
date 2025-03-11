@@ -65,7 +65,7 @@ def nfact_decomp_main(args: dict = None) -> None:
     check_subject_exist(args["ptxdir"])
     print(f"{col['plum']}Number of Subjects:{col['reset']}", len(args["ptxdir"]))
 
-    group_mode = True if len(args["ptxdir"]) > 0 else False
+    group_mode = True if len(args["ptxdir"]) > 1 else False
     # process seeds
     args["seeds"] = process_input_imgs(args["seeds"])
     args["surface"] = check_seeds_surfaces(args["seeds"])
@@ -121,7 +121,9 @@ def nfact_decomp_main(args: dict = None) -> None:
         )
 
     if fdt_2_conn is None:
-        nprint(f"{print_str} Averaging")
+        nprint(f"{print_str} Averaging") if group_mode else nprint(
+            f"{print_str} Loading Single Matrix"
+        )
         save_directory = os.path.join(args["outdir"], "nfact_decomp", "group_averages")
         fdt_2_conn = process_fdt_matrix2(args["ptxdir"], group_mode)
         save_avg_matrix(fdt_2_conn, save_directory)

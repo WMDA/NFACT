@@ -11,6 +11,63 @@ from glob import glob
 import re
 
 
+def get_key_to_organise_list(seed_path: str) -> str:
+    """
+    Function to get key to organise
+    grey matter file names.
+
+    Parameters
+    ----------
+    seed_path: str
+        path to first seed
+        in the list
+
+    Returns
+    -------
+    str: string
+        string of key to organise
+        grey matter list by
+    """
+    seed_name = os.path.basename(seed_path).lower()
+    file_split = re.split(r"[.-]", seed_name)
+    return next(
+        (
+            side
+            for keys, side in {
+                ("l", "left"),
+                ("left", "left"),
+                ("r", "right"),
+                ("right", "right"),
+            }
+            if keys in file_split
+        ),
+        seed_name,
+    )
+
+
+def sort_grey_matter_order(grey_matter_list: list, keyword: str) -> list:
+    """
+    Function to organise grey matter
+    seed by a keyword. Does so on
+    a partial match.
+
+    Parameters
+    ----------
+    grey_matter_list: list
+        list of grey matter
+    keyword: str
+        str of key to organise
+        grey matter by
+
+    Returns
+    -------
+    list: list object
+        sorted grey_matter_list
+        by keyword
+    """
+    return sorted(grey_matter_list, key=lambda x: (keyword not in x, x))
+
+
 def vol2mat(matvol: np.ndarray, lut_vol: object) -> np.ndarray:
     """
     Function to reshape a volume back into
@@ -211,9 +268,8 @@ def grey_components(
         grey matter components array
     """
     grey_matter = glob(os.path.join(decomp_dir, "G_*dim*"))
-    sorted_components = [
-        seed for _, seed in sorted(zip(seeds, grey_matter), key=lambda pair: pair[0])
-    ]
+    seed_key_word = get_key_to_organise_list(seeds[0])
+    sorted_components = sort_grey_matter_order(grey_matter, seed_key_word)
     save_type = "gii" if "gii" in sorted_components[0] else "nii"
 
     if save_type == "nii":

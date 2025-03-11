@@ -217,8 +217,9 @@ Tractography options: :
   -e EXCLUSION, --exclusion EXCLUSION
                         Absolute path to an exclusion mask. Will reject pathways passing through locations given by this mask
   -S [STOP ...], --stop [STOP ...]
-                        Use wtstop and stop in the tractography. Takes an absolute file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask. Argument can be used with the --filetree, in that case no json file is
-                        needed.
+                        Use wtstop and stop in the tractography. Takes an absolute file path to a json file containing stop and wtstop masks, JSON keys must be stopping_mask and wtstop_mask. Argument can be used with the --filetree, in that case no json file is needed.
+ -A, --absolute        Treat seeds and rois as absolute paths, providing one set of seeds and rois for tractography across all subjects.
+
 
 Parallel Processing arguments:
   -n N_CORES, --n_cores N_CORES
