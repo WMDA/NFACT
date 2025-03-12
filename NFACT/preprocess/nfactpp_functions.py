@@ -94,7 +94,8 @@ def filetree_get_files(filetree: object, sub: str, hemi: str, file: str) -> str:
 
     Returns
     -------
-    file_path:str
+    file_path: str
+        file path
     """
     return filetree.update(sub=sub, hemi=hemi).get(file)
 
@@ -181,7 +182,6 @@ def get_stop_files_filestree(files_tree: object, subject: str) -> dict:
         and stopping_mask
 
     """
-
     return {
         "wtstop_mask": [
             filetree_get_files(files_tree, subject, "L", file)
@@ -270,51 +270,6 @@ def stop_masks(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str) -> list:
     else:
         stop_files = load_json(arg["stop"])
     return stoppage(sub, os.path.join(nfactpp_diretory, "files"), stop_files)
-
-
-def add_to_ptx_options(commands: list, ptx_options: list) -> list:
-    """
-    Function to append to ptx options
-
-    Parameters
-    ----------
-    commands: list
-        list of commands to add to
-        ptx file
-    ptx_options: list
-        list of ptx_options. Can be
-        False.
-
-    Returns
-    -------
-    ptx_options: list
-        ptx options
-    """
-    if ptx_options:
-        [ptx_options.append(command) for command in commands]
-        return ptx_options
-    ptx_options = commands
-    return ptx_options
-
-
-def add_to_ptx(arg: dict, command_to_add: list) -> dict:
-    """
-    Function to add avoid file to
-    probtrackx command
-
-    Parameters
-    ----------
-    arg: dict
-        cmd args
-    command_to_add: list
-
-    Returns
-    -------
-    args: dict
-        dict of cmd args with avoid
-    """
-    arg["ptx_options"] = add_to_ptx_options(command_to_add, arg["ptx_options"])
-    return arg
 
 
 def create_files_for_decomp(nfact_directory: str, seeds: list, roi: list) -> None:
