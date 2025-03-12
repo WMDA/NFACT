@@ -1,6 +1,6 @@
 import pathlib
 import os
-import nbabel as nb
+import nibabel as nb
 import numpy as np
 import re
 from NFACT.base.utils import error_and_exit
@@ -46,14 +46,15 @@ def mat2vol(matrix: np.ndarray, lut_vol: np.ndarray) -> np.ndarray:
         array reformatted to be converted to
         a volume
     """
-    mask = lut_vol > 0
-    matvol = np.zeros(lut_vol.shape + (len(matrix)))
 
-    for row in range(len(matrix)):
-        matvol.reshape(-1, len(matrix))[mask.flatten(), row] = matrix[
+    mask = lut_vol > 0
+    n_components = matrix.shape[0]
+    matvol = np.zeros(lut_vol.shape + (n_components,))
+
+    for row in range(n_components):
+        matvol.reshape(-1, n_components)[mask.flatten(), row] = matrix[
             row, lut_vol[mask] - 1
         ]
-
     return matvol
 
 
@@ -128,7 +129,7 @@ def save_white_matter(
 
     """
     lut_vol = nb.load(path_to_lookup_vol)
-    lut_vol_data = lut_vol.get_fdata()
+    lut_vol_data = lut_vol.get_fdata().astype(np.int32)
     lut_shape = sum(lut_vol_data.flatten() > 0)
     white_matter_shape = white_matter_components.shape[1]
     if lut_shape != white_matter_shape:
@@ -138,7 +139,9 @@ def save_white_matter(
         )
 
     white_matter_vol = mat2vol(white_matter_components, lut_vol_data)
-    nb.save(white_matter_vol, header=lut_vol.header).save(out_file)
+    nb.Nifti1Image(
+        white_matter_vol.astype(float), header=lut_vol.header, affine=lut_vol.affine
+    ).to_filename(f"{out_file}.nii.gz")
 
 
 def save_grey_matter_volume(
@@ -172,10 +175,14 @@ def save_grey_matter_volume(
     vol = nb.load(seed)
     xyz_idx = np.ravel_multi_index(x_y_z_coordinates.T, vol.shape)
     ncols = grey_matter_component.shape[1]
-    out = np.zeros(vol.shape + (ncols)).reshape(-1, ncols)
+    out = np.zeros(vol.shape + (ncols,)).reshape(-1, ncols)
     for idx, col in enumerate(grey_matter_component.T):
         out[xyz_idx, idx] = col
-    nb.save(out.reshape(vol.shape + (ncols)), header=vol.header).save(file_name)
+        nb.Nifti1Image(
+            out.reshape(vol.shape + (ncols,)).astype(float),
+            affine=vol.affine,
+            header=vol.header,
+        ).to_filename(f"{file_name}.gz")
 
 
 def save_grey_matter_gifit(

@@ -186,7 +186,10 @@ def white_component(component_dir: str, group_averages_dir: str) -> np.ndarray:
         os.path.join(group_averages_dir, "lookup_tractspace_fdt_matrix2.nii.gz")
     )
     white_matter = nb.load(glob(os.path.join(component_dir, "W_*_dim*"))[0])
-    return vol2mat(white_matter.get_fdata(), lookup_vol.get_fdata())
+    return vol2mat(
+        white_matter.get_fdata().astype(np.int32),
+        lookup_vol.get_fdata().astype(np.int32),
+    )
 
 
 def load_grey_matter_volume(nifti_file: str, x_y_z_coordinates: np.array) -> np.array:

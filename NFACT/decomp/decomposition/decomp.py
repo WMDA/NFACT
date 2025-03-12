@@ -1,4 +1,4 @@
-from NFACT.decomp.matrix_handling import (
+from NFACT.decomp.decomposition.matrix_handling import (
     melodic_incremental_group_pca,
 )
 from NFACT.base.utils import error_and_exit, nprint, Timer

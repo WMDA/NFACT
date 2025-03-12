@@ -1,6 +1,6 @@
 import os
 import numpy as np
-import nbabel as nb
+import nibabel as nb
 from sklearn.preprocessing import StandardScaler
 from glob import glob
 from NFACT.base.utils import colours, error_and_exit
@@ -56,8 +56,7 @@ def save_nifti(data: np.array, affine: np.array, filename: str) -> None:
     -------
     None
     """
-    new_img = nb.Nifti1Image(data.astype(np.float32), affine)
-    nb.save(new_img, filename)
+    nb.Nifti1Image(data.astype(np.float32), affine).to_filename(filename)
 
 
 def normalization(img_data: np.array) -> np.array:
