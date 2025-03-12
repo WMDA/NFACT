@@ -176,7 +176,7 @@ def melodic_incremental_group_pca(
 
 
 def matrix_migp(
-    fdt_matrix: np.array,
+    fdt_matrix: np.ndarray,
     n_dim: int = 1000,
     d_pca: int = 1000,
 ) -> np.ndarray:

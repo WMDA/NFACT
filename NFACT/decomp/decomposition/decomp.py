@@ -1,4 +1,4 @@
-from .matrix_handling import (
+from NFACT.decomp.matrix_handling import (
     melodic_incremental_group_pca,
 )
 from NFACT.base.utils import error_and_exit, nprint, Timer
@@ -14,7 +14,9 @@ warnings.filterwarnings("ignore")
 
 
 @ignore_warnings(category=ConvergenceWarning)
-def ica_decomp(parameters: dict, pca_matrix: np.array, fdt_matrix: np.array) -> dict:
+def ica_decomp(
+    parameters: dict, pca_matrix: np.ndarray, fdt_matrix: np.ndarray
+) -> dict:
     """
     Function to perform ica decomposition
 
@@ -22,9 +24,9 @@ def ica_decomp(parameters: dict, pca_matrix: np.array, fdt_matrix: np.array) -> 
     ----------
     parameters: dict
         dictionary of hyperparameters
-    pca_matrix: np.array
+    pca_matrix: np.ndarray
         matrix that has been reduced.
-    fdt_matrix: np.array
+    fdt_matrix: np.ndarray
         matrix to perform decomposition
         on
 
@@ -48,7 +50,7 @@ def ica_decomp(parameters: dict, pca_matrix: np.array, fdt_matrix: np.array) -> 
 
 
 @ignore_warnings(category=ConvergenceWarning)
-def nmf_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
+def nmf_decomp(parameters: dict, fdt_matrix: np.ndarray) -> dict:
     """
     Function to perform NFM.
 
@@ -56,7 +58,7 @@ def nmf_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
     ----------
     parameters: dict
         dictionary of hyperparameters
-    fdt_matrix: np.array
+    fdt_matrix: np.ndarray
         matrix to perform decomposition
         on
 
@@ -74,7 +76,7 @@ def nmf_decomp(parameters: dict, fdt_matrix: np.array) -> dict:
     return {"grey_components": grey_matter, "white_components": decomp.components_}
 
 
-def pca_reduction(n_components: int, fdt_matrix: np.array) -> np.ndarray:
+def pca_reduction(n_components: int, fdt_matrix: np.ndarray) -> np.ndarray:
     """
     Function to conduct PCA for ICA using
     sckit learns implementation.
@@ -132,7 +134,7 @@ def get_parameters(parameters: dict, algo: str, n_components: int) -> dict:
 
 
 def matrix_decomposition(
-    fdt_matrix: np.array,
+    fdt_matrix: np.ndarray,
     algo: str,
     normalise: bool,
     signflip: bool,
@@ -149,7 +151,7 @@ def matrix_decomposition(
 
     Parameters
     ----------
-    fdt_matrix: np.array
+    fdt_matrix: np.ndarray
         matrix to decompose
     algo: str
         which algo
@@ -194,7 +196,7 @@ def matrix_decomposition(
     return components
 
 
-def sign_flip(decomp_matrix: np.array, thr: int = 0) -> np.ndarray:
+def sign_flip(decomp_matrix: np.ndarray, thr: int = 0) -> np.ndarray:
     """
     Function to sign flip the rows of
     the decomp matrix so that the heavy tail

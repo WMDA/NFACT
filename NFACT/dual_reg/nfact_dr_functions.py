@@ -5,20 +5,20 @@ from NFACT.base.imagehandling import (
 from NFACT.base.utils import colours, nprint, error_and_exit
 import numpy as np
 import os
-from fsl.data.image import Image
 import nibabel as nb
 from glob import glob
 import re
 
+
 def get_key_to_organise_list(seed_path: str) -> str:
     """
-    Function to get key to organise 
+    Function to get key to organise
     grey matter file names.
 
     Parameters
     ----------
     seed_path: str
-        path to first seed 
+        path to first seed
         in the list
 
     Returns
@@ -30,36 +30,42 @@ def get_key_to_organise_list(seed_path: str) -> str:
     seed_name = os.path.basename(seed_path).lower()
     file_split = re.split(r"[.-]", seed_name)
     return next(
-        (side for keys, side in {
-            ('l', 'left'),
-            ('left', 'left'),
-            ('r', 'right'),
-            ('right', 'right'),
-        } if keys in file_split),
-        seed_name
+        (
+            side
+            for keys, side in {
+                ("l", "left"),
+                ("left", "left"),
+                ("r", "right"),
+                ("right", "right"),
+            }
+            if keys in file_split
+        ),
+        seed_name,
     )
+
 
 def sort_grey_matter_order(grey_matter_list: list, keyword: str) -> list:
     """
-    Function to organise grey matter 
+    Function to organise grey matter
     seed by a keyword. Does so on
     a partial match.
 
     Parameters
     ----------
     grey_matter_list: list
-        list of grey matter 
+        list of grey matter
     keyword: str
         str of key to organise
         grey matter by
-    
+
     Returns
     -------
     list: list object
         sorted grey_matter_list
-        by keyword    
+        by keyword
     """
     return sorted(grey_matter_list, key=lambda x: (keyword not in x, x))
+
 
 def vol2mat(matvol: np.ndarray, lut_vol: object) -> np.ndarray:
     """
@@ -174,7 +180,7 @@ def white_component(component_dir: str, group_averages_dir: str) -> np.ndarray:
         array of white matter component
         from the volume
     """
-    lookup_vol = Image(
+    lookup_vol = nb.load(
         os.path.join(group_averages_dir, "lookup_tractspace_fdt_matrix2.nii.gz")
     )
     white_matter = nb.load(glob(os.path.join(component_dir, "W_*_dim*"))[0])

@@ -1,7 +1,6 @@
 import pathlib
 import os
-from fsl.data.image import Image
-import nibabel as nib
+import nbabel as nb
 import numpy as np
 import re
 from NFACT.base.utils import error_and_exit
@@ -29,7 +28,7 @@ def imaging_type(path: str) -> str:
         return "gifti"
 
 
-def mat2vol(matrix: np.ndarray, lut_vol: object) -> np.ndarray:
+def mat2vol(matrix: np.ndarray, lut_vol: np.ndarray) -> np.ndarray:
     """
     Function to reshape a matrix
     to be saved as a volume.
@@ -38,8 +37,8 @@ def mat2vol(matrix: np.ndarray, lut_vol: object) -> np.ndarray:
     ----------
     matrix: np.ndarray
         array to  be saved as volume
-    lut_vol: object
-        image object of lookup volume
+    lut_vol: ndarray
+        data from lookup volume
 
     Returns
     -------
@@ -47,12 +46,12 @@ def mat2vol(matrix: np.ndarray, lut_vol: object) -> np.ndarray:
         array reformatted to be converted to
         a volume
     """
-    mask = lut_vol.data > 0
-    matvol = np.zeros(lut_vol.shape + (len(matrix),))
+    mask = lut_vol > 0
+    matvol = np.zeros(lut_vol.shape + (len(matrix)))
 
     for row in range(len(matrix)):
         matvol.reshape(-1, len(matrix))[mask.flatten(), row] = matrix[
-            row, lut_vol.data[mask] - 1
+            row, lut_vol[mask] - 1
         ]
 
     return matvol
@@ -128,15 +127,18 @@ def save_white_matter(
     None
 
     """
-    lut_vol = Image(path_to_lookup_vol)
-    if sum(lut_vol.data.flatten() > 0) != white_matter_components.shape[1]:
+    lut_vol = nb.load(path_to_lookup_vol)
+    lut_vol_data = lut_vol.get_fdata()
+    lut_shape = sum(lut_vol_data.flatten() > 0)
+    white_matter_shape = white_matter_components.shape[1]
+    if lut_shape != white_matter_shape:
         error_and_exit(
             False,
-            f"Lookup_tractspace_fdt_matrix2 (size={sum(lut_vol.data.flatten() > 0)} is not compatible with output white matter component (size={white_matter_components.shape[1]})",
+            f"Lookup_tractspace_fdt_matrix2 size {lut_shape} is not compatible with white matter component size {white_matter_shape}",
         )
 
-    white_matter_vol = mat2vol(white_matter_components, lut_vol)
-    Image(white_matter_vol, header=lut_vol.header).save(out_file)
+    white_matter_vol = mat2vol(white_matter_components, lut_vol_data)
+    nb.save(white_matter_vol, header=lut_vol.header).save(out_file)
 
 
 def save_grey_matter_volume(
@@ -167,13 +169,13 @@ def save_grey_matter_volume(
     None
     """
 
-    vol = Image(seed)
+    vol = nb.load(seed)
     xyz_idx = np.ravel_multi_index(x_y_z_coordinates.T, vol.shape)
     ncols = grey_matter_component.shape[1]
-    out = np.zeros(vol.shape + (ncols,)).reshape(-1, ncols)
+    out = np.zeros(vol.shape + (ncols)).reshape(-1, ncols)
     for idx, col in enumerate(grey_matter_component.T):
         out[xyz_idx, idx] = col
-    Image(out.reshape(vol.shape + (ncols,)), header=vol.header).save(file_name)
+    nb.save(out.reshape(vol.shape + (ncols)), header=vol.header).save(file_name)
 
 
 def save_grey_matter_gifit(
@@ -198,13 +200,13 @@ def save_grey_matter_gifit(
     -------
     None
     """
-    surf = nib.load(seed)
-    m_wall = nib.load(roi).darrays[0].data != 0
+    surf = nb.load(seed)
+    m_wall = nb.load(roi).darrays[0].data != 0
     grey_matter_component = np.zeros((m_wall.shape[0], grey_component.shape[1]))
     grey_matter_component[m_wall == 1, :] = grey_component
 
     darrays = [
-        nib.gifti.GiftiDataArray(
+        nb.gifti.GiftiDataArray(
             data=np.array(col, dtype=float),
             datatype="NIFTI_TYPE_FLOAT32",
             intent=2001,
@@ -212,7 +214,7 @@ def save_grey_matter_gifit(
         )
         for col in grey_matter_component.T
     ]
-    nib.GiftiImage(darrays=darrays, meta=surf.darrays[0].meta).to_filename(
+    nb.GiftiImage(darrays=darrays, meta=surf.darrays[0].meta).to_filename(
         f"{file_name}.func.gii"
     )
 
