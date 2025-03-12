@@ -64,10 +64,10 @@ def sort_grey_matter_order(grey_matter_list: list, keyword: str) -> list:
         sorted grey_matter_list
         by keyword
     """
-    return sorted(grey_matter_list, key=lambda x: (keyword not in x, x))
+    return sorted(grey_matter_list, key=lambda sk: (keyword not in sk, sk))
 
 
-def vol2mat(matvol: np.ndarray, lut_vol: object) -> np.ndarray:
+def vol2mat(matvol: np.ndarray, lut_vol: np.ndarray) -> np.ndarray:
     """
     Function to reshape a volume back into
     the original matrix format.
@@ -76,20 +76,22 @@ def vol2mat(matvol: np.ndarray, lut_vol: object) -> np.ndarray:
     ----------
     matvol: np.ndarray
         array reformatted as a volume
-    lut_vol: object
-        image object of lookup volume
+    lut_vol: np.ndarray
+        np.ndarray containing
+        lookup volume data
 
     Returns
     -------
     matrix: np.ndarray
-        array converted back to original matrix form
+        array of volume data converted back
+        to original matrix form
     """
-    mask = lut_vol.data > 0
+    mask = lut_vol > 0
     num_rows = matvol.shape[-1]
-    matrix = np.zeros((num_rows, np.max(lut_vol.data)))
+    matrix = np.zeros((num_rows, np.max(lut_vol)))
 
     for row in range(num_rows):
-        matrix[row, lut_vol.data[mask] - 1] = matvol.reshape(-1, num_rows)[
+        matrix[row, lut_vol[mask] - 1] = matvol.reshape(-1, num_rows)[
             mask.flatten(), row
         ]
 
@@ -184,7 +186,7 @@ def white_component(component_dir: str, group_averages_dir: str) -> np.ndarray:
         os.path.join(group_averages_dir, "lookup_tractspace_fdt_matrix2.nii.gz")
     )
     white_matter = nb.load(glob(os.path.join(component_dir, "W_*_dim*"))[0])
-    return vol2mat(white_matter.get_fdata(), lookup_vol)
+    return vol2mat(white_matter.get_fdata(), lookup_vol.get_fdata())
 
 
 def load_grey_matter_volume(nifti_file: str, x_y_z_coordinates: np.array) -> np.array:
