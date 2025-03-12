@@ -1,5 +1,5 @@
-from .nfactQc_args import nfact_qc_args
-from .nfactQc_functions import (
+from NFACT.qc.nfactQc_args import nfact_qc_args
+from NFACT.qc.nfactQc_functions import (
     nfactQc_dir,
     check_Qc_dir,
     get_images,

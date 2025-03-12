@@ -2,7 +2,7 @@ import os
 import json
 from datetime import datetime
 import shutil
-from .utils import error_and_exit, colours
+from NFACT.base.utils import error_and_exit, colours
 
 
 def delete_folder(outdir: str) -> None:

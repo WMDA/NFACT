@@ -22,7 +22,6 @@ dependencies = [
     'numpy',
     'nibabel',
     'scikit-learn',
-    'fslpy',
     'tqdm',
     'file-tree'
 ]

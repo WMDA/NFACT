@@ -1,8 +1,8 @@
 import logging
 import json
 import os
-from .filesystem import get_current_date
-from .utils import colours
+from NFACT.base.filesystem import get_current_date
+from NFACT.base.utils import colours
 
 
 class NFACT_logs:

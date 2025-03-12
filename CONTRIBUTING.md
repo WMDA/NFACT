@@ -79,17 +79,17 @@ No 10,000 line scripts called functions.py please!
 This is really difficult to read and maintain
 
 ```
-for sub in subject:
-    for key, value in subjects_dict:
-        if len(value) == 1:
-            value = sub
+for s in sj:
+    for k, v in subjects_dict:
+        if len(v) == 1:
+            v = xx
         elif:
-           if (len(value) != 2) and (len(value) > 3):
-               value = sub +1
+           if (len(v) != 2) and (len(v) > 3):
+               v = xx +1
             else:
-               value = sub +2     
+               v = xx +2     
         else:
-            key +=1
+            v +=10
         
 ```
 

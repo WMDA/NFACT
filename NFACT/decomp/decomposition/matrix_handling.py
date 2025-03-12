@@ -17,8 +17,8 @@ def process_fdt_matrix2(list_of_ptx_folds: list, group_mode: bool) -> np.ndarray
 
     Returns
     -------
-    matrcies: np.array
-       np.array of fdt2 matrix either averaged
+    fdt_matrix2: np.array
+       np.ndarray of fdt2 matrix either averaged
        across subjects or single subjects
     """
     list_of_fdt = [
@@ -176,7 +176,7 @@ def melodic_incremental_group_pca(
 
 
 def matrix_migp(
-    fdt_matrix: np.array,
+    fdt_matrix: np.ndarray,
     n_dim: int = 1000,
     d_pca: int = 1000,
 ) -> np.ndarray:

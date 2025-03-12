@@ -2,7 +2,7 @@ from NFACT.preprocess.nfactpp_args import nfact_pp_args
 from NFACT.decomp.setup.args import nfact_decomp_args
 from NFACT.dual_reg.nfact_dr_args import nfactdr_args
 from NFACT.qc.nfactQc_args import nfact_qc_args
-from .base_args import cluster_args
+from NFACT.base.base_args import cluster_args
 import inspect
 import re
 

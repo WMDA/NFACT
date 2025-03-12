@@ -1,10 +1,10 @@
-from .dual_regression import Dual_regression
-from .nfact_dr_args import nfactdr_args, nfact_dr_splash
-from .nfact_dr_set_up import (
+from NFACT.dual_reg.dual_regression import Dual_regression
+from NFACT.dual_reg.nfact_dr_args import nfactdr_args, nfact_dr_splash
+from NFACT.dual_reg.nfact_dr_set_up import (
     check_nfact_decomp_directory,
     create_nfact_dr_folder_set_up,
 )
-from .nfact_dr_functions import get_group_level_components, get_paths
+from NFACT.dual_reg.nfact_dr_functions import get_group_level_components, get_paths
 
 from NFACT.base.setup import (
     check_algo,

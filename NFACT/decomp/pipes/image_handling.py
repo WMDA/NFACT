@@ -117,6 +117,10 @@ def winner_takes_all(
         list of seeds
     dim: str
         number of dimensions (for saving files)
+
+    Returns
+    -------
+    None
     """
 
     white_wta_map = create_wta_map(components["white_components"], 0, z_thr)
@@ -143,7 +147,7 @@ def winner_takes_all(
 
 
 def create_wta_map(
-    component: np.array,
+    component: np.ndarray,
     axis: int,
     z_thr: float,
 ) -> np.ndarray:
@@ -153,7 +157,7 @@ def create_wta_map(
 
     Parameters
     ----------
-    component: np.array
+    component: np.ndarray
         component to create a
     axis: int
         axis to get max values

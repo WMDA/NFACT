@@ -1,6 +1,6 @@
 import os
 import numpy as np
-import nibabel as nib
+import nibabel as nb
 from sklearn.preprocessing import StandardScaler
 from glob import glob
 from NFACT.base.utils import colours, error_and_exit
@@ -26,14 +26,14 @@ def save_gifit(filename: str, seed: object, surf_data: np.array):
     None
     """
     darrays = [
-        nib.gifti.GiftiDataArray(
+        nb.gifti.GiftiDataArray(
             surf_data,
             datatype="NIFTI_TYPE_FLOAT32",
             intent=2001,
             meta=seed.darrays[0].meta,
         )
     ]
-    nib.gifti.GiftiImage(darrays=darrays, meta=seed.darrays[0].meta).to_filename(
+    nb.gifti.GiftiImage(darrays=darrays, meta=seed.darrays[0].meta).to_filename(
         f"{filename}.func.gii"
     )
 
@@ -56,8 +56,7 @@ def save_nifti(data: np.array, affine: np.array, filename: str) -> None:
     -------
     None
     """
-    new_img = nib.Nifti1Image(data.astype(np.float32), affine)
-    nib.save(new_img, filename)
+    nb.Nifti1Image(data.astype(np.float32), affine).to_filename(filename)
 
 
 def normalization(img_data: np.array) -> np.array:
@@ -189,7 +188,7 @@ def create_gifti_hitmap(
     -------
     None
     """
-    seed = nib.load(seed_path)
+    seed = nb.load(seed_path)
 
     combinearray = np.array(
         [seed.darrays[idx].data for idx, _ in enumerate(seed.darrays)]
@@ -222,7 +221,7 @@ def create_nifti_hitmap(
        float of percentage coverage
     """
     col = colours()
-    img_comp = nib.load(img_path)
+    img_comp = nb.load(img_path)
     img_data = img_comp.get_fdata()
     maps = nifti_hitcount_maps(img_data, threshold, normalize)
     print(f"{col['pink']}Image:{col['reset']} Saving Hitmap")
