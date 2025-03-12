@@ -6,6 +6,7 @@ from NFACT.base.base_args import (
     base_arguments,
     seed_roi_args,
     algo_arg,
+    cluster_args,
 )
 
 
@@ -56,8 +57,9 @@ def nfactdr_args() -> dict:
         default=False,
         help="normalise components by scaling",
     )
-    parallel_args(base_args, col, "To parallelize dual regression")
 
+    parallel_args(base_args, col, "To parallelize dual regression")
+    cluster_args(base_args, col)
     no_args(base_args)
     options = base_args.parse_args()
     if options.verbose_help:

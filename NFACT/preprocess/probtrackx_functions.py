@@ -235,7 +235,6 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
     list: list object
         list of probtrackx2 arguements
     """
-
     command_arguments = process_command_arguments(arg, sub)
     prob_bin = "probtrackx2_gpu" if arg["gpu"] else "probtrackx2"
     binary = os.path.join(os.environ["FSLDIR"], "bin", prob_bin)

@@ -13,11 +13,13 @@ import re
 def get_key_to_organise_list(seed_path: str) -> str:
     """
     Function to get key to organise
+    Function to get key to organise
     grey matter file names.
 
     Parameters
     ----------
     seed_path: str
+        path to first seed
         path to first seed
         in the list
 
@@ -47,6 +49,7 @@ def get_key_to_organise_list(seed_path: str) -> str:
 def sort_grey_matter_order(grey_matter_list: list, keyword: str) -> list:
     """
     Function to organise grey matter
+    Function to organise grey matter
     seed by a keyword. Does so on
     a partial match.
 
@@ -54,14 +57,17 @@ def sort_grey_matter_order(grey_matter_list: list, keyword: str) -> list:
     ----------
     grey_matter_list: list
         list of grey matter
+        list of grey matter
     keyword: str
         str of key to organise
         grey matter by
+
 
     Returns
     -------
     list: list object
         sorted grey_matter_list
+        by keyword
         by keyword
     """
     return sorted(grey_matter_list, key=lambda sk: (keyword not in sk, sk))
@@ -126,6 +132,12 @@ def save_dual_regression_images(
         used for naming output
     sub: str
         Subject id in string format
+    ptx_dir: str
+        needed to obtain coords/lookup
+        tractspace
+    roi: list
+        list of roi. Needed
+        for surfaces.
 
     Returns
     -------
@@ -212,11 +224,8 @@ def load_grey_matter_volume(nifti_file: str, x_y_z_coordinates: np.array) -> np.
 
     img = nb.load(nifti_file)
     data = img.get_fdata()
-    # Convert the x, y, z coordinates into flat indices
     vol_shape = data.shape[:3]
     xyz_idx = np.ravel_multi_index(x_y_z_coordinates.T, vol_shape)
-
-    # Flatten the data to 2D (number of voxels x number of components)
     ncols = data.shape[3] if len(data.shape) > 3 else 1
     flattened_data = data.reshape(-1, ncols)
     return flattened_data[xyz_idx, :]
@@ -268,6 +277,7 @@ def grey_components(
     np.ndarray: np.array
         grey matter components array
     """
+
     grey_matter = glob(os.path.join(decomp_dir, "G_*dim*"))
     seed_key_word = get_key_to_organise_list(seeds[0])
     sorted_components = sort_grey_matter_order(grey_matter, seed_key_word)
@@ -360,3 +370,33 @@ def get_paths(args: dict) -> dict:
         False,
         "Directory to components not given. Please specify with --nfact_decomp_dir or --decomp_dir",
     )
+
+
+def get_subject_id(path: str, number: int) -> str:
+    """
+    Function to assign a subjects Id
+
+    Parameters
+    ----------
+    path: str
+        string of path to subjects
+    number: int
+        subject number
+
+    Returns
+    ------
+    str: string
+        subject id either taken from file path
+        or assigned number in the list
+    """
+    try:
+        stripped_path = re.sub(r"subjects", "", path)
+        return re.findall(r"sub_[a-zA-Z0-9]*", stripped_path)[0]
+    except IndexError:
+        sub_name = os.path.basename(os.path.dirname(path))
+        if "MR" in sub_name:
+            try:
+                return sub_name.split("_")[0]
+            except IndexError:
+                pass
+        return f"sub-{number}"
