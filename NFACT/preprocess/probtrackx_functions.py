@@ -122,7 +122,6 @@ def build_warp_options(warps: list) -> list:
     warp_options = [f"--xfm={warps[0]}"]
     if len(warps) > 1:
         warp_options.extend([f"--invxfm={warps[1]}"])
-
     return warp_options
 
 
@@ -168,6 +167,53 @@ def get_probtrackx_bin(use_gpu: bool) -> str:
     """
     prob_bin = "probtrackx2_gpu" if use_gpu else "probtrackx2"
     return os.path.join(os.environ["FSLDIR"], "bin", prob_bin)
+
+
+def exclsuion_mask(exclusion_path: str) -> list:
+    """
+    Function to add exclusion
+    mask to probtrackx
+
+    Parameters
+    ----------
+    exclusion_path: str
+        path to exclusion mask
+
+    Returns
+    -------
+    list: list obect
+        list with avoid argument
+    """
+    col = colours()
+    print(f"{col['pink']}Processing:{col['reset']} Exclusion mask {exclusion_path}")
+    return [f"--avoid={exclusion_path}"]
+
+
+def add_stoppage_args(arg: dict, nfactpp_diretory: str, sub: str, sub_id: str):
+    """
+    Function to add in stoppage masks
+
+    arg: dict,
+       cmd processes
+    nfactpp_diretory: str
+        path to nfactpp_directory
+    sub: str
+        path to sub dirs
+    sub_id: str
+        subject id
+
+    Returns
+    -------
+    list: list object
+        list of stop and wtstop
+        arguments
+    """
+    # Lazy import needed to stop circular imports
+    from NFACT.preprocess.nfactpp_functions import stop_masks
+
+    col = colours()
+    print(f"{col['pink']}Processing:{col['reset']} stop and wtstop files")
+    return stop_masks(arg, nfactpp_diretory, sub, sub_id)
 
 
 def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
@@ -222,6 +268,15 @@ def build_probtrackx2_arguments(arg: dict, sub: str, ptx_options=False) -> list:
         f"--dir={output_dir}",
     ]
     command.extend(warp_options)
+    if arg["exclusion"]:
+        command.extend(exclsuion_mask(arg["exclusion"]))
+    if arg["stop"]:
+        command.extend(
+            add_stoppage_args(
+                arg, os.path.dirname(output_dir), sub, os.path.basename(sub)
+            )
+        )
+
     if ptx_options:
         command.extend(ptx_options)
     return command

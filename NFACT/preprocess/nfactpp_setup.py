@@ -130,6 +130,17 @@ def check_provided_img(image_to_check: str, error_messgae: str) -> None:
     Wrapper around function to
     check exclusion masks is a file
     and exists.
+
+    Parameterers
+    ------------
+    image_to_check: str
+        path to image to check
+    error_messgae: str
+        error message if errors
+
+    Returns
+    -------
+    None
     """
     error_and_exit(os.path.isfile(image_to_check), error_messgae)
     check_files_are_imaging_files(image_to_check)
