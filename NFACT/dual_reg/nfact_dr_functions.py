@@ -43,17 +43,6 @@ def get_key_to_organise_list(seed_path: str) -> str:
             if keys in file_split
         ),
         seed_name,
-        (
-            side
-            for keys, side in {
-                ("l", "left"),
-                ("left", "left"),
-                ("r", "right"),
-                ("right", "right"),
-            }
-            if keys in file_split
-        ),
-        seed_name,
     )
 
 
@@ -288,6 +277,7 @@ def grey_components(
     np.ndarray: np.array
         grey matter components array
     """
+
     grey_matter = glob(os.path.join(decomp_dir, "G_*dim*"))
     seed_key_word = get_key_to_organise_list(seeds[0])
     sorted_components = sort_grey_matter_order(grey_matter, seed_key_word)
