@@ -1,4 +1,4 @@
-from .utils import colours, error_and_exit
+from NFACT.base.utils import colours, error_and_exit
 import os
 import subprocess
 import time

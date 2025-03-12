@@ -1,4 +1,4 @@
-from .probtrackx_functions import get_probtrack2_arguments
+from NFACT.preprocess.probtrackx_functions import get_probtrack2_arguments
 from NFACT.base.utils import colours, error_and_exit
 from NFACT.base.filesystem import make_directory
 from NFACT.base.imagehandling import check_files_are_imaging_files

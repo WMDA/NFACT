@@ -4,7 +4,7 @@ from fsl.data.image import Image
 import nibabel as nib
 import numpy as np
 import re
-from .utils import error_and_exit
+from NFACT.base.utils import error_and_exit
 
 
 def imaging_type(path: str) -> str:
@@ -29,21 +29,21 @@ def imaging_type(path: str) -> str:
         return "gifti"
 
 
-def mat2vol(matrix: np.array, lut_vol: object) -> np.ndarray:
+def mat2vol(matrix: np.ndarray, lut_vol: object) -> np.ndarray:
     """
     Function to reshape a matrix
     to be saved as a volume.
 
     Parameters
     ----------
-    matrix: np.array
+    matrix: np.ndarray
         array to  be saved as volume
     lut_vol: object
         image object of lookup volume
 
     Returns
     -------
-    matvol: np.array
+    matvol: np.ndarray
         array reformatted to be converted to
         a volume
     """
@@ -107,7 +107,7 @@ def check_files_are_imaging_files(path: str) -> bool:
 
 
 def save_white_matter(
-    white_matter_components: np.array, path_to_lookup_vol: str, out_file: str
+    white_matter_components: np.ndarray, path_to_lookup_vol: str, out_file: str
 ) -> None:
     """
     Function to save white matter compponents
@@ -115,7 +115,7 @@ def save_white_matter(
 
     Parameters
     ----------
-    white_matter_components: np.array
+    white_matter_components: np.ndarray
         The white matter components from ICA/NFM
         to save
     path_to_lookup_vol: str
@@ -140,10 +140,10 @@ def save_white_matter(
 
 
 def save_grey_matter_volume(
-    grey_matter_component: np.array,
+    grey_matter_component: np.ndarray,
     file_name: str,
     seed: str,
-    x_y_z_coordinates: np.array,
+    x_y_z_coordinates: np.ndarray,
 ) -> None:
     """
 
@@ -152,14 +152,14 @@ def save_grey_matter_volume(
 
     Parameters
     ----------
-    grey_matter_component: np.array
+    grey_matter_component: np.ndarray
         grey matter component for a
         single seed
     file_name: str
         file name
     seed: str
         path to seed
-    x_y_z_coordinates: np.array
+    x_y_z_coordinates: np.ndarray
         array of x, y, z co-ordinates
 
     Returns
@@ -177,14 +177,14 @@ def save_grey_matter_volume(
 
 
 def save_grey_matter_gifit(
-    grey_component: np.array, file_name: str, seed: str, roi: str
+    grey_component: np.ndarray, file_name: str, seed: str, roi: str
 ) -> None:
     """
     Function to save grey matter as gifti
 
     Parameters
     ----------
-    grey_matter_component: np.array
+    grey_matter_component: np.ndarray
         grey matter component for a
         single seed
     file_name: str
@@ -277,7 +277,7 @@ def name_seed(seed: str, nfact_path: str, directory: str, prefix: str, dim: int)
 
 
 def save_grey_matter_components(
-    grey_matter_components: np.array,
+    grey_matter_components: np.ndarray,
     nfact_path: str,
     seeds: list,
     directory: str,
@@ -292,8 +292,7 @@ def save_grey_matter_components(
 
     Parameters
     ----------
-
-    grey_matter_components: str
+    grey_matter_components: ndarray
         grey_matter_component matrix
     nfact_path: str
         str to nfact directory
@@ -306,6 +305,7 @@ def save_grey_matter_components(
         used for naming output
     roi: list
         list of roi path
+
     Returns
     -------
     None
