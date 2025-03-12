@@ -1,17 +1,17 @@
 # NFACT functions
-from .nfactpp_setup import (
+from NFACT.preprocess.nfactpp_setup import (
     nfact_pp_folder_setup,
     check_roi_seed_len,
     load_file_tree,
 )
-from .nfactpp_functions import (
+from NFACT.preprocess.nfactpp_functions import (
     get_file,
     filetree_get_files,
     process_filetree_args,
     create_files_for_decomp,
     write_options_to_file,
 )
-from .probtrackx_functions import (
+from NFACT.preprocess.probtrackx_functions import (
     build_probtrackx2_arguments,
     Probtrackx,
     get_target2,

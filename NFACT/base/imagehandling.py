@@ -1,7 +1,6 @@
 import pathlib
 import os
-from fsl.data.image import Image
-import nibabel as nib
+import nibabel as nb
 import numpy as np
 import re
 from NFACT.base.utils import error_and_exit
@@ -29,32 +28,33 @@ def imaging_type(path: str) -> str:
         return "gifti"
 
 
-def mat2vol(matrix: np.ndarray, lut_vol: object) -> np.ndarray:
+def mat2vol(matrix: np.ndarray, lut_vol: np.ndarray) -> np.ndarray:
     """
     Function to reshape a matrix
     to be saved as a volume.
 
     Parameters
     ----------
-    matrix: np.array
+    matrix: np.ndarray
         array to  be saved as volume
-    lut_vol: object
-        image object of lookup volume
+    lut_vol: ndarray
+        data from lookup volume
 
     Returns
     -------
-    matvol: np.array
+    matvol: np.ndarray
         array reformatted to be converted to
         a volume
     """
-    mask = lut_vol.data > 0
-    matvol = np.zeros(lut_vol.shape + (len(matrix),))
 
-    for row in range(len(matrix)):
-        matvol.reshape(-1, len(matrix))[mask.flatten(), row] = matrix[
-            row, lut_vol.data[mask] - 1
+    mask = lut_vol > 0
+    n_components = matrix.shape[0]
+    matvol = np.zeros(lut_vol.shape + (n_components,))
+
+    for row in range(n_components):
+        matvol.reshape(-1, n_components)[mask.flatten(), row] = matrix[
+            row, lut_vol[mask] - 1
         ]
-
     return matvol
 
 
@@ -115,7 +115,7 @@ def save_white_matter(
 
     Parameters
     ----------
-    white_matter_components: np.array
+    white_matter_components: np.ndarray
         The white matter components from ICA/NFM
         to save
     path_to_lookup_vol: str
@@ -128,22 +128,27 @@ def save_white_matter(
     None
 
     """
-    lut_vol = Image(path_to_lookup_vol)
-    if sum(lut_vol.data.flatten() > 0) != white_matter_components.shape[1]:
+    lut_vol = nb.load(path_to_lookup_vol)
+    lut_vol_data = lut_vol.get_fdata().astype(np.int32)
+    lut_shape = sum(lut_vol_data.flatten() > 0)
+    white_matter_shape = white_matter_components.shape[1]
+    if lut_shape != white_matter_shape:
         error_and_exit(
             False,
-            f"Lookup_tractspace_fdt_matrix2 (size={sum(lut_vol.data.flatten() > 0)} is not compatible with output white matter component (size={white_matter_components.shape[1]})",
+            f"Lookup_tractspace_fdt_matrix2 size {lut_shape} is not compatible with white matter component size {white_matter_shape}",
         )
 
-    white_matter_vol = mat2vol(white_matter_components, lut_vol)
-    Image(white_matter_vol, header=lut_vol.header).save(out_file)
+    white_matter_vol = mat2vol(white_matter_components, lut_vol_data)
+    nb.Nifti1Image(
+        white_matter_vol.astype(float), header=lut_vol.header, affine=lut_vol.affine
+    ).to_filename(f"{out_file}.nii.gz")
 
 
 def save_grey_matter_volume(
-    grey_matter_component: np.array,
+    grey_matter_component: np.ndarray,
     file_name: str,
     seed: str,
-    x_y_z_coordinates: np.array,
+    x_y_z_coordinates: np.ndarray,
 ) -> None:
     """
 
@@ -152,14 +157,14 @@ def save_grey_matter_volume(
 
     Parameters
     ----------
-    grey_matter_component: np.array
+    grey_matter_component: np.ndarray
         grey matter component for a
         single seed
     file_name: str
         file name
     seed: str
         path to seed
-    x_y_z_coordinates: np.array
+    x_y_z_coordinates: np.ndarray
         array of x, y, z co-ordinates
 
     Returns
@@ -167,24 +172,28 @@ def save_grey_matter_volume(
     None
     """
 
-    vol = Image(seed)
+    vol = nb.load(seed)
     xyz_idx = np.ravel_multi_index(x_y_z_coordinates.T, vol.shape)
     ncols = grey_matter_component.shape[1]
     out = np.zeros(vol.shape + (ncols,)).reshape(-1, ncols)
     for idx, col in enumerate(grey_matter_component.T):
         out[xyz_idx, idx] = col
-    Image(out.reshape(vol.shape + (ncols,)), header=vol.header).save(file_name)
+        nb.Nifti1Image(
+            out.reshape(vol.shape + (ncols,)).astype(float),
+            affine=vol.affine,
+            header=vol.header,
+        ).to_filename(f"{file_name}.gz")
 
 
 def save_grey_matter_gifit(
-    grey_component: np.array, file_name: str, seed: str, roi: str
+    grey_component: np.ndarray, file_name: str, seed: str, roi: str
 ) -> None:
     """
     Function to save grey matter as gifti
 
     Parameters
     ----------
-    grey_matter_component: np.array
+    grey_matter_component: np.ndarray
         grey matter component for a
         single seed
     file_name: str
@@ -198,13 +207,13 @@ def save_grey_matter_gifit(
     -------
     None
     """
-    surf = nib.load(seed)
-    m_wall = nib.load(roi).darrays[0].data != 0
+    surf = nb.load(seed)
+    m_wall = nb.load(roi).darrays[0].data != 0
     grey_matter_component = np.zeros((m_wall.shape[0], grey_component.shape[1]))
     grey_matter_component[m_wall == 1, :] = grey_component
 
     darrays = [
-        nib.gifti.GiftiDataArray(
+        nb.gifti.GiftiDataArray(
             data=np.array(col, dtype=float),
             datatype="NIFTI_TYPE_FLOAT32",
             intent=2001,
@@ -212,7 +221,7 @@ def save_grey_matter_gifit(
         )
         for col in grey_matter_component.T
     ]
-    nib.GiftiImage(darrays=darrays, meta=surf.darrays[0].meta).to_filename(
+    nb.GiftiImage(darrays=darrays, meta=surf.darrays[0].meta).to_filename(
         f"{file_name}.func.gii"
     )
 
@@ -277,7 +286,7 @@ def name_seed(seed: str, nfact_path: str, directory: str, prefix: str, dim: int)
 
 
 def save_grey_matter_components(
-    grey_matter_components: np.array,
+    grey_matter_components: np.ndarray,
     nfact_path: str,
     seeds: list,
     directory: str,
@@ -292,8 +301,7 @@ def save_grey_matter_components(
 
     Parameters
     ----------
-
-    grey_matter_components: str
+    grey_matter_components: ndarray
         grey_matter_component matrix
     nfact_path: str
         str to nfact directory
@@ -306,6 +314,7 @@ def save_grey_matter_components(
         used for naming output
     roi: list
         list of roi path
+
     Returns
     -------
     None
