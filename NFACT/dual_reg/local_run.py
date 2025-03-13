@@ -182,6 +182,9 @@ def run_locally(args: dict, paths: dict):
     except Exception:
         error_and_exit(False, "Unable to find components")
 
+    for idx, subject in enumerate(args["ptx_"]):
+        subject_id = get_subject_id(subject, idx)
+
     method = "Regression" if args["algo"] == "ica" else "Non-negative Regression"
     nprint(f"{col['pink']}DR Method:{col['reset']} {method}")
 
