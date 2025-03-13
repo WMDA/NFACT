@@ -6,12 +6,12 @@ from NFACT.dual_reg.dual_regression import (
     run_decomp,
 )
 from NFACT.dual_reg.nfact_dr_functions import save_dual_regression_images
-from NFACT.base.utils import colours
+from NFACT.base.utils import colours, error_and_exit, nprint
 import argparse
 import os
 
 
-def script_args() -> dict:
+def cluster_mode_args() -> dict:
     """
     Script args
 
@@ -47,9 +47,12 @@ def script_args() -> dict:
     return vars(parser.parse_args())
 
 
-def main_dr(args: dict) -> None:
+def dual_regression_pipeline(args: dict) -> None:
     """
-    Main cluster function.
+    The dual regression pipeline function.
+    This function either runs the pipeline
+    locally or as an individual script to
+    the cluster.
 
     Parameters
     ----------
@@ -61,50 +64,47 @@ def main_dr(args: dict) -> None:
     None
     """
     col = colours()
+    nprint(
+        f"{col['plum']}Number of cores{col['reset']}: ",
+        args["parallel"],
+        to_flush=True,
+    )
+    nprint("-" * 100)
+    nprint(
+        f"{col['pink']}Obtaining{col['reset']}: Group Level Components", to_flush=True
+    )
+
     try:
-        print(f"{col['plum']}Subject ID{col['reset']}: {args['id']}", flush=True)
-        print(
-            f"{col['plum']}Number of cores{col['reset']}: ",
-            args["parallel"],
-            flush=True,
-        )
-        print(f"Args Given: {args}", flush=True)
-        print("-" * 100)
-        print(
-            f"{col['pink']}Obtaining{col['reset']}: Group Level Components", flush=True
-        )
         components = get_group_level_components(
             args["component_path"],
             args["group_average_path"],
             args["seeds"],
             args["roi"],
         )
+    except Exception:
+        error_and_exit(False, "Unable to find components")
 
-        print(f"{col['pink']}Obtaining{col['reset']}: FDT Matrix")
-        matrix = load_fdt_matrix(os.path.join(args["fdt_path"], "fdt_matrix2.dot"))
-        dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
-        print(f"{col['pink']}Running{col['reset']}: Dual Regression", flush=True)
-        dr_results = run_decomp(dr_regression, components, matrix, args["parallel"])
-        print(f"{col['pink']}Saving{col['reset']}: Components", flush=True)
-        save_dual_regression_images(
-            dr_results,
-            args["output_dir"],
-            args["seeds"],
-            args["algo"].upper(),
-            dr_results["white_components"].shape[0],
-            args["id"],
-            args["fdt_path"],
-            args["roi"],
-        )
-        print(f"{col['pink']}Completed{col['reset']}: {args['id']}", flush=True)
-    except Exception as e:
-        print(
-            f"{col['red']}Dual regression failed due to: {e} {col['reset']}", flush=True
-        )
-        exit(1)
+    nprint(f"{col['plum']}Subject ID{col['reset']}: {args['id']}", to_flush=True)
+    nprint(f"{col['pink']}Obtaining{col['reset']}: FDT Matrix")
+    matrix = load_fdt_matrix(os.path.join(args["fdt_path"], "fdt_matrix2.dot"))
+    dr_regression = nmf_dual_regression if args["algo"] else ica_dual_regression
+    nprint(f"{col['pink']}Running{col['reset']}: Dual Regression", to_flush=True)
+    dr_results = run_decomp(dr_regression, components, matrix, args["parallel"])
+    nprint(f"{col['pink']}Saving{col['reset']}: Components", flush=True)
+    save_dual_regression_images(
+        dr_results,
+        args["output_dir"],
+        args["seeds"],
+        args["algo"].upper(),
+        dr_results["white_components"].shape[0],
+        args["id"],
+        args["fdt_path"],
+        args["roi"],
+    )
+    nprint(f"{col['pink']}Completed{col['reset']}: {args['id']}", to_flush=True)
     return None
 
 
 if __name__ == "__main__":
-    args = script_args()
-    main_dr(args)
+    args = cluster_mode_args()
+    dual_regression_pipeline(args)
