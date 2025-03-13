@@ -221,7 +221,6 @@ def load_grey_matter_volume(nifti_file: str, x_y_z_coordinates: np.array) -> np.
     np.array
         Grey matter component matrix
     """
-
     img = nb.load(nifti_file)
     data = img.get_fdata()
     vol_shape = data.shape[:3]
@@ -277,7 +276,6 @@ def grey_components(
     np.ndarray: np.array
         grey matter components array
     """
-
     grey_matter = glob(os.path.join(decomp_dir, "G_*dim*"))
     seed_key_word = get_key_to_organise_list(seeds[0])
     sorted_components = sort_grey_matter_order(grey_matter, seed_key_word)
@@ -327,7 +325,6 @@ def get_group_level_components(
     dict: dictionary
         dict of components
     """
-
     return {
         "white_components": white_component(component_dir, group_averages_dir),
         "grey_components": grey_components(

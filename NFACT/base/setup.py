@@ -278,12 +278,11 @@ def check_rois(args) -> dict:
         cmd arguments if processed
         roi
     """
-
     if args["surface"] and args["roi"]:
         args["roi"] = process_input_imgs(args["roi"])
-        return args
     if args["surface"] and not args["roi"]:
         error_and_exit(False, "Seeds are surface files but no medial wall given.")
+    return args
 
 
 def process_dim(dim: str) -> str:

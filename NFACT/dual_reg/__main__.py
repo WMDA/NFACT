@@ -48,7 +48,6 @@ def nfact_dr_main(args: dict = None) -> None:
     if not args:
         args = nfactdr_args()
         to_exit = True
-
     # Do argument checking
     check_arguments(args, ["seeds", "list_of_subjects", "algo"])
     args["algo"] = check_algo(args["algo"])
