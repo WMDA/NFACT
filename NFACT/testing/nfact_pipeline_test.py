@@ -7,7 +7,8 @@ from NFACT.decomp.decomposition.decomp import (
     sign_flip,
 )
 from NFACT.decomp.pipes.image_handling import create_wta_map
-from NFACT.base.matrix_handling import normalise_components
+from NFACT.base.matrix_handling import normalise_components, load_fdt_matrix
+from NFACT.dual_reg.dual_regression import nmf_dual_regression, ica_dual_regression
 import pytest
 import os
 from pathlib import Path
@@ -25,8 +26,21 @@ def list_of_mat_files():
 
 
 @pytest.fixture
-def test_matrix(list_of_mat_files):
-    fdt_files = [os.path.join(sub, "fdt_matrix2.dot") for sub in list_of_mat_files]
+def fdt_files(list_of_mat_files):
+    return [os.path.join(sub, "fdt_matrix2.dot") for sub in list_of_mat_files]
+
+
+@pytest.fixture
+def individual_matrix(fdt_files):
+    return load_fdt_matrix(fdt_files[0])
+
+
+def test_loading_works(individual_matrix):
+    assert isinstance(individual_matrix, np.ndarray)
+
+
+@pytest.fixture
+def test_matrix(fdt_files):
     return avg_fdt(fdt_files)
 
 
@@ -96,3 +110,18 @@ def test_signflip(test_ica):
 
 def test_wta(test_ica):
     assert isinstance(create_wta_map(test_ica["white_components"], 0, 0.0), np.ndarray)
+
+
+def test_nnls_non_parrallel(test_nmf, individual_matrix):
+    sub_specific = nmf_dual_regression(test_nmf, individual_matrix, n_jobs=1)
+    assert isinstance(sub_specific["white_components"], np.ndarray)
+
+
+def test_nnls_parrallel(test_nmf, individual_matrix):
+    sub_specific = nmf_dual_regression(test_nmf, individual_matrix, n_jobs=2)
+    assert isinstance(sub_specific["white_components"], np.ndarray)
+
+
+def test_ica_dr(test_ica, individual_matrix):
+    sub_specific = ica_dual_regression(test_ica, individual_matrix)
+    assert isinstance(sub_specific["white_components"], np.ndarray)
