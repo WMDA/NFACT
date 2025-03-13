@@ -63,7 +63,7 @@ def nfact_pp_args() -> dict:
         dest="seed",
         help="""
         Relative path to either a single or multiple seeds. If multiple seeds given
-        then include a space between paths. Must be the same across subjects.
+        then include a space between paths. Path to file must be the same across subjects.
         """,
     )
     tractography_input.add_argument(
@@ -72,7 +72,8 @@ def nfact_pp_args() -> dict:
         dest="warps",
         nargs="+",
         help="""Relative path to warps inside a subjects directory. 
-        Include a space between paths. Must be the same across subjects.
+        Include a space between paths. Path to file must be the same across subjects.
+        Expects the order as Standard2diff and Diff2standard.
         """,
     )
     tractography_input.add_argument(
@@ -80,7 +81,7 @@ def nfact_pp_args() -> dict:
         "--bpx",
         dest="bpx_path",
         help="""Relative path to Bedpostx folder inside a subjects directory. 
-        Must be the same across subjects""",
+        Path to file must be the same across subjects""",
     )
     tractography_input.add_argument(
         "-r",

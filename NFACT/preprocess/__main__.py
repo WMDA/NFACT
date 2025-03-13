@@ -92,7 +92,7 @@ def nfact_pp_main(arg: dict = None):
     ) if arg["file_tree"] else None
 
     print(
-        f'{col["darker_pink"]}Inputs:{col["reset"]} Treated as absolute paths'
+        f'{col["darker_pink"]}Inputs:{col["reset"]} Seeds and ROIS treated as absolute paths'
     ) if arg["absolute"] else None
 
     if arg["stop"] == []:
