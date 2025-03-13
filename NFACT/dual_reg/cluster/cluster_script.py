@@ -70,8 +70,19 @@ def dual_regression_pipeline(
 
     Parameters
     ----------
-    args: dict
-        dictionary of args
+    fdt_path: str
+        path to fdt matrix
+    output_dir: str
+        output directory
+    component_path: str,
+        path to group components
+    group_average_path: str,
+    algo: str,
+    seeds: str,
+    sub_id: str,
+    roi: str,
+    parallel: int = 1,
+
     components: np.ndarray
         group components.
         Can be False (default)
