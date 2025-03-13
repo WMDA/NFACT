@@ -76,13 +76,20 @@ def dual_regression_pipeline(
         output directory
     component_path: str,
         path to group components
-    group_average_path: str,
-    algo: str,
-    seeds: str,
-    sub_id: str,
-    roi: str,
-    parallel: int = 1,
-
+    group_average_path: str
+        path to group averages
+    algo: str
+        which algo was used in
+        the decomposition
+    seeds: str
+        seeds used in the decomposition
+    sub_id: str
+        subject id
+    roi: str
+        roi to restict seeding to
+    parallel: int = 1
+        how many to parallel
+        process to.
     components: np.ndarray
         group components.
         Can be False (default)
