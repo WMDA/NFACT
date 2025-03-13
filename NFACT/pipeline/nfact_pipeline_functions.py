@@ -301,6 +301,7 @@ def roi_file(args: dict) -> None:
     -------
     None
     """
+    args["nfact_dr"]["roi"] = False
     if args["nfact_pp"]["roi"] or args["nfact_pp"]["file_tree"]:
         path = os.path.join(
             args["global_input"]["outdir"],

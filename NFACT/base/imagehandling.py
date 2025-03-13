@@ -178,11 +178,11 @@ def save_grey_matter_volume(
     out = np.zeros(vol.shape + (ncols,)).reshape(-1, ncols)
     for idx, col in enumerate(grey_matter_component.T):
         out[xyz_idx, idx] = col
-        nb.Nifti1Image(
-            out.reshape(vol.shape + (ncols,)).astype(float),
-            affine=vol.affine,
-            header=vol.header,
-        ).to_filename(f"{file_name}.gz")
+    nb.Nifti1Image(
+        out.reshape(vol.shape + (ncols,)).astype(float),
+        affine=vol.affine,
+        header=vol.header,
+    ).to_filename(file_name)
 
 
 def save_grey_matter_gifit(

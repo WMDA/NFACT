@@ -243,7 +243,7 @@ def pre_processing(arg: dict, handler: object) -> None:
         print(f"{col['darker_pink']}Mode:{col['reset']} Surface")
         check_roi_seed_len(arg["seed"], arg["roi"])
     else:
-        print(f"{col['darker_pink']}Mode:{col['reset']}Volume")
+        print(f"{col['darker_pink']}Mode:{col['reset']} Volume")
 
     print(
         f"{col['darker_pink']}Number of subjects:{col['reset']} {len(arg['list_of_subjects'])}"
