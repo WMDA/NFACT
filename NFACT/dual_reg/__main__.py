@@ -87,9 +87,10 @@ def nfact_dr_main(args: dict = None) -> None:
     log.log_break("input")
     log.log_arguments(args)
     log.log_break("nfact decomp workflow")
-    nprint(f"{col['plum']}Number of subject:{col['reset']} {len(args['ptxdir'])} \n")
-
-    nprint("\nDual Regression\n")
+    nprint(f"{col['plum']}Number of subject:{col['reset']} {len(args['ptxdir'])}")
+    parallel_str = args["n_cores"] if args["n_cores"] else 1
+    nprint(f"{col['plum']}Number of cores{col['reset']}: {parallel_str}")
+    nprint("\nDual Regression")
     nprint("-" * 100)
 
     if args["cluster"]:

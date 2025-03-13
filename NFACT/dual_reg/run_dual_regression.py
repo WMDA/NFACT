@@ -101,12 +101,8 @@ def dual_regression_pipeline(
     None
     """
     col = colours()
-    nprint(
-        f"{col['plum']}Number of cores{col['reset']}: ",
-        parallel,
-        to_flush=True,
-    )
     nprint("-" * 100)
+
     if not components:
         nprint(
             f"{col['pink']}Obtaining{col['reset']}: Group Level Components",
@@ -123,7 +119,7 @@ def dual_regression_pipeline(
         except Exception:
             error_and_exit(False, "Unable to find components")
 
-    nprint(f"{col['plum']}Subject ID{col['reset']}: {sub_id}", to_flush=True)
+    nprint(f"{col['pink']}Subject ID{col['reset']}: {sub_id}", to_flush=True)
     nprint(f"{col['pink']}Obtaining{col['reset']}: FDT Matrix")
 
     try:
@@ -132,9 +128,6 @@ def dual_regression_pipeline(
         error_and_exit(False, f"Unable to load {sub_id} fdt matrix")
 
     method = nmf_dual_regression if algo.lower() == "nmf" else ica_dual_regression
-    nprint(f"{col['pink']}DR Method:{col['reset']} {method}")
-
-    nprint(f"{col['pink']}Running{col['reset']}: Dual Regression", to_flush=True)
     try:
         dr_results = run_decomp(method, components, matrix, parallel)
     except Exception as e:

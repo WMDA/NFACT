@@ -173,6 +173,8 @@ def run_on_cluster(args: dict, paths: dict) -> None:
 
     col = colours()
     nprint(f"{col['pink']}Running{col['reset']}: Cluster")
+    method = "Regression" if args["algo"] == "ica" else "Non-negative Regression"
+    nprint(f"{col['pink']}DR Method:{col['reset']} {method}")
     nprint(f"{col['pink']}Submtting to{col['reset']}: {args['cluster_queue']}")
     ids = submit_to_cluster(args, paths)
     queue = Queue_Monitoring()
@@ -198,8 +200,10 @@ def run_locally(args: dict, paths: dict) -> None:
     col = colours()
 
     nprint(f"{col['pink']}Running:{col['reset']} Locally")
+    method = "Regression" if args["algo"] == "ica" else "Non-negative Regression"
+    nprint(f"{col['pink']}DR Method:{col['reset']} {method}")
     nprint(f"{col['pink']}Obtaining:{col['reset']} Components")
-    nprint("-" * 100)
+
     try:
         components = get_group_level_components(
             paths["component_path"],
