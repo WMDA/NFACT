@@ -165,13 +165,28 @@ def nnls_non_parallel(components: dict, connectivity_matrix: np.ndarray):
     }
 
 
-def nnls_for_parall(col, grey_components, connectivity_matrix):
-    """ """
-    return nnls(grey_components, connectivity_matrix[:, col])[0]
+def nnls_for_parallel(
+    col: int, component: np.ndarray, connectivity_matrix: np.ndarray
+) -> np.ndarray:
+    """
+    nnls function wrapper around the nnls function.
+    Needed for parallelization
 
+    Parameters
+    ----------
+    col: int
+        column index
+    component: np.ndarray
+        components to run nnls on
+    connectivity_matrix: np.ndarray
+        connectivity matrix
 
-def nnls_white(col, wm_component_white_map_T, connectivity_matrix):
-    return nnls(wm_component_white_map_T, connectivity_matrix.T[:, col])[0]
+    Returns
+    -------
+    np.ndarray: np.ndarray
+        output of nnls function
+    """
+    return nnls(component, connectivity_matrix[:, col])[0]
 
 
 def nnls_parallel(components: dict, connectivity_matrix: np.ndarray, n_jobs: int = -1):
@@ -201,7 +216,7 @@ def nnls_parallel(components: dict, connectivity_matrix: np.ndarray, n_jobs: int
     nprint(f"{col['pink']}Regression:{col['reset']} White Matter")
     wm_component_white_map = np.array(
         Parallel(n_jobs=n_jobs)(
-            delayed(nnls_grey)(col, grey_components, connectivity_matrix)
+            delayed(nnls_for_parallel)(col, grey_components, connectivity_matrix)
             for col in range(connectivity_matrix.shape[1])
         )
     ).T
@@ -211,7 +226,9 @@ def nnls_parallel(components: dict, connectivity_matrix: np.ndarray, n_jobs: int
     wm_component_white_map_T = wm_component_white_map.T
     gm_component_grey_map = np.array(
         Parallel(n_jobs=n_jobs)(
-            delayed(nnls_white)(col, wm_component_white_map_T, connectivity_matrix.T)
+            delayed(nnls_for_parallel)(
+                col, wm_component_white_map_T, connectivity_matrix.T
+            )
             for col in range(connectivity_matrix.shape[0])
         )
     )
