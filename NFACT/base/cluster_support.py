@@ -196,7 +196,7 @@ def fsl_sub_cluster_command(
     if gpu:
         cluster_command.extend(["-c", "cuda"])
     if parallel:
-        cluster_command.extend(["s", str(parallel)])
+        cluster_command.extend(["-s", str(parallel)])
     cluster_command.extend([" ".join(command_to_run)])
     return cluster_command
 
