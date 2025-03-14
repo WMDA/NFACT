@@ -148,7 +148,8 @@ def submit_to_cluster(args: dict, paths: dict) -> list:
             f"{sub_id}_nfact_dr",
             os.path.join(args["outdir"], "nfact_dr", "logs"),
             args["cluster_qos"],
-            False,
+            gpu=False,
+            parallel=args["n_cores"],
         )
         job_ids.append(id)
     return job_ids
