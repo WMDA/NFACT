@@ -1,6 +1,6 @@
 from NFACT.dual_reg.nfact_dr_functions import get_group_level_components
 from NFACT.base.matrix_handling import load_fdt_matrix
-from NFACT.dual_reg.dual_regression import (
+from NFACT.dual_reg.dual_regression.dual_regression_methods import (
     nmf_dual_regression,
     ica_dual_regression,
     run_decomp,
@@ -133,7 +133,7 @@ def dual_regression_pipeline(
     except Exception as e:
         error_and_exit(False, f"Dual regression failed due to {e}")
 
-    nprint(f"{col['pink']}Saving{col['reset']}: Components", flush=True)
+    nprint(f"{col['pink']}Saving{col['reset']}: Components", to_flush=True)
 
     try:
         save_dual_regression_images(

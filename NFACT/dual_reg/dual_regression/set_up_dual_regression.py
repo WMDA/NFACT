@@ -1,5 +1,5 @@
 from NFACT.dual_reg.nfact_dr_functions import get_subject_id, get_group_level_components
-from NFACT.dual_reg.run_dual_regression import dual_regression_pipeline
+from NFACT.dual_reg.dual_regression.run_dual_regression import dual_regression_pipeline
 from NFACT.base.utils import nprint, error_and_exit, colours
 from NFACT.base.cluster_support import cluster_submission, Queue_Monitoring
 from pathlib import Path
@@ -218,7 +218,7 @@ def run_locally(args: dict, paths: dict) -> None:
         subject_id = get_subject_id(subject, idx)
         dual_regression_pipeline(
             fdt_path=subject,
-            output_dir=args["outdir"],
+            output_dir=os.path.join(args["outdir"], "nfact_dr"),
             component_path=paths["component_path"],
             group_average_path=paths["group_average_path"],
             algo=args["algo"],

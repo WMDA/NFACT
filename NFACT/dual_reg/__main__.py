@@ -4,7 +4,10 @@ from NFACT.dual_reg.nfact_dr_set_up import (
     create_nfact_dr_folder_set_up,
 )
 from NFACT.dual_reg.nfact_dr_functions import get_paths
-from NFACT.dual_reg.set_up_dual_regression import run_on_cluster, run_locally
+from NFACT.dual_reg.dual_regression.set_up_dual_regression import (
+    run_on_cluster,
+    run_locally,
+)
 from NFACT.base.setup import (
     check_algo,
     get_subjects,
